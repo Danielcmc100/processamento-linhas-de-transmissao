@@ -1,0 +1,19 @@
+[project]
+name = "processamento-linhas-de-transmissao"
+version = "0.1.0"
+description = "Processamento de Dados em Linhas de Transmissão Durante Manobras de Energização"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "patito>=0.8.6",
+    "polars>=1.38.1",
+    "pydantic>=2.12.5",
+]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.38.2",
+    "ipykernel>=7.2.0",
+    "ruff>=0.15.5",
+]
