@@ -7,13 +7,50 @@ requires-python = ">=3.13"
 dependencies = [
     "matplotlib>=3.10.8",
     "patito>=0.8.6",
+    "pillow>=12.1.1",
     "polars>=1.38.1",
     "pydantic>=2.12.5",
+    "scikit-learn>=1.8.0",
+    "scipy>=1.17.1",
 ]
 
 [dependency-groups]
 dev = [
     "basedpyright>=1.38.2",
     "ipykernel>=7.2.0",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
     "ruff>=0.15.5",
+    "scipy-stubs>=1.17.1.1",
+    "taskipy>=1.14.1",
 ]
+
+[tool.ruff]
+line-length = 79
+indent-width = 4
+preview = true
+exclude = ["migrations", ".venv"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "S"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.taskipy.tasks]
+format = "ruff check --fix . && ruff format ."
+lint = "ruff check ."
+typecheck = "basedpyright"
+test = "pytest"
+
+[tool.basedpyright]
+pythonVersion = "3.13"
+typeCheckingMode = "standard"
+exclude = [".venv", "migrations"]
+reportMissingTypeStubs = "warning"

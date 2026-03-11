@@ -12,15 +12,15 @@ from .models import (
 _RE_NENERG = re.compile(r"NENERG\s*=\s*(\d+)")
 
 _RE_SWITCH_CONFIG = re.compile(
-    r"^\s*(\d+)\s+(\d+)\s+(\S+)\s+(\S+)" + r"\s+([\d.]+)\s+([\d.]+)\s+(\d+)\s*$"
+    r"^\s*(\d+)\s+(\d+)\s+(\S+)\s+(\S+)\s+([\d.]+)\s+([\d.]+)\s+(\d+)\s*$"
 )
 
 _RE_SIM_SPLIT = re.compile(
-    r"Random switching times for simulation number" + r"\s+(\d+)\s*:"
+    r"Random switching times for simulation number\s+(\d+)\s*:"
 )
 
 _RE_DUMP_TIME = re.compile(
-    r"Time\s*\[sec\]\s*=\s*" + r"([+-]?\d*\.?\d+(?:[Ee][+-]?\d+)?)"
+    r"Time\s*\[sec\]\s*=\s*([+-]?\d*\.?\d+(?:[Ee][+-]?\d+)?)"
 )
 
 
@@ -44,30 +44,42 @@ def _parse_switch_configs(
     """
     configs: list[StatisticalSwitchConfig] = []
     in_table = False
+    found_data = False
 
     for line in text.splitlines():
         if "Entry" in line and "Switch" in line:
             in_table = True
-            continue
-        if in_table and "number" in line and "bus" in line:
+            found_data = False
             continue
 
-        if in_table:
-            match = _RE_SWITCH_CONFIG.match(line)
-            if match:
-                configs.append(
-                    StatisticalSwitchConfig(
-                        entry_number=int(match.group(1)),
-                        switch_number=int(match.group(2)),
-                        from_bus=match.group(3),
-                        to_bus=match.group(4),
-                        mean_time=float(match.group(5)),
-                        std_dev=float(match.group(6)),
-                        reference_switch=int(match.group(7)),
-                    )
-                )
-            else:
+        if not in_table:
+            continue
+
+        stripped = line.strip()
+        # Skip blank lines and non-data header rows (before we find data)
+        if not stripped:
+            if found_data:
                 in_table = False
+            continue
+
+        match = _RE_SWITCH_CONFIG.match(line)
+        if match:
+            found_data = True
+            configs.append(
+                StatisticalSwitchConfig(
+                    entry_number=int(match.group(1)),
+                    switch_number=int(match.group(2)),
+                    from_bus=match.group(3),
+                    to_bus=match.group(4),
+                    mean_time=float(match.group(5)),
+                    std_dev=float(match.group(6)),
+                    reference_switch=int(match.group(7)),
+                )
+            )
+        elif found_data:
+            # We already got data rows; stop on the first non-matching
+            in_table = False
+        # else: still in header rows, skip
 
     return configs
 
