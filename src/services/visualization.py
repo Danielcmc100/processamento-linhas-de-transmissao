@@ -403,13 +403,12 @@ def plot_exceedance_curve(
                     color=color,
                 )
 
-    ax.set_yscale("log")
     ax.set_xlabel("Overvoltage (P.U.)")
-    ax.set_ylabel("P(X > x)  [log scale]")
+    ax.set_ylabel("P(X > x)")
     ax.set_title(
         "Exceedance Probability per Terminal — Empirical vs. Gaussian Fit"
     )
     ax.legend(fontsize=7, ncols=2, loc="upper right")
-    ax.grid(visible=True, which="both", linestyle="--", alpha=0.35)
+    ax.grid(visible=True, linestyle="--", alpha=0.35)
     fig.tight_layout()
     return fig, ax

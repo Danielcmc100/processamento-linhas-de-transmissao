@@ -98,7 +98,7 @@ def load_directory(
     """
     frames: list[pl.DataFrame] = []
     files = sorted(directory.rglob("*.lis"))
-    for lis_file in files[:1]:  # TODO remover limitação
+    for lis_file in files:  # TODO remover limitação
         text = lis_file.read_text(encoding=encoding)
         result = parse_statistical_data(text=text)
         df = extract_maxima_dataframe(
