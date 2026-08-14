@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "matplotlib>=3.10.8",
+    "matplotlib-stubs>=0.3.11",
     "patito>=0.8.6",
     "pillow>=12.1.1",
     "polars>=1.38.1",
@@ -16,11 +17,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "basedpyright>=1.38.2",
+    "basedpyright==1.39.10",
+    "ruff==0.16.3",
     "ipykernel>=7.2.0",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
-    "ruff>=0.15.5",
     "scipy-stubs>=1.17.1.1",
     "taskipy>=1.14.1",
 ]

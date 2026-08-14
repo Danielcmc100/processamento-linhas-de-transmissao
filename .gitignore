@@ -8,3 +8,22 @@ wheels/
 
 # Virtual environments
 .venv
+
+# LaTeX compilation files
+doc/**/*.aux
+doc/**/*.bbl
+doc/**/*.bcf
+doc/**/*.blg
+doc/**/*.fdb_latexmk
+doc/**/*.fls
+doc/**/*.idx
+doc/**/*.ilg
+doc/**/*.ind
+doc/**/*.lof
+doc/**/*.log
+doc/**/*.lot
+doc/**/*.out
+doc/**/*.pdf
+doc/**/*.run.xml
+doc/**/*.synctex.gz
+doc/**/*.toc

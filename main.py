@@ -1,10 +1,10 @@
-"""Main script for ATP overvoltage analysis pipeline.
+"""Main script for ATP over voltage analysis pipeline.
 
 Orchestrates the full data science pipeline:
   1. Load and parse .lis simulation files from a directory.
   2. Detect numerical outliers via DBSCAN.
   3. Fit a Gaussian distribution to the cleaned data per terminal.
-  4. Plot the combined scatter + PDF visualisation.
+  4. Plot the combined scatter + PDF visualization.
 """
 
 from pathlib import Path
@@ -32,8 +32,7 @@ from src.services.visualization import (
 # ---------------------------------------------------------------------------
 
 LIS_DIRECTORY = Path(
-    "/home/daniel/Documentos/Trabalho/pos/"
-    "INOCENCIO/enviados/ELT_INOCENSIO_QUEIMADOS/ELT"
+    "/media/daniel/e7cc1fe6-0a01-4e4a-b492-f30649c49c04/post-processing-files/INOSENSIO-REV3/DOM-INO-IV_DOM-INO-SUL/ELT/CASOS/T_MAN/CRPI/5325-5380/SDEF"
 )
 
 # Peak phase-to-ground base voltage (V) for P.U. normalisation.
