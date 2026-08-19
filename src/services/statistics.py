@@ -10,6 +10,19 @@ import numpy as np
 import polars as pl
 from scipy import stats
 
+STATISTICAL_SUMMARY_SCHEMA = {
+    "terminal": pl.String,
+    "phase": pl.String,
+    "n_total": pl.Int64,
+    "n_valid": pl.Int64,
+    "mean": pl.Float64,
+    "std": pl.Float64,
+    "sigma_3_threshold": pl.Float64,
+    "empirical_exceedance": pl.Float64,
+    "gaussian_exceedance": pl.Float64,
+    "validation_status": pl.String,
+}
+
 
 class GaussianFitResult:
     """Results of fitting a Gaussian distribution to a voltage sample.
@@ -88,3 +101,71 @@ def sigma_summary(fit: GaussianFitResult) -> pl.DataFrame:
         "threshold_pu": thresholds,
         "exceedance_prob": probs,
     })
+
+
+def summarize_statistics(
+    df: pl.DataFrame,
+    *,
+    threshold: float,
+    value_col: str = "value_pu",
+) -> pl.DataFrame:
+    """Summarize exceedance statistics by terminal and phase.
+
+    Non-finite measurements count toward ``n_total`` but are excluded from
+    every estimate and from ``n_valid``. Gaussian exceedance is unavailable
+    for fewer than two valid samples and for zero-variance samples.
+
+    Returns:
+        One row per terminal and phase with empirical and fitted-Gaussian
+        evidence, sigma threshold, and an explicit validation status.
+    """
+    summary_rows: list[dict[str, str | int | float | None]] = []
+    groups = df.partition_by(["terminal", "phase"], maintain_order=True)
+
+    for group in groups:
+        valid_values = [
+            float(value)
+            for value in group[value_col]
+            if value is not None and np.isfinite(value)
+        ]
+        n_total = group.height
+        n_valid = len(valid_values)
+        mean: float | None = None
+        std: float | None = None
+        sigma_3_threshold: float | None = None
+        empirical_exceedance: float | None = None
+        gaussian_exceedance: float | None = None
+
+        if n_valid:
+            mean = float(np.mean(valid_values))
+            empirical_exceedance = (
+                sum(value > threshold for value in valid_values) / n_valid
+            )
+
+        if n_valid < 2:
+            validation_status = "insufficient_samples"
+        else:
+            std = float(np.std(valid_values, ddof=1))
+            sigma_3_threshold = mean + 3 * std if mean is not None else None
+            if std == 0.0:
+                validation_status = "zero_variance"
+            else:
+                validation_status = "valid"
+                gaussian_exceedance = float(
+                    stats.norm.sf(threshold, loc=mean, scale=std)
+                )
+
+        summary_rows.append({
+            "terminal": str(group.item(0, "terminal")),
+            "phase": str(group.item(0, "phase")),
+            "n_total": n_total,
+            "n_valid": n_valid,
+            "mean": mean,
+            "std": std,
+            "sigma_3_threshold": sigma_3_threshold,
+            "empirical_exceedance": empirical_exceedance,
+            "gaussian_exceedance": gaussian_exceedance,
+            "validation_status": validation_status,
+        })
+
+    return pl.DataFrame(summary_rows, schema=STATISTICAL_SUMMARY_SCHEMA)
