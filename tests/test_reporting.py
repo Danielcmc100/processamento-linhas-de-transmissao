@@ -103,8 +103,9 @@ def test_writer_saves_complete_rerunnable_artifact_package(
     generated_at = datetime.fromisoformat(
         metadata["runtime"]["generated_at_utc"]
     )
-    assert generated_at.utcoffset() is not None
-    assert generated_at.utcoffset().total_seconds() == 0
+    utc_offset = generated_at.utcoffset()
+    assert utc_offset is not None
+    assert utc_offset.total_seconds() == 0
     assert set(metadata["software"]) == {
         "matplotlib",
         "numpy",

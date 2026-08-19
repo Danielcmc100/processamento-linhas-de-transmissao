@@ -7,12 +7,14 @@ Provides functions to generate:
 """
 
 from collections.abc import Sequence
+from typing import Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from matplotlib.markers import MarkerStyle
 from scipy import stats
 
 from src.services.statistics import GaussianFitResult, fit_gaussian
@@ -39,7 +41,10 @@ _PALETTE: list[str] = [
 
 def _terminal_color(terminal: str) -> str:
     """Return a consistent hex colour for *terminal*."""
-    terminals_sorted = sorted(TERMINAL_DISTANCES, key=TERMINAL_DISTANCES.get)  # type: ignore[arg-type]
+    terminals_sorted = sorted(
+        TERMINAL_DISTANCES,
+        key=lambda name: TERMINAL_DISTANCES[name],
+    )
     idx = (
         terminals_sorted.index(terminal) if terminal in terminals_sorted else 0
     )
@@ -49,7 +54,7 @@ def _terminal_color(terminal: str) -> str:
 def _jitter(n: int, width: float = 0.01) -> np.ndarray:
     """Return an array of *n* small random horizontal offsets."""
     rng = np.random.default_rng(seed=42)
-    return rng.uniform(-width, width, size=n)  # type: ignore[return-value]
+    return rng.uniform(-width, width, size=n)
 
 
 def plot_overvoltage_scatter(
@@ -134,7 +139,7 @@ def plot_overvoltage_scatter(
                 color="#9E9E9E",
                 alpha=0.75,
                 s=marker_size * 1.8,
-                marker="x",
+                marker=MarkerStyle("x"),
                 linewidths=1.2,
                 zorder=3,
             )
@@ -205,7 +210,8 @@ def plot_pdf_overlay(
         ax.fill_betweenx(
             y_vals,
             dist,
-            dist + pdf_normalised,
+            # matplotlib-stubs 0.3.11 incorrectly restricts x2 to a scalar.
+            dist + pdf_normalised,  # pyright: ignore[reportArgumentType]
             color=color,
             alpha=0.25,
             zorder=3,
@@ -219,13 +225,17 @@ def plot_pdf_overlay(
         )
 
         # Mark mean and ±3σ lines.
-        for n_sigma, linestyle in [(0, "-"), (3, "--")]:
+        line_styles: tuple[tuple[int, Literal["solid", "dashed"]], ...] = (
+            (0, "solid"),
+            (3, "dashed"),
+        )
+        for n_sigma, linestyle in line_styles:
             level = fit.mean + n_sigma * fit.std
             ax.hlines(
                 level,
                 dist - 0.005,
                 dist + pdf_width + 0.005,
-                colors=color,
+                colors=[color],
                 linestyles=linestyle,
                 linewidth=0.9,
                 alpha=0.7,
@@ -237,7 +247,7 @@ def plot_pdf_overlay(
                     level_neg,
                     dist - 0.005,
                     dist + pdf_width + 0.005,
-                    colors=color,
+                    colors=[color],
                     linestyles=linestyle,
                     linewidth=0.9,
                     alpha=0.7,

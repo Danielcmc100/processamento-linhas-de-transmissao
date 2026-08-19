@@ -151,9 +151,10 @@ def summarize_statistics(
                 validation_status = "zero_variance"
             else:
                 validation_status = "valid"
-                gaussian_exceedance = float(
-                    stats.norm.sf(threshold, loc=mean, scale=std)
-                )
+                if mean is not None:
+                    gaussian_exceedance = float(
+                        stats.norm.sf(threshold, loc=mean, scale=std)
+                    )
 
         summary_rows.append({
             "terminal": str(group.item(0, "terminal")),
