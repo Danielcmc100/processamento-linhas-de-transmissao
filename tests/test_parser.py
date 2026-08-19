@@ -1,4 +1,10 @@
+"""Unit tests for parsing representative ATP statistical data."""
+
+from pathlib import Path
+
 from src.parser import parse_statistical_data
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 DUMMY_LIS = """
 NENERG = 2
@@ -81,3 +87,50 @@ def test_parse_statistical_data():
     assert run2.reference_angle is None
     assert run2.maxima_data[2].value == 2.5
     assert run2.maxima_data[2].time == 0.025
+
+
+def test_parse_representative_fixture_preserves_runs_and_signed_values():
+    text = (FIXTURES / "representative.lis").read_text(encoding="iso-8859-1")
+
+    result = parse_statistical_data(text=text)
+
+    assert result.total_simulations == 2
+    assert [run.simulation_number for run in result.runs] == [1, 2]
+    assert [
+        (header.variable_name, header.node_name)
+        for header in result.variable_headers
+    ] == [
+        ("T_MANA", ""),
+        ("T_MANB", ""),
+        ("T_MANC", ""),
+        ("T_OPOA", ""),
+        ("T_OPOB", ""),
+        ("T_OPOC", ""),
+    ]
+    assert [item.value for item in result.runs[0].maxima_data] == [
+        100_000.0,
+        -200_000.0,
+        300_000.0,
+        400_000.0,
+        -500_000.0,
+        600_000.0,
+    ]
+    assert [item.time for item in result.runs[1].maxima_data] == [
+        0.020,
+        0.021,
+        0.022,
+        0.023,
+        0.024,
+        0.025,
+    ]
+
+
+def test_parse_empty_fixture_returns_declared_empty_result():
+    text = (FIXTURES / "empty" / "empty.lis").read_text(encoding="iso-8859-1")
+
+    result = parse_statistical_data(text=text)
+
+    assert result.total_simulations == 0
+    assert result.variable_headers == []
+    assert result.switch_configs == []
+    assert result.runs == []

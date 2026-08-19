@@ -1,5 +1,7 @@
 """Unit tests for the preprocessing service."""
 
+from pathlib import Path
+
 import polars as pl
 
 from src.parser.models import (
@@ -14,6 +16,7 @@ from src.services.preprocessing import (
 )
 
 BASE_VOLTAGE = 408_248.0
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def _make_result() -> LisParseResult:
@@ -97,3 +100,140 @@ def test_extract_maxima_dataframe_terminal_filter():
         terminal_names={"T_OPO"},  # no T_OPO in our data
     )
     assert df.is_empty()
+
+
+def test_load_directory_normalizes_representative_fixture():
+    from src.services.preprocessing import load_directory
+
+    frame = load_directory(
+        directory=FIXTURES,
+        base_voltage=100_000.0,
+        terminal_names={"T_MAN", "T_OPO"},
+    ).sort(["simulation", "terminal", "phase"])
+
+    assert frame.columns == [
+        "source_file",
+        "simulation",
+        "terminal",
+        "phase",
+        "value_pu",
+        "time",
+    ]
+    assert frame.to_dicts() == [
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "terminal": "T_MAN",
+            "phase": "A",
+            "value_pu": 1.0,
+            "time": 0.010,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "terminal": "T_MAN",
+            "phase": "B",
+            "value_pu": 2.0,
+            "time": 0.011,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "terminal": "T_MAN",
+            "phase": "C",
+            "value_pu": 3.0,
+            "time": 0.012,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "terminal": "T_OPO",
+            "phase": "A",
+            "value_pu": 4.0,
+            "time": 0.013,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "terminal": "T_OPO",
+            "phase": "B",
+            "value_pu": 5.0,
+            "time": 0.014,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "terminal": "T_OPO",
+            "phase": "C",
+            "value_pu": 6.0,
+            "time": 0.015,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "terminal": "T_MAN",
+            "phase": "A",
+            "value_pu": 1.5,
+            "time": 0.020,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "terminal": "T_MAN",
+            "phase": "B",
+            "value_pu": 2.5,
+            "time": 0.021,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "terminal": "T_MAN",
+            "phase": "C",
+            "value_pu": 3.5,
+            "time": 0.022,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "terminal": "T_OPO",
+            "phase": "A",
+            "value_pu": 4.5,
+            "time": 0.023,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "terminal": "T_OPO",
+            "phase": "B",
+            "value_pu": 5.5,
+            "time": 0.024,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "terminal": "T_OPO",
+            "phase": "C",
+            "value_pu": 6.5,
+            "time": 0.025,
+        },
+    ]
+
+
+def test_load_directory_with_only_empty_input_returns_declared_schema():
+    from src.services.preprocessing import load_directory
+
+    frame = load_directory(
+        directory=FIXTURES / "empty",
+        base_voltage=100_000.0,
+        terminal_names={"T_MAN", "T_OPO"},
+    )
+
+    assert frame.is_empty()
+    assert frame.columns == [
+        "source_file",
+        "simulation",
+        "terminal",
+        "phase",
+        "value_pu",
+        "time",
+    ]

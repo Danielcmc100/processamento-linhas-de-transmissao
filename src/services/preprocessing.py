@@ -26,6 +26,7 @@ def extract_maxima_dataframe(
     result: LisParseResult,
     base_voltage: float,
     terminal_names: set[str],
+    source_file: str = "",
 ) -> pl.DataFrame:
     """Extract and normalize phase-to-ground maxima from a parsed LIS result.
 
@@ -40,10 +41,12 @@ def extract_maxima_dataframe(
             (e.g. ``{"T_MAN", "T_OPO"}``). The last character of
             each variable name is the phase (A/B/C) and is stripped
             before comparison.
+        source_file: Source identifier to preserve with each observation.
 
     Returns:
         A Polars DataFrame with columns:
-        ``simulation``, ``terminal``, ``phase``, ``value_pu``, ``time``.
+        ``source_file``, ``simulation``, ``terminal``, ``phase``,
+        ``value_pu``, ``time``.
     """
     phase_ground_mask = [
         _is_phase_to_ground(h) for h in result.variable_headers
@@ -61,6 +64,7 @@ def extract_maxima_dataframe(
             if terminal not in terminal_names:
                 continue
             rows.append({
+                "source_file": source_file,
                 "simulation": run.simulation_number,
                 "terminal": terminal,
                 "phase": phase,
@@ -69,6 +73,7 @@ def extract_maxima_dataframe(
             })
 
     empty_schema = {
+        "source_file": pl.String,
         "simulation": pl.Int32,
         "terminal": pl.String,
         "phase": pl.String,
@@ -105,6 +110,7 @@ def load_directory(
             result=result,
             base_voltage=base_voltage,
             terminal_names=terminal_names,
+            source_file=str(lis_file.relative_to(directory)),
         )
         if not df.is_empty():
             frames.append(df)
@@ -112,6 +118,7 @@ def load_directory(
     if not frames:
         return pl.DataFrame(
             schema={
+                "source_file": pl.String,
                 "simulation": pl.Int32,
                 "terminal": pl.String,
                 "phase": pl.String,

@@ -1,0 +1,27 @@
+NENERG = 2
+
+==== Statistical switch configuration ====
+
+ Entry   Switch   From bus   To bus     Mean time  Standard dev. Ref switch
+ number  number                         [sec]      [sec]         number
+      1       1   T_MAN      1_2LT        0.010000   0.001000      0
+      2       2   1_2LT      T_OPO        0.012000   0.001000      0
+
+otherwise blank space.
+
+ T_MANA T_MANB T_MANC T_OPOA T_OPOB T_OPOC
+
+ Random switching times for simulation number       1 :
+ 1  0.009  2  0.011
+==== Table dumping for all subsequent restorations.  Time [sec] = 0.05
+
+ 193.165  100000.0  -200000.0  300000.0  400000.0  -500000.0  600000.0
+Times of maxima :
+ 0.010  0.011  0.012  0.013  0.014  0.015
+
+ Random switching times for simulation number       2 :
+ 1  0.010  2  0.012
+
+ 150000.0  -250000.0  350000.0  450000.0  -550000.0  650000.0
+Times of maxima :
+ 0.020  0.021  0.022  0.023  0.024  0.025
