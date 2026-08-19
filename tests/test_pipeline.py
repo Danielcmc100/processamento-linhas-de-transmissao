@@ -100,6 +100,16 @@ def test_main_loads_json_config_and_reports_counts(
 
     assert exit_code == 0
     assert capsys.readouterr().out == (
-        "Loaded 12 rows; analyzed 4 rows; produced 2 summary rows.\n"
+        "Saved 12 raw rows, 4 analyzed rows, and 2 summary rows "
+        f"to {config.output_dir}.\n"
     )
-    plt.close("all")
+    assert {path.name for path in config.output_dir.iterdir()} == {
+        "raw_observations.csv",
+        "annotated_observations.csv",
+        "summary.csv",
+        "configuration.json",
+        "metadata.json",
+        "combined.png",
+        "exceedance.png",
+    }
+    assert plt.get_fignums() == []
