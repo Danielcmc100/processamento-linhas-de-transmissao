@@ -38,6 +38,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     finally:
         plt.close(result.figures.combined)
         plt.close(result.figures.exceedance)
+        plt.close(result.figures.overvoltage_histogram)
+        plt.close(result.figures.switching_time)
     print(
         f"Saved {result.raw_observations.height} raw rows, "
         f"{result.annotated_observations.height} analyzed rows, and "

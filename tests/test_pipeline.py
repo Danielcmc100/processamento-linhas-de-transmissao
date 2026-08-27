@@ -68,10 +68,14 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     assert set(result.summary["validation_status"]) == {"valid"}
     assert isinstance(result.figures.combined, Figure)
     assert isinstance(result.figures.exceedance, Figure)
+    assert isinstance(result.figures.overvoltage_histogram, Figure)
+    assert isinstance(result.figures.switching_time, Figure)
     assert list(config.output_dir.iterdir()) == []
 
     plt.close(result.figures.combined)
     plt.close(result.figures.exceedance)
+    plt.close(result.figures.overvoltage_histogram)
+    plt.close(result.figures.switching_time)
 
 
 def test_pipeline_rejects_unanalyzable_selection(tmp_path: Path) -> None:
@@ -111,5 +115,7 @@ def test_main_loads_json_config_and_reports_counts(
         "metadata.json",
         "combined.png",
         "exceedance.png",
+        "overvoltage_histogram.png",
+        "switching_time.png",
     }
     assert plt.get_fignums() == []

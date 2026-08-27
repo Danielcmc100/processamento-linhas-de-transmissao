@@ -2,6 +2,7 @@
 
 Provides functions to generate:
 - Scatter plots mapping P.U. overvoltage to terminal line position.
+- Histograms comparing overvoltage frequencies between terminals.
 - Gaussian Probability Density Function (PDF) overlays on scatter data.
 - Combined figures merging both visualisations.
 """
@@ -37,6 +38,24 @@ _PALETTE: list[str] = [
     "#9C27B0",  # 3_4LT   – purple
     "#F44336",  # T_OPO   – red
 ]
+
+
+def _normal_uniform_survival(
+    values: np.ndarray,
+    mean: float,
+    std: float,
+    uniform_width: float,
+) -> np.ndarray:
+    """Return survival probabilities for a normal plus uniform delay."""
+    if uniform_width <= 0 or std <= 0:
+        return stats.norm.sf(values, loc=mean, scale=std)
+
+    z_high = (values - mean) / std
+    z_low = z_high - uniform_width / std
+    integral_high = z_high * stats.norm.cdf(z_high) + stats.norm.pdf(z_high)
+    integral_low = z_low * stats.norm.cdf(z_low) + stats.norm.pdf(z_low)
+    cdf = std * (integral_high - integral_low) / uniform_width
+    return 1.0 - cdf
 
 
 def _terminal_color(terminal: str) -> str:
@@ -151,6 +170,65 @@ def plot_overvoltage_scatter(
     ax.grid(visible=True, linestyle="--", alpha=0.4, zorder=1)
     ax.set_xlim(-0.08, 1.08)
 
+    return fig, ax
+
+
+def plot_overvoltage_histogram(
+    df: pl.DataFrame,
+    ax: Axes | None = None,
+    terminal_col: str = "terminal",
+    value_col: str = "value_pu",
+    bins: int = 20,
+    figsize: tuple[float, float] = (10, 6),
+) -> tuple[Figure, Axes]:
+    """Plot overvoltage frequency histograms grouped by terminal.
+
+    All terminals use the same bin edges so their absolute frequencies are
+    directly comparable. Non-finite values are excluded from the plot.
+
+    Returns:
+        A ``(figure, axes)`` tuple.
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        raw_fig = ax.get_figure()
+        if raw_fig is None or not isinstance(raw_fig, Figure):
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            fig = raw_fig
+
+    all_values = df[value_col].drop_nulls().to_numpy()
+    finite_values = all_values[np.isfinite(all_values)]
+    if len(finite_values) > 0:
+        bin_edges = np.histogram_bin_edges(finite_values, bins=bins)
+        terminals: Sequence[str] = df[terminal_col].unique().sort().to_list()
+        for terminal in terminals:
+            values = (
+                df
+                .filter(pl.col(terminal_col) == terminal)[value_col]
+                .drop_nulls()
+                .to_numpy()
+            )
+            values = values[np.isfinite(values)]
+            if len(values) == 0:
+                continue
+            ax.hist(
+                values,
+                bins=bin_edges,
+                histtype="step",
+                linewidth=2.0,
+                color=_terminal_color(terminal),
+                label=terminal,
+            )
+
+    ax.set_xlabel("Overvoltage (P.U.)")
+    ax.set_ylabel("Frequency")
+    ax.set_title("Overvoltage Frequency Distribution per Terminal")
+    if ax.has_data():
+        ax.legend(title="Terminal", fontsize=8)
+    ax.grid(visible=True, axis="y", linestyle="--", alpha=0.35)
+    fig.tight_layout()
     return fig, ax
 
 
@@ -417,6 +495,94 @@ def plot_exceedance_curve(
     ax.set_ylabel("P(X > x)")
     ax.set_title(
         "Exceedance Probability per Terminal — Empirical vs. Gaussian Fit"
+    )
+    ax.legend(fontsize=7, ncols=2, loc="upper right")
+    ax.grid(visible=True, linestyle="--", alpha=0.35)
+    fig.tight_layout()
+    return fig, ax
+
+
+def plot_switching_time_curve(
+    df: pl.DataFrame,
+    switch_col: str = "switch_number",
+    time_col: str = "opening_time",
+    mean_col: str = "mean_time",
+    std_col: str = "std_dev",
+    system_frequency_hz: float = 60.0,
+    figsize: tuple[float, float] = (11, 7),
+    n_curve_points: int = 400,
+) -> tuple[Figure, Axes]:
+    """Plot empirical and Gaussian survival curves for event times.
+
+    The observed times are compared with the configured Gaussian combined
+    with ATP's uniform reference-angle delay. At ``system_frequency_hz``,
+    that delay ranges from zero to one electrical cycle. The curve is not
+    refitted from the observed times.
+
+    Returns:
+        A ``(figure, axes)`` tuple.
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+
+    switches: Sequence[int] = df[switch_col].unique().sort().to_list()
+    for switch_number in switches:
+        subset = df.filter(pl.col(switch_col) == switch_number)
+        times = subset[time_col].drop_nulls().to_numpy()
+        times = times[np.isfinite(times)]
+        if len(times) == 0:
+            continue
+
+        color = _PALETTE[(int(switch_number) - 1) % len(_PALETTE)]
+        sorted_times = np.sort(times)
+        n = len(sorted_times)
+        ranks = np.arange(1, n + 1)
+        empirical_survival = (n - ranks + 1) / n
+
+        ax.scatter(
+            sorted_times,
+            empirical_survival,
+            color=color,
+            alpha=0.35,
+            s=12,
+            edgecolors="none",
+            zorder=2,
+            label=f"Switch {switch_number} (empirical)",
+        )
+
+        means = subset[mean_col].drop_nulls().to_numpy()
+        stds = subset[std_col].drop_nulls().to_numpy()
+        if len(means) == 0 or len(stds) == 0 or stds[0] <= 0:
+            continue
+
+        mean_time = float(means[0])
+        std_time = float(stds[0])
+        delay_width = 1.0 / system_frequency_hz
+        x_min = min(sorted_times.min(), mean_time - 4 * std_time)
+        x_max = max(
+            sorted_times.max(),
+            mean_time + delay_width + 4 * std_time,
+        )
+        if x_max > x_min:
+            x_curve = np.linspace(x_min, x_max, n_curve_points)
+            switching_survival = _normal_uniform_survival(
+                x_curve,
+                mean=mean_time,
+                std=std_time,
+                uniform_width=delay_width,
+            )
+            ax.plot(
+                x_curve,
+                switching_survival,
+                color=color,
+                linewidth=2.0,
+                zorder=3,
+                label=(f"Switch {switch_number} (Gaussian + reference delay)"),
+            )
+
+    ax.set_xlabel("Breaker closing/opening time (s)")
+    ax.set_ylabel("P(T > t)")
+    ax.set_title(
+        "Breaker Switching Time — Empirical vs. Gaussian + Reference Delay"
     )
     ax.legend(fontsize=7, ncols=2, loc="upper right")
     ax.grid(visible=True, linestyle="--", alpha=0.35)

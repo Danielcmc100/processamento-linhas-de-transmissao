@@ -69,6 +69,8 @@ Each successful run writes the following files to `output_dir`:
 - `metadata.json`
 - `combined.png`
 - `exceedance.png`
+- `overvoltage_histogram.png`
+- `switching_time.png`
 
 The saved `configuration.json` can be passed to the same command to reproduce
 the analysis. Select a new output directory or set `overwrite` to `true` when

@@ -13,6 +13,7 @@ from src.parser.models import (
 )
 from src.services.preprocessing import (
     extract_maxima_dataframe,
+    load_switching_times_directory,
 )
 
 BASE_VOLTAGE = 408_248.0
@@ -236,4 +237,46 @@ def test_load_directory_with_only_empty_input_returns_declared_schema():
         "phase",
         "value_pu",
         "time",
+    ]
+
+
+def test_load_switching_times_uses_configured_gaussian():
+    frame = load_switching_times_directory(FIXTURES).sort([
+        "switch_number",
+        "simulation",
+    ])
+
+    assert frame.to_dicts() == [
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "switch_number": 1,
+            "opening_time": 0.009,
+            "mean_time": 0.01,
+            "std_dev": 0.001,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "switch_number": 1,
+            "opening_time": 0.01,
+            "mean_time": 0.01,
+            "std_dev": 0.001,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 1,
+            "switch_number": 2,
+            "opening_time": 0.011,
+            "mean_time": 0.012,
+            "std_dev": 0.001,
+        },
+        {
+            "source_file": "representative.lis",
+            "simulation": 2,
+            "switch_number": 2,
+            "opening_time": 0.012,
+            "mean_time": 0.012,
+            "std_dev": 0.001,
+        },
     ]

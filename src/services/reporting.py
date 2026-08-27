@@ -19,6 +19,8 @@ ARTIFACT_NAMES = (
     "metadata.json",
     "combined.png",
     "exceedance.png",
+    "overvoltage_histogram.png",
+    "switching_time.png",
 )
 
 
@@ -59,6 +61,12 @@ def write_result_artifacts(
     )
     result.figures.combined.savefig(config.output_dir / "combined.png")
     result.figures.exceedance.savefig(config.output_dir / "exceedance.png")
+    result.figures.overvoltage_histogram.savefig(
+        config.output_dir / "overvoltage_histogram.png"
+    )
+    result.figures.switching_time.savefig(
+        config.output_dir / "switching_time.png"
+    )
     _write_json(
         config.output_dir / "metadata.json",
         _build_metadata(config, result),

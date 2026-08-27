@@ -128,3 +128,47 @@ def load_directory(
         )
 
     return pl.concat(frames)
+
+
+def load_switching_times_directory(
+    directory: Path,
+    encoding: str = "iso-8859-1",
+) -> pl.DataFrame:
+    """Load simulated breaker times and their configured Gaussian values.
+
+    Returns:
+        DataFrame with source file, simulation, switch number, observed time,
+        configured mean time, and configured standard deviation.
+    """
+    rows: list[dict[str, object]] = []
+    for lis_file in sorted(directory.rglob("*.lis")):
+        text = lis_file.read_text(encoding=encoding)
+        result = parse_statistical_data(text=text)
+        configs = {
+            config.switch_number: config for config in result.switch_configs
+        }
+
+        for run in result.runs:
+            for event in run.switching_times:
+                switch_number = int(event.switch_name)
+                config = configs.get(switch_number)
+                rows.append({
+                    "source_file": str(lis_file.relative_to(directory)),
+                    "simulation": run.simulation_number,
+                    "switch_number": switch_number,
+                    "opening_time": event.time,
+                    "mean_time": config.mean_time if config else None,
+                    "std_dev": config.std_dev if config else None,
+                })
+
+    schema = {
+        "source_file": pl.String,
+        "simulation": pl.Int32,
+        "switch_number": pl.Int32,
+        "opening_time": pl.Float64,
+        "mean_time": pl.Float64,
+        "std_dev": pl.Float64,
+    }
+    if not rows:
+        return pl.DataFrame(schema=schema)
+    return pl.DataFrame(rows, schema=schema)

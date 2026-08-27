@@ -12,14 +12,22 @@ from src.services.clustering import (
 )
 from src.services.comparison import compare_anomaly_methods
 from src.services.config import AnalysisConfig
-from src.services.preprocessing import load_directory
+from src.services.preprocessing import (
+    load_directory,
+    load_switching_times_directory,
+)
 from src.services.statistics import (
     GaussianFitResult,
     fit_gaussian,
     summarize_statistics,
 )
 from src.services.validation import ValidationResult, validate_observations
-from src.services.visualization import plot_combined, plot_exceedance_curve
+from src.services.visualization import (
+    plot_combined,
+    plot_exceedance_curve,
+    plot_overvoltage_histogram,
+    plot_switching_time_curve,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -28,6 +36,8 @@ class PipelineFigures:
 
     combined: Figure
     exceedance: Figure
+    overvoltage_histogram: Figure
+    switching_time: Figure
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +66,10 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         directory=config.input_path,
         base_voltage=config.base_voltage,
         terminal_names=set(config.terminals),
+        encoding=config.encoding,
+    )
+    switching_times = load_switching_times_directory(
+        directory=config.input_path,
         encoding=config.encoding,
     )
     validation = validate_observations(
@@ -106,6 +120,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         fits=fits,
         cluster_col="dbscan_cluster",
     )
+    overvoltage_histogram, _ = plot_overvoltage_histogram(compared)
+    switching_time, _ = plot_switching_time_curve(switching_times)
 
     return PipelineResult(
         raw_observations=raw_observations,
@@ -115,6 +131,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         figures=PipelineFigures(
             combined=combined,
             exceedance=exceedance,
+            overvoltage_histogram=overvoltage_histogram,
+            switching_time=switching_time,
         ),
     )
 

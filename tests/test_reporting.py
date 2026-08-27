@@ -118,9 +118,11 @@ def test_writer_saves_complete_rerunnable_artifact_package(
     assert "physical_cause" not in metadata
     assert (config.output_dir / "combined.png").stat().st_size > 0
     assert (config.output_dir / "exceedance.png").stat().st_size > 0
+    assert (config.output_dir / "overvoltage_histogram.png").stat().st_size > 0
 
     plt.close(result.figures.combined)
     plt.close(result.figures.exceedance)
+    plt.close(result.figures.overvoltage_histogram)
 
 
 def test_writer_produces_deterministic_tables_and_configuration(

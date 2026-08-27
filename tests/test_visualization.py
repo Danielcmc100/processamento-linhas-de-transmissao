@@ -15,8 +15,10 @@ from matplotlib.figure import Figure  # noqa: E402
 from src.services.visualization import (  # noqa: E402
     TERMINAL_DISTANCES,
     plot_combined,
+    plot_overvoltage_histogram,
     plot_overvoltage_scatter,
     plot_pdf_overlay,
+    plot_switching_time_curve,
 )
 
 
@@ -28,8 +30,12 @@ def _make_df(n_per_terminal: int = 20) -> pl.DataFrame:
     rows = []
     for terminal, mean in [("T_MAN", 1.2), ("T_OPO", 1.8)]:
         values = rng.normal(loc=mean, scale=0.1, size=n_per_terminal).tolist()
-        for v in values:
-            rows.append({"terminal": terminal, "value_pu": v})
+        for index, v in enumerate(values):
+            rows.append({
+                "terminal": terminal,
+                "value_pu": v,
+                "time": 0.01 + index * 0.0001,
+            })
     return pl.DataFrame(rows)
 
 
@@ -63,6 +69,34 @@ def test_plot_pdf_overlay_returns_figure_and_axes():
 def test_plot_combined_returns_figure_and_axes():
     df = _make_df()
     fig, ax = plot_combined(df)
+    assert isinstance(fig, Figure)
+    assert isinstance(ax, Axes)
+
+
+def test_plot_overvoltage_histogram_groups_frequencies_by_terminal():
+    df = _make_df()
+
+    fig, ax = plot_overvoltage_histogram(df, bins=8)
+
+    assert isinstance(fig, Figure)
+    assert isinstance(ax, Axes)
+    assert ax.get_ylabel() == "Frequency"
+    legend = ax.get_legend()
+    assert legend is not None
+    assert {text.get_text() for text in legend.get_texts()} == {
+        "T_MAN",
+        "T_OPO",
+    }
+
+
+def test_plot_switching_time_returns_figure_and_axes():
+    df = pl.DataFrame({
+        "switch_number": [1, 1, 2, 2],
+        "opening_time": [0.019, 0.0205, 0.011, 0.013],
+        "mean_time": [0.02, 0.02, 0.012, 0.012],
+        "std_dev": [0.000833, 0.000833, 0.001, 0.001],
+    })
+    fig, ax = plot_switching_time_curve(df)
     assert isinstance(fig, Figure)
     assert isinstance(ax, Axes)
 
