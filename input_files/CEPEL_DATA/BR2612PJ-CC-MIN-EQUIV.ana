@@ -1,0 +1,232 @@
+TIPO
+P
+TITU     1
+ONS = SISTEMA INTERLIGADO = CONFIG DEZ/2026 = VERSÃO 31/03/2026 = BR2612PJ.ANA
+CMNT     1
+================================================================================
+CMNT     2
+ CICLO DO PAR ANO 2027 / 2031 - REVISÃO 0
+CMNT     3
+ CASO DE REFERÊNCIA BR2612PJ.ANA GERADO A PARTIR DA BASE DE DADOS DE OPERAÇÃO
+CMNT     4
+ BR2512B.ANA DE 31/03/2026, APLICANDO-SE OS ARQUIVOS DE ALTERAÇÃO
+CMNT     5
+ NNE2612PJ.ALT, SECO2612PJ.ALT E SUL2612PJ.ALT.
+CMNT     6
+================================================================================
+CMNT     7
+* Nathan Kelvi de Almeida Bueno   <nathan.bueno@ons.org.br>   Tel:48 32613928 *
+CMNT     8
+* NORTE, NORDESTE                                                             *
+CMNT     9
+* Rodolfo G. de Souza Leite      <rodolfo.leite@ons.org.br>   Tel:81 32178941 *
+CMNT    10
+*******************************************************************************
+DBAR
+(NB  CEMA     BN               VBAS DISJUN          DDMMAAAADDMMAAAA IA SA  F
+(----=-=-============          ---- ======          --------======== ---=== -
+  390    SGOTAR-MG500           500     50                           351
+  391    SGOTA2-MG345           345     40                           352
+  393  1 SGOTA4-MG000                                                351
+  395    SGOTA3-MG013          13.8                                  351    A
+  397    SGOTA4-MG013          13.8                                  351    A
+ 1505  1 SGOTA3-MG000                                                351
+ 9049    SGOTA2-MG138           138     40                           358    A
+ 9098  2 SGO-DF-MG138           138                                  352    A
+42076  1 SGOTA6-MG000                                                352
+42077    SGOTA6-MG013          13.8    100                           352    A
+48461    CALTOS-MG138           138                                  358
+99999
+DCIR
+(BF  CE  BT   NCT  R1    X1    R0    X0    CN                  TB  TCIA DEF  KM CD RNDE  XNDE CP RNPA  XNPA SA     NunNop DJ_BF CicDJ_BT Cic                    DDMMAAAADDMMAAAA   MVA              TD     NOME EXTENSO
+(----=-=====  --=------======------======------               -----==---=== ====--======------==------======---    ===--- ======---======---                    ========-------- =======            == --------------------
+  390   1505   3T         275         275T3                          998        YN                                                                                                   400
+  391   1505   3T         -63         -63T3                          998        YN                                                                                                   400
+  395   1505   3T         743         743T3                          998        D                                                                                                    133
+  390    393   4T         242         242T4                          998        YN                                                                                                   400
+  391    393   4T         -18         -18T4                          998        YN                                                                                                   400
+  397    393   4T         738         738T4                          998        D                                                                                                    100
+  391  42076   6T0.02082.48840.02082.4867T6                          998        YN                                                                                                   300
+ 9098  42076   6T0.0105-0.1790.0105   -18T6                          998        YN                                                                                                   300
+42077  42076   6T0.251912.5090.251912.509T6                          998 30     D                                                                                                    300
+ 9098   9049   7T 0.075 1.506 0.077 1.541                            998        YN            YN                                                                                     300
+ 9049  48461   1L 2.38110.66410.22833.888                            998    44.9                                                                                                     180
+ 9049      0   1G7.818526.76316.65366.912EQUIV.                      998        YN                                                                                                                     Equivalente shunt
+  391   9049   1T181458487139 .31E7.259E7EQUIV.                      998        YN            YN                                                                                                       Equivalente serie
+  391      0   1G.72624 7.85532.84645.687EQUIV.                      998        YN                                                                                                                     Equivalente shunt
+  390    391   1T6.692254.573633391669034EQUIV.                      998        YN            YN                                                                                                       Equivalente serie
+  390   9049   1T49.425 16929251829497773EQUIV.                      998        YN            YN                                                                                                       Equivalente serie
+  390      0   1G.05491.84706.455122.1381EQUIV.                      998        YN                                                                                                                     Equivalente shunt
+99999
+DARE
+(NN  C                            NOME                
+(--  =            ------------------------------------
+998                   Barras sem Correspondência Curto
+  1                                        RS - 525 kV
+  2                                        RS - 230 kV
+  3                                      RS - DIT/DIST
+  4                 RS - DIT/DIST (Sul + Livramento 2)
+  5                               RS - Consumidores RB
+  6                         RS - Autoprodutores 230 kV
+ 51                                        SC - 525 kV
+ 52                                        SC - 230 kV
+ 53                                      SC - DIT/DIST
+ 54                               SC - Consumidores RB
+101                                        PR - 525 kV
+102                                        PR - 230 kV
+103                                      PR - DIT/DIST
+104                               PR - Consumidores RB
+105                         PR - Autoprodutores 230 kV
+201                                SP - 765 kV (SP+PR)
+202                                        SP - 500 kV
+203                                        SP - 440 kV
+204                                        SP - 345 kV
+205                                        SP - 230 kV
+206                            SP - DIT/DIST (Litoral)
+207                       SP - DIT/DIST (ATB/MOG/CAMP)
+208                             SP - DIT/DIST (Araras)
+209                              SP - DIT/DIST (Jupiá)
+210                         SP - DIT/DIST (P.Prudente)
+211                   SP - DIT/DIST (CERQ/Oeste/Salto)
+212               SP - DIT/DIST (Região Metropolitana)
+213                    SP - DIT/DIST (Vale do Paraíba)
+214                        SP - DIT/DIST (C. Paulista)
+216                               SP - Consumidores RB
+251                                        RJ - 500 kV
+252                                        RJ - 345 kV
+253                                        RJ - 230 kV
+254                      RJ - DIT/DIST (Metropolitana)
+255                     RJ - DIT/DIST (Sul Fluminense)
+256                 RJ - DIT/DIST (Baixada Fluminense)
+259                   RJ - DIT/DIST (Norte Fluminense)
+261                         RJ - Autoprodutores 500 kV
+301                                        ES - 500 kV
+302                                        ES - 345 kV
+303                                        ES - 230 kV
+304                     ES - DIT/DIST (Grande Vitória)
+305                                ES - DIT/DIST (Sul)
+306                              ES - DIT/DIST (Norte)
+351                                        MG - 500 kV
+352                                        MG - 345 kV
+353                                        MG - 230 kV
+354                      MG - DIT/DIST (Metropolitana)
+355                        MG - DIT/DIST (Mantiqueira)
+356                              MG - DIT/DIST (Norte)
+357                              MG - DIT/DIST (Leste)
+358                          MG - DIT/DIST (Triângulo)
+359                                MG - DIT/DIST (Sul)
+360                              MG - DIT/DIST (Oeste)
+361                       MG - DIT/DIST (Padre Fialho)
+362                               MG - Consumidores RB
+401                                        MS - 440 kV
+402                                        MS - 230 kV
+403                                      MS - DIT/DIST
+404                         MS - Autoprodutores 230 kV
+431                                        AC - 230 kV
+432                       AC - DIT/DIST (Rio Branco I)
+451                                        RO - 500 kV
+452                                        RO - 230 kV
+453                              RO - DIT/DIST (Abunã)
+454                  RO - DIT/DIST (Nova Mutum Paraná)
+455                        RO - DIT/DIST (Porto Velho)
+456                          RO - DIT/DIST (Ariquemes)
+457                               RO - DIT/DIST (Jaru)
+458                          RO - DIT/DIST (Ji-Paraná)
+459                      RO - DIT/DIST (Pimenta Bueno)
+460                            RO - DIT/DIST (Vilhena)
+471                                        MT - 500 kV
+472                                        MT - 230 kV
+473                              MT - DIT/DIST (Sinop)
+474                            MT - DIT/DIST (Sorriso)
+475                 MT - DIT/DIST (Lucas do Rio Verde)
+476                         MT - DIT/DIST (Dardanelos)
+477                        MT - DIT/DIST (Anel Cuiabá)
+478                     MT - DIT/DIST (Barra do Peixe)
+479                            MT - DIT/DIST (Parecis)
+480                               MT - Consumidores RB
+511                                        GO - 500 kV
+512                                        GO - 345 kV
+513                                        GO - 230 kV
+514                            GO - DIT/DIST (Corumbá)
+515                            GO - DIT/DIST (Goiânia)
+516                          GO - DIT/DIST (Paranaíba)
+517                           GO - DIT/DIST (Sudoeste)
+518                              GO - DIT/DIST (Norte)
+519                               GO - Consumidores RB
+520                         GO - Autoprodutores 230 kV
+561                                        DF - 500 kV
+562                                        DF - 345 kV
+563                                        DF - 230 kV
+564                           DF - DIT/DIST (Brasília)
+581                        TO - Geração (Centro-Oeste)
+701                                BA - 500 kV (Oeste)
+702                                BA - 230 kV (Oeste)
+703                              BA - DIT/DIST (Oeste)
+711                                     BA/SE - 500 kV
+712                                     BA/SE - 230 kV
+713                          BA/SE - DIT/DIST (Sul NE)
+714                       BA/SE - DIT/DIST (Centro NE)
+716                      BA/SE - Autoprodutores 230 kV
+721                                     AL/PE - 500 kV
+722                                     AL/PE - 230 kV
+723                        AL/PE - DIT/DIST (Leste NE)
+741                                     PB/RN - 500 kV
+742                                     PB/RN - 230 kV
+743                        PB/RN - DIT/DIST (Leste NE)
+761                                        CE - 500 kV
+762                                        CE - 230 kV
+763                                      CE - DIT/DIST
+764                               CE - Consumidores RB
+771                                        PI - 500 kV
+772                                        PI - 230 kV
+773                                      PI - DIT/DIST
+801                      AM - 500 kV (Interligação PA)
+802                                        AM - 230 kV
+803                           AM - DIT/DIST (Mauá III)
+804                             AM - DIT/DIST (Manaus)
+805                        AM - DIT/DIST (J. Teixeira)
+806                            AM - DIT/DIST (Radiais)
+821                                        AP - 230 kV
+822                                      AP - DIT/DIST
+841                                        PA - 500 kV
+842                          PA - 230 kV (Tramo Oeste)
+843                                PA - 230 kV (Norte)
+844                                  PA - 230 kV (Sul)
+845                        PA - DIT/DIST (Tramo Oeste)
+846                              PA - DIT/DIST (Norte)
+847                                PA - DIT/DIST (Sul)
+848                               PA - Consumidores RB
+861                                        MA - 500 kV
+862                         MA - 230 kV (Centro/Norte)
+863                           MA - 230 kV (Imperatriz)
+864                       MA - DIT/DIST (Centro/Norte)
+865                         MA - DIT/DIST (Imperatriz)
+866                               MA - Consumidores RB
+881                                        TO - 500 kV
+882                                        TO - 230 kV
+883                                      TO - DIT/DIST
+744                            PB/RN - Consumidores RB
+704                       BA - Consumidores RB (Oeste)
+241                                 PY - Sistema 50 Hz
+260                               RJ - Consumidores RB
+715                            BA/SE - Consumidores RB
+724                            AL/PE - Consumidores RB
+258                              RJ - DIT/DIST (Lagos)
+215                       SP - Autoprodutores DIT/DIST
+257                            RJ - DIT/DIST (Serrana)
+363                       MG - Autoprodutores DIT/DIST
+405                       MS - Autoprodutores DIT/DIST
+481                       MT - Autoprodutores DIT/DIST
+217                         SP - Autoprodutores 440 kV
+240                              PR - 500 kV (Sudeste)
+482                         MT - Autoprodutores 230 kV
+521                       GO - Autoprodutores DIT/DIST
+433                              AC - DIT/DIST (Feijó)
+807                         AM - DIT/DIST (João Paulo)
+808                       AM - Consumidores (DIT/DIST)
+307                       ES - Autoprodutores DIT/DIST
+901                                        RR - 500 kV
+902                                        RR - 230 kV
+903                                      RR - DIT/DIST
+999               Área oriunda de algum bloco de dados
+99999

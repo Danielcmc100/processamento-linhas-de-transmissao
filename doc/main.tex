@@ -49,6 +49,7 @@
 \usepackage{hyphenat}
 \usepackage{longtable}
 \usepackage{graphicx}
+\usepackage[section]{placeins}
 
 \usepackage{tikz}
 \usepackage{xcolor}
@@ -365,10 +366,16 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 % DEVE SER PREENCHIDA A MÃO LEMBRE-SE DE MANTER EM ORDEM ALFABETICA.
 \begin{siglas}
   \item[ABNT] Associação Brasileira de Normas Técnicas
+  \item[ANAFAS] Programa de Análise de Faltas Simultâneas
+  \item[ANAREDE] Programa de Análise de Redes Elétricas
   \item[ATP] \textit{Alternative Transients Program}
+  \item[ATPDraw] Interface gráfica para elaboração de modelos do ATP
   \item[DBSCAN] \textit{Density-Based Spatial Clustering of Applications with Noise}
   \item[EMTP] \textit{Electromagnetic Transients Program}
   \item[IA] Inteligência Artificial
+  \item[LT] Linha de transmissão
+  \item[ONS] Operador Nacional do Sistema Elétrico
+  \item[PAR/PEL] Plano da Operação Elétrica de Médio Prazo
 \end{siglas}
 % ---
 
@@ -491,7 +498,7 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 
 \section{Organização do trabalho}
 
-Este trabalho está organizado em capítulos que contemplam os principais elementos da investigação. Após esta introdução, o capítulo de fundamentação teórica apresenta os conceitos necessários para compreender o problema, incluindo aspectos de transitórios eletromagnéticos, simulação computacional, análise estatística, análise probabilística e técnicas de aprendizagem de máquina aplicadas à detecção de anomalias. Em seguida, o capítulo de metodologia e desenvolvimento descreve os procedimentos adotados para coleta, tratamento e análise dos dados, bem como a construção da solução proposta. Por fim, o capítulo de conclusão retoma os objetivos do estudo, sintetiza os resultados alcançados e aponta possibilidades de continuidade da pesquisa.
+Este trabalho está organizado em capítulos que contemplam os principais elementos da investigação. Após esta introdução, o capítulo de fundamentação teórica apresenta os conceitos necessários para compreender o problema, incluindo aspectos de transitórios eletromagnéticos, simulação computacional, análise estatística, análise probabilística e técnicas de aprendizagem de máquina aplicadas à detecção de anomalias. O capítulo seguinte descreve a modelagem do sistema elétrico utilizada como ambiente de geração dos dados. Na sequência, o capítulo de metodologia e desenvolvimento apresenta os procedimentos de extração, tratamento e análise dos resultados, bem como a construção da solução proposta. Por fim, o capítulo de conclusão retoma os objetivos do estudo, sintetiza os resultados alcançados e aponta possibilidades de continuidade da pesquisa.
 
 \chapter{Fundamentação teórica}
 
@@ -524,6 +531,8 @@ O \textit{Alternative Transients Program} (ATP) é uma ferramenta computacional 
 % \section{Extração e organização dos dados do ATP}
 
 Apesar de sua utilidade, a análise dos arquivos gerados pelo ATP pode ser trabalhosa quando há grande volume de simulações, pois os resultados podem estar distribuídos em arquivos extensos, contendo valores numéricos, identificação de fases, pontos de medição e informações de cada execução. Nesse contexto, a automatização da leitura dos arquivos por meio de um \textit{parser} contribui para reduzir o esforço manual, padronizar a extração dos dados e diminuir a possibilidade de erros na organização das informações. Além disso, como as múltiplas simulações produzem um conjunto de valores máximos de tensão, torna-se necessário aplicar procedimentos estatísticos e visuais que permitam compreender a distribuição dos dados, identificar valores extremos e apoiar a interpretação técnica dos resultados.
+
+O código-fonte desenvolvido para o processamento dos dados das linhas de transmissão está disponível em repositório público no GitHub \cite{viana2026repositorio}.
 
 A automatização de estudos envolvendo o ATP também é discutida por Guidi-Venerdini e Pérez-Yauli \cite{guidi2013}, que desenvolveram uma rotina em MATLAB para manipular arquivos-base do ATP e executar simulações sistemáticas em uma linha de transmissão. Embora o foco dos autores esteja na simulação de faltas, o trabalho evidencia a relevância de procedimentos automatizados para a construção de bases de dados, redução do esforço manual e diminuição de erros no tratamento de grandes volumes de resultados.
 
@@ -684,6 +693,217 @@ Apesar de suas vantagens, o DBSCAN apresenta limitações. A escolha inadequada 
 
 Com base nos conceitos apresentados, observa-se que a análise de sobretensões transitórias em manobras de energização exige a integração entre conhecimento físico do sistema elétrico, simulação computacional, tratamento estatístico, análise probabilística e técnicas de reconhecimento de padrões. O ATP fornece os dados necessários para representar diferentes condições de operação, enquanto a estatística e a visualização auxiliam na compreensão da distribuição dos valores máximos obtidos. Os algoritmos de clusterização, por sua vez, podem apoiar a identificação de comportamentos predominantes e de observações discrepantes. Essa fundamentação sustenta a etapa metodológica do trabalho, na qual serão definidos os procedimentos de extração, organização, análise probabilística e classificação das sobretensões simuladas.
 
+\chapter{Modelagem do sistema elétrico}
+
+Este capítulo descreve o sistema elétrico utilizado para gerar os dados
+sintéticos analisados neste trabalho. Seu objetivo não é desenvolver um novo
+modelo de rede nem realizar um estudo completo de planejamento elétrico, mas
+registrar a origem dos dados, as simplificações adotadas e as variáveis que
+podem influenciar as sobretensões obtidas. Essa descrição estabelece a
+rastreabilidade entre o cenário elétrico, os arquivos produzidos pelo ATP e a
+base posteriormente processada pela aplicação em Python.
+
+O nível de detalhamento foi limitado às decisões necessárias para compreender
+e reproduzir o processo de geração dos dados. Assim, são apresentados o caso
+de referência, a redução da rede, a representação dos componentes no ATPDraw,
+o modelo da linha de transmissão e os pontos de observação, sem aprofundar as
+formulações matemáticas próprias dos programas elétricos empregados.
+
+\section{Dados de entrada e cenário de referência}
+
+O ponto de partida foi um caso do Sistema Interligado Nacional disponibilizado
+pelo Operador Nacional do Sistema Elétrico (ONS) para o ciclo PAR/PEL
+2027--2031. Foi selecionado o cenário de inverno de 2031, no patamar de carga
+máxima noturna. A base de fluxo de potência foi fornecida no formato do
+ANAREDE, enquanto o caso de curto-circuito utilizado corresponde ao arquivo
+\texttt{BR2612PJ.ANA}, configuração de dezembro de 2026 e versão de 31 de
+março de 2026.
+
+As duas bases desempenham funções distintas e complementares. O ANAREDE é
+utilizado para estudos de regime permanente e fornece o ponto de operação do
+sistema, incluindo níveis de tensão, carregamentos e condições de geração. O
+ANAFAS é destinado a estudos de curto-circuito e fornece os parâmetros
+necessários à representação da resposta da rede diante de perturbações
+\cite{cepelAnarede2026,cepelAnafas2026}. O uso conjunto dessas informações é
+compatível com a prática adotada nos estudos do PAR/PEL, que disponibilizam
+casos de fluxo de potência e de curto-circuito para os programas da plataforma
+CEPEL \cite{ons2026pnast}.
+
+Essa identificação do cenário é relevante para a análise computacional porque
+os valores produzidos pelo ATP não constituem medições de campo. Eles são
+dados sintéticos condicionados pelo estado inicial e pelos parâmetros do caso
+selecionado. Consequentemente, qualquer comparação entre simulações deve manter
+o cenário de referência ou registrar explicitamente suas alterações.
+
+\section{Redução da rede}
+
+A representação integral do Sistema Interligado Nacional introduziria grande
+quantidade de elementos sem relação direta com a manobra investigada. Para
+delimitar uma região de estudo controlada, foi empregada a função de cálculo de
+equivalentes do ANAFAS. O programa permite substituir a parcela externa da rede
+por ligações equivalentes, com erro máximo definido durante o procedimento de
+redução \cite{cepelAnafas2026}.
+
+No modelo resultante, foram preservadas as barras e os equipamentos da região
+de interesse, enquanto a influência do restante do sistema foi representada
+por equivalentes série e em derivação conectados às barras de fronteira. As
+três conexões equivalentes visíveis no diagrama representam a interação com a
+rede externa; elas não devem ser confundidas com a quantidade total de
+barramentos do modelo. A rede reduzida ainda contém barras nos níveis de
+500~kV, 345~kV, 138~kV e 13,8~kV, além dos nós auxiliares necessários à
+representação dos transformadores.
+
+Essa redução procura conservar, nas fronteiras escolhidas, o comportamento de
+curto-circuito considerado pelo ANAFAS. Ela não implica que todas as
+características transitórias da rede completa sejam preservadas. Essa
+limitação é importante para a interpretação dos dados: uma observação atípica
+deve ser investigada em relação ao modelo reduzido e às suas condições de
+simulação antes de ser associada a um fenômeno da rede real.
+
+\section{Componentes da rede reduzida}
+
+A Figura~\ref{fig:equivalente_anafas} apresenta o diagrama unifilar da região
+equivalentada. Entre os elementos mantidos encontram-se quatro
+transformadores, a interligação existente entre as barras de 138~kV e os
+equipamentos associados às subestações representadas. Três fontes equivalentes
+conectam a área preservada ao restante do sistema. Os rótulos das barras foram
+mantidos durante a conversão para permitir a conferência entre os arquivos do
+ONS, o diagrama do ANAFAS e o modelo do ATPDraw.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{imagens/rede_equivalente_anafas.png}
+    \caption{Rede elétrica equivalente representada no ANAFAS. Fonte:
+    elaboração própria a partir da base do ONS.}
+    \label{fig:equivalente_anafas}
+\end{figure}
+
+\section{Rede modelada no ATPDraw}
+
+Após a redução, os componentes foram representados no ATPDraw para a execução
+das simulações de transitórios eletromagnéticos. A conversão exigiu associar
+cada elemento da rede de origem a um componente compatível do ATP. A
+Tabela~\ref{tab:mapeamento-atpdraw} resume esse mapeamento e sua relação com os
+dados gerados.
+
+\begin{table}[htbp]
+\centering
+\caption{Mapeamento dos principais elementos para o ATPDraw.}
+\label{tab:mapeamento-atpdraw}
+\begin{tabularx}{\textwidth}{L L L}
+\hline
+\textbf{Informação de origem} &
+\textbf{Representação no ATPDraw} &
+\textbf{Relação com os dados} \\
+\hline
+Ponto de operação do ANAREDE &
+Fontes e condições iniciais &
+Define as tensões anteriores à manobra \\
+
+Rede externa equivalente &
+Fontes e impedâncias equivalentes &
+Representa a influência do sistema externo \\
+
+Transformadores &
+Transformadores trifásicos e suas ligações &
+Conecta os diferentes níveis de tensão \\
+
+Linha sob estudo &
+Modelo de parâmetros distribuídos &
+Determina a propagação das ondas de tensão \\
+
+Disjuntor de manobra &
+Chaves estatísticas por fase &
+Varia os instantes de energização \\
+
+Pontos de medição &
+Sondas de tensão &
+Produz os valores processados pela aplicação \\
+\hline
+\end{tabularx}
+\end{table}
+
+A Figura~\ref{fig:equivalente_atp_draw} mostra a implementação da rede
+equivalente. As identificações das barras foram preservadas para facilitar a
+verificação do modelo e a associação dos resultados a cada configuração. A
+linha submetida à energização foi conectada entre as proximidades das barras
+9049 e 48461, pertencentes ao nível de 138~kV. Os terminais e os pontos
+intermediários receberam nomes próprios, empregados posteriormente pelo
+\textit{parser} para reconhecer as variáveis nos arquivos de saída.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{imagens/rede_equivalente_atp_draw.png}
+    \caption{Rede elétrica equivalente implementada no ATPDraw. Fonte:
+    elaboração própria.}
+    \label{fig:equivalente_atp_draw}
+\end{figure}
+
+\section{Modelo da linha de transmissão}
+
+A linha de transmissão analisada possui tensão nominal de 138~kV e extensão
+total de 80~km. No ATPDraw, ela foi representada pelo modelo K.C. Lee não
+transposto, cujos parâmetros foram calculados a 60~Hz. A representação também
+considera a disposição geométrica dos condutores e a resistividade do solo de
+$1000~\Omega\cdot\text{m}$. Esses dados afetam a propagação e a reflexão das
+ondas eletromagnéticas e, portanto, influenciam diretamente os valores máximos
+registrados durante a energização.
+
+Para permitir a observação espacial das sobretensões, a linha foi dividida em
+quatro trechos: dois trechos externos de 13,3~km e dois trechos internos de
+26,7~km. A soma das extensões resulta nos 80~km do circuito. Essa divisão
+introduz um ponto de medição no centro da linha sem alterar sua continuidade
+elétrica. A Figura~\ref{fig:modelo_linha} apresenta essa organização.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]
+        {imagens/modelo_linha_transmissão.png}
+    \caption{Linha de transmissão modelada no ATPDraw, com quatro trechos e
+    pontos de observação ao longo do circuito. Fonte: elaboração própria.}
+    \label{fig:modelo_linha}
+\end{figure}
+
+As tensões fase-terra são registradas nas três fases nos pontos
+$T_{MAN}$, $1/2\,LT$ e $T_{OPO}$. O primeiro corresponde ao terminal onde é
+realizada a manobra, o segundo representa o centro elétrico da linha e o
+terceiro corresponde ao terminal oposto. Essa nomenclatura também aparece nos
+arquivos do ATP como \texttt{T\_MAN}, \texttt{1\_2LT} e \texttt{T\_OPO},
+estabelecendo uma correspondência direta entre o modelo e as colunas da base
+processada.
+
+\section{Manobra e geração dos dados}
+
+A energização é executada por chaves estatísticas independentes para as fases
+A, B e C. Em vez de utilizar um único instante determinístico, o ATP produz
+múltiplas execuções com pequenas variações nos tempos de fechamento. Dessa
+forma, cada execução representa uma possível condição de manobra e gera um
+conjunto de valores máximos de tensão. O modelo também permite comparar
+configurações com e sem resistor de pré-inserção, além de diferentes
+representações da rede equivalente.
+
+Nos casos examinados, o passo de integração é de $10~\mu\text{s}$ e a janela
+simulada é de 0,3~s. Ao final de cada execução, o ATP registra no arquivo de
+saída a identificação da simulação, o ponto monitorado, a fase, o valor máximo
+e o instante em que esse máximo ocorreu. A quantidade de execuções é um
+parâmetro do experimento; por isso, foram preparados conjuntos com 50, 100,
+200, 1.000 e 10.000 simulações estatísticas para avaliar também o efeito do
+tamanho da amostra.
+
+Esses arquivos constituem a entrada da etapa computacional deste trabalho. O
+\textit{parser} associa os nomes dos terminais e das fases aos valores extraídos
+e transforma cada máximo observado em um registro estruturado. Assim, o fluxo
+de dados pode ser resumido como: caso do ONS, rede equivalente, modelo no ATP,
+simulações estatísticas, arquivos de saída e base tabular analisada em Python.
+
+Como consequência, as anomalias identificadas posteriormente descrevem
+comportamentos discrepantes dentro desse ambiente de simulação. A classificação
+estatística, isoladamente, não comprova que um ponto seja um erro numérico nem
+que corresponda a um evento físico real. Essa distinção requer a conferência do
+caso de origem, dos parâmetros de chaveamento e da coerência do resultado com
+os demais pontos e fases. O capítulo, portanto, define a origem e os limites
+dos dados, enquanto as etapas seguintes concentram a contribuição principal do
+trabalho: sua extração, organização e análise automatizada.
 
 %
 
