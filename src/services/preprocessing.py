@@ -11,6 +11,7 @@ import polars as pl
 
 from src.parser import parse_statistical_data
 from src.parser.models import LisParseResult, MaximaData, VariableHeader
+from src.services.schemas import MaximaObservation, SwitchingTimeObservation
 
 
 def _is_phase_to_ground(header: VariableHeader) -> bool:
@@ -72,20 +73,11 @@ def extract_maxima_dataframe(
                 "time": m.time,
             })
 
-    empty_schema = {
-        "source_file": pl.String,
-        "simulation": pl.Int32,
-        "terminal": pl.String,
-        "phase": pl.String,
-        "value_pu": pl.Float64,
-        "time": pl.Float64,
-    }
     if not rows:
-        return pl.DataFrame(schema=empty_schema)
+        return pl.DataFrame(schema=MaximaObservation.dtypes)
 
-    return pl.DataFrame(
-        rows,
-        schema=empty_schema,
+    return MaximaObservation.validate(
+        pl.DataFrame(rows, schema=MaximaObservation.dtypes)
     )
 
 
@@ -116,16 +108,7 @@ def load_directory(
             frames.append(df)
 
     if not frames:
-        return pl.DataFrame(
-            schema={
-                "source_file": pl.String,
-                "simulation": pl.Int32,
-                "terminal": pl.String,
-                "phase": pl.String,
-                "value_pu": pl.Float64,
-                "time": pl.Float64,
-            }
-        )
+        return pl.DataFrame(schema=MaximaObservation.dtypes)
 
     return pl.concat(frames)
 
@@ -161,14 +144,8 @@ def load_switching_times_directory(
                     "std_dev": config.std_dev if config else None,
                 })
 
-    schema = {
-        "source_file": pl.String,
-        "simulation": pl.Int32,
-        "switch_number": pl.Int32,
-        "opening_time": pl.Float64,
-        "mean_time": pl.Float64,
-        "std_dev": pl.Float64,
-    }
     if not rows:
-        return pl.DataFrame(schema=schema)
-    return pl.DataFrame(rows, schema=schema)
+        return pl.DataFrame(schema=SwitchingTimeObservation.dtypes)
+    return SwitchingTimeObservation.validate(
+        pl.DataFrame(rows, schema=SwitchingTimeObservation.dtypes)
+    )

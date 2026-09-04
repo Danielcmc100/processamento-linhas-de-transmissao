@@ -10,18 +10,10 @@ import numpy as np
 import polars as pl
 from scipy import stats
 
-STATISTICAL_SUMMARY_SCHEMA = {
-    "terminal": pl.String,
-    "phase": pl.String,
-    "n_total": pl.Int64,
-    "n_valid": pl.Int64,
-    "mean": pl.Float64,
-    "std": pl.Float64,
-    "sigma_3_threshold": pl.Float64,
-    "empirical_exceedance": pl.Float64,
-    "gaussian_exceedance": pl.Float64,
-    "validation_status": pl.String,
-}
+from src.services.schemas import (
+    SigmaSummaryRow,
+    StatisticalSummaryRow,
+)
 
 
 class GaussianFitResult:
@@ -96,11 +88,16 @@ def sigma_summary(fit: GaussianFitResult) -> pl.DataFrame:
     thresholds = [fit.sigma_level(s) for s in sigmas]
     probs = [fit.exceedance_probability(t) for t in thresholds]
 
-    return pl.DataFrame({
-        "sigma": sigmas,
-        "threshold_pu": thresholds,
-        "exceedance_prob": probs,
-    })
+    return SigmaSummaryRow.validate(
+        pl.DataFrame(
+            {
+                "sigma": sigmas,
+                "threshold_pu": thresholds,
+                "exceedance_prob": probs,
+            },
+            schema=SigmaSummaryRow.dtypes,
+        )
+    )
 
 
 def summarize_statistics(
@@ -169,4 +166,6 @@ def summarize_statistics(
             "validation_status": validation_status,
         })
 
-    return pl.DataFrame(summary_rows, schema=STATISTICAL_SUMMARY_SCHEMA)
+    return StatisticalSummaryRow.validate(
+        pl.DataFrame(summary_rows, schema=StatisticalSummaryRow.dtypes)
+    )
