@@ -6,8 +6,8 @@ and computes sigma levels and exceedance probabilities.
 
 from typing import override
 
-import numpy as np
-import polars as pl
+from numpy import isfinite, mean, ndarray, std
+from polars import DataFrame
 from scipy import stats
 
 from src.services.schemas import (
@@ -58,7 +58,7 @@ class GaussianFitResult:
 
 
 def fit_gaussian(
-    df: pl.DataFrame,
+    df: DataFrame,
     value_col: str = "value_pu",
 ) -> GaussianFitResult:
     """Fit a Gaussian distribution to the *value_col* column.
@@ -72,12 +72,14 @@ def fit_gaussian(
     if df.is_empty():
         message = "Cannot fit Gaussian to an empty DataFrame."
         raise ValueError(message)
-    values: np.ndarray = df[value_col].to_numpy()
-    mean, std = float(np.mean(values)), float(np.std(values, ddof=1))
-    return GaussianFitResult(mean=mean, std=std, n_samples=len(values))
+    values: ndarray = df[value_col].to_numpy()
+    mean_value, std_value = float(mean(values)), float(std(values, ddof=1))
+    return GaussianFitResult(
+        mean=mean_value, std=std_value, n_samples=len(values)
+    )
 
 
-def sigma_summary(fit: GaussianFitResult) -> pl.DataFrame:
+def sigma_summary(fit: GaussianFitResult) -> DataFrame:
     """Return a summary table of sigma levels (1σ to 6σ).
 
     Returns:
@@ -89,7 +91,7 @@ def sigma_summary(fit: GaussianFitResult) -> pl.DataFrame:
     probs = [fit.exceedance_probability(t) for t in thresholds]
 
     return SigmaSummaryRow.validate(
-        pl.DataFrame(
+        DataFrame(
             {
                 "sigma": sigmas,
                 "threshold_pu": thresholds,
@@ -101,11 +103,11 @@ def sigma_summary(fit: GaussianFitResult) -> pl.DataFrame:
 
 
 def summarize_statistics(
-    df: pl.DataFrame,
+    df: DataFrame,
     *,
     threshold: float,
     value_col: str = "value_pu",
-) -> pl.DataFrame:
+) -> DataFrame:
     """Summarize exceedance statistics by terminal and phase.
 
     Non-finite measurements count toward ``n_total`` but are excluded from
@@ -123,18 +125,18 @@ def summarize_statistics(
         valid_values = [
             float(value)
             for value in group[value_col]
-            if value is not None and np.isfinite(value)
+            if value is not None and isfinite(value)
         ]
         n_total = group.height
         n_valid = len(valid_values)
-        mean: float | None = None
-        std: float | None = None
+        mean_value: float | None = None
+        std_value: float | None = None
         sigma_3_threshold: float | None = None
         empirical_exceedance: float | None = None
         gaussian_exceedance: float | None = None
 
         if n_valid:
-            mean = float(np.mean(valid_values))
+            mean_value = float(mean(valid_values))
             empirical_exceedance = (
                 sum(value > threshold for value in valid_values) / n_valid
             )
@@ -142,15 +144,19 @@ def summarize_statistics(
         if n_valid < 2:
             validation_status = "insufficient_samples"
         else:
-            std = float(np.std(valid_values, ddof=1))
-            sigma_3_threshold = mean + 3 * std if mean is not None else None
-            if std == 0.0:
+            std_value = float(std(valid_values, ddof=1))
+            sigma_3_threshold = (
+                mean_value + 3 * std_value if mean_value is not None else None
+            )
+            if std_value == 0.0:
                 validation_status = "zero_variance"
             else:
                 validation_status = "valid"
-                if mean is not None:
+                if mean_value is not None:
                     gaussian_exceedance = float(
-                        stats.norm.sf(threshold, loc=mean, scale=std)
+                        stats.norm.sf(
+                            threshold, loc=mean_value, scale=std_value
+                        )
                     )
 
         summary_rows.append({
@@ -158,8 +164,8 @@ def summarize_statistics(
             "phase": str(group.item(0, "phase")),
             "n_total": n_total,
             "n_valid": n_valid,
-            "mean": mean,
-            "std": std,
+            "mean": mean_value,
+            "std": std_value,
             "sigma_3_threshold": sigma_3_threshold,
             "empirical_exceedance": empirical_exceedance,
             "gaussian_exceedance": gaussian_exceedance,
@@ -167,5 +173,5 @@ def summarize_statistics(
         })
 
     return StatisticalSummaryRow.validate(
-        pl.DataFrame(summary_rows, schema=StatisticalSummaryRow.dtypes)
+        DataFrame(summary_rows, schema=StatisticalSummaryRow.dtypes)
     )

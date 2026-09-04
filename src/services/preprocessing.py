@@ -7,7 +7,8 @@ organized by terminal name.
 
 from pathlib import Path
 
-import polars as pl
+from patito.polars import DataFrame
+from polars import concat
 
 from src.parser import parse_statistical_data
 from src.parser.models import LisParseResult, MaximaData, VariableHeader
@@ -28,7 +29,7 @@ def extract_maxima_dataframe(
     base_voltage: float,
     terminal_names: set[str],
     source_file: str = "",
-) -> pl.DataFrame:
+) -> DataFrame[MaximaObservation]:
     """Extract and normalize phase-to-ground maxima from a parsed LIS result.
 
     Filters the simulation maxima to keep only phase-to-ground measurements
@@ -74,10 +75,10 @@ def extract_maxima_dataframe(
             })
 
     if not rows:
-        return pl.DataFrame(schema=MaximaObservation.dtypes)
+        return DataFrame(schema=MaximaObservation.dtypes)
 
     return MaximaObservation.validate(
-        pl.DataFrame(rows, schema=MaximaObservation.dtypes)
+        DataFrame(rows, schema=MaximaObservation.dtypes)
     )
 
 
@@ -86,14 +87,14 @@ def load_directory(
     base_voltage: float,
     terminal_names: set[str],
     encoding: str = "iso-8859-1",
-) -> pl.DataFrame:
+) -> DataFrame[MaximaObservation]:
     """Parse all .lis files in *directory* and aggregate into one DataFrame.
 
     Returns:
         Combined Polars DataFrame (same schema as
         :func:`extract_maxima_dataframe`) across all files.
     """
-    frames: list[pl.DataFrame] = []
+    frames: list[DataFrame] = []
     files = sorted(directory.rglob("*.lis"))
     for lis_file in files:  # TODO remover limitação
         text = lis_file.read_text(encoding=encoding)
@@ -108,15 +109,15 @@ def load_directory(
             frames.append(df)
 
     if not frames:
-        return pl.DataFrame(schema=MaximaObservation.dtypes)
+        return DataFrame(schema=MaximaObservation.dtypes)
 
-    return pl.concat(frames)
+    return MaximaObservation.validate(concat(frames))
 
 
 def load_switching_times_directory(
     directory: Path,
     encoding: str = "iso-8859-1",
-) -> pl.DataFrame:
+) -> DataFrame[SwitchingTimeObservation]:
     """Load simulated breaker times and their configured Gaussian values.
 
     Returns:
@@ -145,7 +146,7 @@ def load_switching_times_directory(
                 })
 
     if not rows:
-        return pl.DataFrame(schema=SwitchingTimeObservation.dtypes)
+        return DataFrame(schema=SwitchingTimeObservation.dtypes)
     return SwitchingTimeObservation.validate(
-        pl.DataFrame(rows, schema=SwitchingTimeObservation.dtypes)
+        DataFrame(rows, schema=SwitchingTimeObservation.dtypes)
     )

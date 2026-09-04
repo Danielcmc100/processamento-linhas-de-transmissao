@@ -1,46 +1,46 @@
 """Patito schema models for the Polars DataFrames used across services."""
 
-import patito as pt
-import polars as pl
+from patito import Field, Model
+from polars import Int32, Int64
 
 
-class MaximaObservation(pt.Model):
+class MaximaObservation(Model):
     """One phase-to-ground voltage maximum, normalized to P.U."""
 
     source_file: str
-    simulation: int = pt.Field(dtype=pl.Int32)
+    simulation: int = Field(dtype=Int32)
     terminal: str
     phase: str
     value_pu: float
     time: float
 
 
-class SwitchingTimeObservation(pt.Model):
+class SwitchingTimeObservation(Model):
     """One simulated breaker switching event and its configured Gaussian."""
 
     source_file: str
-    simulation: int = pt.Field(dtype=pl.Int32)
-    switch_number: int = pt.Field(dtype=pl.Int32)
+    simulation: int = Field(dtype=Int32)
+    switch_number: int = Field(dtype=Int32)
     opening_time: float
     mean_time: float | None
     std_dev: float | None
 
 
-class SigmaSummaryRow(pt.Model):
+class SigmaSummaryRow(Model):
     """One sigma-level row (1σ to 6σ) with threshold and exceedance."""
 
-    sigma: int = pt.Field(dtype=pl.Int64)
+    sigma: int = Field(dtype=Int64)
     threshold_pu: float
     exceedance_prob: float
 
 
-class StatisticalSummaryRow(pt.Model):
+class StatisticalSummaryRow(Model):
     """One terminal/phase exceedance summary row."""
 
     terminal: str
     phase: str
-    n_total: int = pt.Field(dtype=pl.Int64)
-    n_valid: int = pt.Field(dtype=pl.Int64)
+    n_total: int = Field(dtype=Int64)
+    n_valid: int = Field(dtype=Int64)
     mean: float | None
     std: float | None
     sigma_3_threshold: float | None
