@@ -71,6 +71,11 @@ Para fundamentar o seu referencial teórico, recomendo buscar estas fontes:
 - Nomes de variáveis, funções e classes devem estar em inglês
 - Mensagens de commit e comentários de código em inglês
 
+## Imports
+- Nunca usar imports relativos (`from . import x`, `from ..foo import y`). Sempre path absoluto a partir de `src`.
+- Nunca usar alias de import (`import polars as pl`, `import numpy as np`). Importar o módulo/nome diretamente.
+- Nunca importar módulo inteiro para usar `modulo.Nome` (ex: `polars.DataFrame`). Importar só o nome usado: `from polars import DataFrame`.
+
 ## Padrões de Código Python
 - Use snake_case para funções e variáveis
 - Use PascalCase para classes
