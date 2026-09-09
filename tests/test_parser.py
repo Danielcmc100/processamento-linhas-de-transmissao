@@ -2,7 +2,9 @@
 
 from pathlib import Path
 
-from src.parser import parse_statistical_data
+import pytest
+
+from src.parser import LisParseError, parse_statistical_data
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -32,9 +34,9 @@ Times of maxima :
              Random switching times for simulation number       2 :
                                  1  0.010        2  0.012 
 
-  0.0       1.5       2.5       3.5
+  1.5       2.5       3.5
 Times of maxima :
-  0.0       0.015     0.025     0.035
+  0.015     0.025     0.035
 """
 
 
@@ -85,8 +87,8 @@ def test_parse_statistical_data():
 
     # run2 has equal value and time tokens, so reference_angle is None
     assert run2.reference_angle is None
-    assert run2.maxima_data[2].value == 2.5
-    assert run2.maxima_data[2].time == 0.025
+    assert run2.maxima_data[2].value == 3.5
+    assert run2.maxima_data[2].time == 0.035
 
 
 def test_parse_representative_fixture_preserves_runs_and_signed_values():
@@ -129,6 +131,49 @@ def test_parse_empty_fixture_returns_declared_empty_result():
     text = (FIXTURES / "empty" / "empty.lis").read_text(encoding="iso-8859-1")
 
     result = parse_statistical_data(text=text)
+
+    assert result.total_simulations == 0
+    assert result.variable_headers == []
+    assert result.switch_configs == []
+    assert result.runs == []
+
+
+def test_parse_rejects_declared_run_count_mismatch():
+    incomplete_text = DUMMY_LIS.split(
+        "Random switching times for simulation number       2 :"
+    )[0]
+
+    with pytest.raises(
+        LisParseError,
+        match="declares 2 simulations but 1 runs were parsed",
+    ):
+        parse_statistical_data(text=incomplete_text)
+
+
+def test_parse_rejects_incomplete_maxima_table():
+    incomplete_text = DUMMY_LIS.rsplit("0.035", maxsplit=1)[0]
+
+    with pytest.raises(
+        LisParseError,
+        match="simulation 2 has 2 maxima pairs for 3 variable headers",
+    ):
+        parse_statistical_data(text=incomplete_text)
+
+
+def test_parse_rejects_missing_headers_for_statistical_study():
+    incomplete_text = DUMMY_LIS.replace("otherwise blank space.", "")
+
+    with pytest.raises(
+        LisParseError,
+        match="does not contain supported variable headers",
+    ):
+        parse_statistical_data(text=incomplete_text)
+
+
+def test_parse_non_statistical_lis_as_unsupported_empty_result():
+    result = parse_statistical_data(
+        text="Deterministic ATP output without a statistical study."
+    )
 
     assert result.total_simulations == 0
     assert result.variable_headers == []

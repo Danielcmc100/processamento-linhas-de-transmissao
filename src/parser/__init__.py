@@ -1,6 +1,6 @@
 import re
 
-from .models import (
+from src.parser.models import (
     LisParseResult,
     MaximaData,
     SimulationRun,
@@ -8,6 +8,11 @@ from .models import (
     SwitchEvent,
     VariableHeader,
 )
+
+
+class LisParseError(ValueError):
+    """Report an unsupported or internally inconsistent statistical block."""
+
 
 _RE_NENERG = re.compile(r"NENERG\s*=\s*(\d+)")
 
@@ -173,8 +178,12 @@ def _parse_simulation_runs(
 
             sw_str = content.split("==== Table dumping")[0].strip()
 
-            data_part = content.split("==== Table dumping")[1]
-            data_part = data_part.split("\n", 1)[1]
+            dump_parts = content.split("==== Table dumping", maxsplit=1)
+            if "\n" not in dump_parts[1]:
+                raise LisParseError(
+                    f"simulation {sim_num} has no maxima table"
+                )
+            data_part = dump_parts[1].split("\n", maxsplit=1)[1]
         else:
             # Sim 2+: switching times on first lines,
             # then blank line, then peak value data
@@ -197,36 +206,72 @@ def _parse_simulation_runs(
             data_part = "\n".join(lines[data_start:])
 
         sw_tokens = sw_str.split()
-        switching_times: list[SwitchEvent] = [
-            SwitchEvent(
-                switch_name=sw_tokens[j],
-                time=float(sw_tokens[j + 1]),
+        if len(sw_tokens) % 2 != 0:
+            raise LisParseError(
+                f"simulation {sim_num} has an incomplete switching-time pair"
             )
-            for j in range(0, len(sw_tokens) - 1, 2)
-        ]
 
-        val_sec, time_sec = data_part.split("Times of maxima :", 1)
+        try:
+            switching_times: list[SwitchEvent] = [
+                SwitchEvent(
+                    switch_name=sw_tokens[j],
+                    time=float(sw_tokens[j + 1]),
+                )
+                for j in range(0, len(sw_tokens), 2)
+            ]
+        except ValueError as error:
+            raise LisParseError(
+                f"simulation {sim_num} has a non-numeric switching time"
+            ) from error
+
+        if "Times of maxima :" not in data_part:
+            raise LisParseError(
+                f"simulation {sim_num} has no maxima-time table"
+            )
+        val_sec, time_sec = data_part.split("Times of maxima :", maxsplit=1)
+        time_sec = re.split(r"\n[ \t]*\n", time_sec, maxsplit=1)[0]
 
         val_tokens = val_sec.split()
         time_tokens = time_sec.split()
 
         ref_angle: float | None = None
-        if len(val_tokens) > len(time_tokens):
-            ref_angle = float(val_tokens.pop(0))
+        if len(val_tokens) == len(time_tokens) + 1:
+            try:
+                ref_angle = float(val_tokens.pop(0))
+            except ValueError as error:
+                raise LisParseError(
+                    f"simulation {sim_num} has a non-numeric reference angle"
+                ) from error
+
+        if len(val_tokens) != len(time_tokens):
+            raise LisParseError(
+                f"simulation {sim_num} has {len(val_tokens)} maxima values "
+                f"but {len(time_tokens)} maxima times"
+            )
 
         n = len(headers)
-        val_tokens = val_tokens[:n]
-        time_tokens = time_tokens[:n]
-
-        maxima_data: list[MaximaData] = [
-            MaximaData(
-                variable_name=headers[idx].variable_name,
-                node_name=headers[idx].node_name,
-                value=float(val),
-                time=float(t),
+        if len(val_tokens) != n:
+            raise LisParseError(
+                f"simulation {sim_num} has {len(val_tokens)} maxima pairs "
+                f"for {n} variable headers"
             )
-            for idx, (val, t) in enumerate(zip(val_tokens, time_tokens))
-        ]
+
+        try:
+            maxima_data: list[MaximaData] = [
+                MaximaData(
+                    variable_name=headers[idx].variable_name,
+                    node_name=headers[idx].node_name,
+                    value=float(val),
+                    time=float(t),
+                )
+                for idx, (val, t) in enumerate(
+                    zip(val_tokens, time_tokens, strict=True)
+                )
+            ]
+        except ValueError as error:
+            raise LisParseError(
+                f"simulation {sim_num} has a non-numeric maximum or time"
+            ) from error
 
         runs.append(
             SimulationRun(
@@ -250,9 +295,30 @@ def parse_statistical_data(
         A model containing all parsed simulation data.
     """
     total_simulations = _parse_nenerg(text)
+    if _RE_NENERG.search(text) is None:
+        return LisParseResult()
+
     switch_configs = _parse_switch_configs(text)
     variable_headers = _parse_variable_headers(text)
+    if total_simulations > 0 and not variable_headers:
+        raise LisParseError(
+            "statistical study does not contain supported variable headers"
+        )
+
     runs = _parse_simulation_runs(text, variable_headers)
+    if len(runs) != total_simulations:
+        raise LisParseError(
+            f"statistical study declares {total_simulations} simulations "
+            f"but {len(runs)} runs were parsed"
+        )
+
+    run_ids = [run.simulation_number for run in runs]
+    expected_ids = list(range(1, total_simulations + 1))
+    if run_ids != expected_ids:
+        raise LisParseError(
+            "statistical study run identifiers are not contiguous from 1 "
+            f"through {total_simulations}"
+        )
 
     return LisParseResult(
         total_simulations=total_simulations,
