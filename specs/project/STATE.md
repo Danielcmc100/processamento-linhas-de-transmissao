@@ -1,6 +1,6 @@
 # Project State
 
-**Updated:** 2026-08-18
+**Updated:** 2026-09-08
 
 ## Decisions
 
@@ -15,8 +15,6 @@
 
 ## Blockers and risks
 
-- The end-to-end fixture is representative synthetic data, not a real company
-  ATP dataset; representative real-data validation remains pending.
 - Gaussian assumptions and DBSCAN parameters have not yet been validated on
   the target dataset.
 - No normality test, goodness-of-fit test, or confidence interval is currently
@@ -34,10 +32,12 @@
   explicit overwrite policy.
 - The implementation and quality-gate evidence are documented in
   `doc/validation-evidence.md`.
+- Parser fidelity is accepted for the audited real ATP layouts. The evidence
+  covers 235 primary files, 533,450 runs, and independently transcribed
+  checkpoints in `doc/parser_validation_report.md`.
 
 ## Next actions
 
-- Run the documented workflow against approved representative real ATP data.
 - Validate model assumptions and parameters, then review candidate anomalies
   with electrical-engineering domain evidence.
 - Use the target-dataset artifacts in the TCC methodology and results

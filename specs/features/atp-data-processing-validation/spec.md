@@ -1,7 +1,7 @@
 # ATP Data Processing and Statistical Validation Specification
 
-**Status:** Complete — implemented and verified with a representative
-synthetic fixture; representative real ATP data validation remains pending
+**Status:** Complete — implemented and verified with synthetic fixtures and
+real ATP statistical files within the documented supported layout scope
 **Source:** TCC objectives in `doc/main.tex`, repository inspection on
 2026-08-14
 
@@ -17,7 +17,7 @@ produces auditable analytical evidence, not an automated insulation decision.
 
 | Objective | Current evidence | Assessment |
 |---|---|---|
-| Extract raw ATP statistical data | Parser, loader, and synthetic fixture tests | **Implemented and fixture-verified; real ATP validation pending** |
+| Extract raw ATP statistical data | Parser, loader, fixtures, and real-file audit | **Implemented and accepted for the audited ATP layouts** |
 | Structure data for phase maxima | Typed models, Polars extraction, and tests | **Implemented and verified for the supported schema** |
 | Preprocess and apply `3sigma` criteria | P.U. normalization, validation, and guarded summaries | **Implemented and fixture-verified; normality validation pending** |
 | Probabilistic overvoltage analysis | Empirical/Gaussian exceedance summaries and plots | **Implemented and fixture-verified; no confidence intervals or goodness-of-fit test** |
@@ -27,8 +27,8 @@ produces auditable analytical evidence, not an automated insulation decision.
 
 ## Goals
 
-- [x] Validate the parser and loader using representative synthetic ATP-like
-  `.lis` fixtures; representative real ATP validation remains pending.
+- [x] Validate the parser and loader using synthetic fixtures and independently
+  checked records from representative real ATP `.lis` files.
 - [x] Make the analysis inputs and model parameters explicit and reproducible.
 - [x] Produce empirical and Gaussian probability evidence with documented
   assumptions.
@@ -130,7 +130,7 @@ the deterministic tables and metadata fields that are expected to be stable.
 
 | ID | Requirement | Priority | Status |
 |---|---|---:|---|
-| ATP-01 | Parse and aggregate supported `.lis` files | P1 | Implemented; synthetic-fixture verified |
+| ATP-01 | Parse and aggregate supported `.lis` files | P1 | Verified on audited real ATP layouts |
 | ATP-02 | Normalize and preserve traceable observation fields | P1 | Implemented and verified |
 | ATP-03 | Validate data quality and edge cases | P1 | Implemented and verified |
 | ATP-04 | Produce Gaussian, sigma, and empirical probability summaries | P1 | Implemented and verified |
@@ -153,6 +153,5 @@ gaps.
 - The generated package can be regenerated from its configuration without a
   machine-specific path.
 
-These criteria are verified with the representative synthetic fixture. They
-do not constitute validation on a real company ATP dataset or proof of the
-physical or numerical cause of an anomaly.
+These criteria are verified with synthetic fixtures and the real-file parser
+audit. They do not prove the physical or numerical cause of an anomaly.

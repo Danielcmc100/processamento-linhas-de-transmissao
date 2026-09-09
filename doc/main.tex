@@ -896,6 +896,37 @@ e transforma cada máximo observado em um registro estruturado. Assim, o fluxo
 de dados pode ser resumido como: caso do ONS, rede equivalente, modelo no ATP,
 simulações estatísticas, arquivos de saída e base tabular analisada em Python.
 
+\subsection{Escopo e validação do parser}
+
+O reconhecimento do arquivo estatístico utiliza os marcadores textuais
+\texttt{NENERG}, \texttt{otherwise blank space}, a identificação numerada de
+cada simulação e a tabela \texttt{Times of maxima}. Para cada execução, são
+preservados o identificador, os tempos de chaveamento, o sinal do máximo, o
+instante de ocorrência e a associação com o cabeçalho da variável. Arquivos
+estatísticos com cabeçalho ausente, numeração descontínua, quantidade de
+execuções divergente de \texttt{NENERG} ou comprimentos incompatíveis entre
+máximos e tempos são rejeitados. Arquivos \texttt{.lis} sem \texttt{NENERG}
+são tratados como saídas não estatísticas e não geram observações.
+
+A fidelidade da extração foi auditada em 8 de setembro de 2026. Foram
+transcritos diretamente do texto-fonte os blocos inicial e final do cenário
+\texttt{T\_MAN/SRPI/CASO-COMPLETO/SDEF} para 50, 100, 200, 1.000 e 10.000
+simulações. Os dez blocos de referência compreenderam trinta pares de máximo
+com sinal e instante de ocorrência nos pontos $T_{MAN}$, $1/2\,LT$ e
+$T_{OPO}$, além de dez tempos de chaveamento. Todos coincidiram exatamente com
+a estrutura produzida pelo \textit{parser}. Em verificação complementar, os
+235 arquivos estatísticos principais disponíveis foram processados sem falha,
+totalizando 533.450 execuções. Em todas elas, a quantidade de pares
+máximo--tempo coincidiu com os cabeçalhos; foram observados leiautes com 42,
+43, 48 e 49 variáveis.
+
+Essa aceitação fica restrita aos leiautes e marcadores presentes na coleção
+auditada. Alterações de versão ou de formato do ATP exigem novo teste de
+regressão. A validação comprova a fidelidade sintática entre a saída e o modelo
+estruturado, mas não atribui causa física ou numérica aos valores extremos. O
+relatório, os resumos criptográficos e os valores de referência estão
+versionados junto ao código para permitir a reprodução da auditoria.
+
 Como consequência, as anomalias identificadas posteriormente descrevem
 comportamentos discrepantes dentro desse ambiente de simulação. A classificação
 estatística, isoladamente, não comprova que um ponto seja um erro numérico nem

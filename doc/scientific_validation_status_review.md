@@ -2,6 +2,14 @@
 
 Assessment date: 2026-09-07.
 
+## Subsequent validation
+
+On 2026-09-08, TCCKL-8 was promoted to `Concluído` after the parser was
+checked against independently transcribed records from five real ATP files and
+all 235 primary statistical files were scanned successfully. See the
+[parser validation report](parser_validation_report.md). The remaining table
+and conclusions below preserve the scope of the original 2026-09-07 review.
+
 ## Decision and scope
 
 The [task index](../afazeres/README.md) now distinguishes Concluído,
