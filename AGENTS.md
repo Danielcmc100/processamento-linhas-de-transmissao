@@ -65,6 +65,8 @@ Para fundamentar o seu referencial teórico, recomendo buscar estas fontes:
 - **Ruff** - Linter e formatador
 - **BasedPyright 1.37+** - Type checker principal
 - **Pytest 8.3+ / Coverage** - Framework de testes e cobertura de código
+- **Plane MCP** - Always use `plane`, never `plane-selfhosted`, for the
+  [TCC Kleber Viana workspace](https://app.plane.so/tcc-kleber-viana).
 
 ## Idioma
 - **SEMPRE escreva documentações, comentários e docstrings em inglês**
