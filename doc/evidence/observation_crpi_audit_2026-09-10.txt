@@ -1,0 +1,6 @@
+PASS 100-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 100 runs, 900 unique complete observations, 6 source records
+PASS 1000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 1000 runs, 9000 unique complete observations, 6 source records
+PASS 10000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 10000 runs, 90000 unique complete observations, 6 source records
+PASS 200-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 200 runs, 1800 unique complete observations, 6 source records
+PASS 50-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 50 runs, 450 unique complete observations, 6 source records
+ACCEPTED: 5 files, 102150 unique complete observations, and 30 independently transcribed source records passed

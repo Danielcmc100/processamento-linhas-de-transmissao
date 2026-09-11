@@ -5,8 +5,9 @@ Assessment date: 2026-09-10. Reviewer: Codex.
 ## Follow-up — 2026-09-10
 
 TCCKL-8 was subsequently corrected and accepted for its stated source-checkpoint
-scope; see the [current parser report](parser_validation_report.md). TCCKL-9
-remains in validation. The original investigation below is retained as history.
+scope; see the [current parser report](parser_validation_report.md). TCCKL-9 was subsequently accepted after its separate ten-file audit; see
+the [current observation report](observation_structure_validation_report.md).
+The original investigation below is retained as history.
 
 ## Decision and scope
 

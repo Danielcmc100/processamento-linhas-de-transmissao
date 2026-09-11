@@ -1,5 +1,42 @@
 # Observation structure
 
+## Current acceptance — 2026-09-10
+
+**Concluído.** Accepted for the ten selected SRPI/CRPI files after parser repair.
+Reviewer: Codex; no independent human review is claimed.
+Evaluated revision: `a90451eef2271e39d905862734c2d29f4d95132f`.
+
+### Required evidence before Concluído
+
+- [x] All five CRPI files regenerated after parser correction: 102,150 complete
+  observations; SRPI regression retains another 102,150 observations.
+- [x] All nine terminal/phase combinations in every simulation, with unique
+  source-file/simulation/terminal/phase keys across the ten-file scope.
+- [x] Independent phase-A voltage/time references: CRPI 30/30 and SRPI 30/30
+  match at first/last runs. Numerical coverage is sampled, not exhaustive.
+- [x] Revision, hashes, procedure, results, limitations, reviewer, date,
+  decision and thesis location recorded in the current report below.
+
+### Evidence and decision
+
+- [Current report](../../doc/observation_structure_validation_report.md).
+- [Manifest](../../doc/evidence/observation_validation_2026-09-10.sha256).
+- [CRPI execution](../../doc/evidence/observation_crpi_audit_2026-09-10.txt).
+- [SRPI execution](../../doc/evidence/observation_srpi_audit_2026-09-10.txt).
+- [Parser prerequisite](01_parser_arquivos_atp.md).
+- Thesis: `doc/main.tex`, subsection `Escopo e validação do parser`, paragraph
+  beginning “Observation structure was revalidated”.
+
+The 204,300 rows satisfy exhaustive key completeness and uniqueness for the
+selected files; all 60 numerical checkpoints agree. Seven preprocessing tests
+pass. This supports acceptance of scalar-observation structure, not electrical
+P.U. justification, waveforms, Gaussian adequacy or anomaly interpretation.
+Old CRPI downstream artifacts require regeneration and separate validation.
+Reopen for other layouts or changes invalidating the recorded evidence.
+
+## Historical reopening — superseded by current acceptance
+
+
 ## Reopened validation — 2026-09-10
 
 **Validando.** All five examined CRPI sizes produce duplicate terminal/phase

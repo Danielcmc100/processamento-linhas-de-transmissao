@@ -952,15 +952,25 @@ simulações, pois sua identidade permanece no caminho de origem. A inclusão de
 novos cenários exige conferir previamente quais terminais e fases são esperados
 nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 
-A estruturação foi auditada em 9 de setembro de 2026 nos mesmos cinco arquivos
-e dez blocos de referência transcritos diretamente do ATP. Considerando os
-três terminais e as fases A, B e C, foram verificadas 102.150 observações: todas
-apresentaram chave composta única e os conjuntos esperados estavam completos.
-Nos trinta registros independentes da fase A, arquivo, simulação, terminal,
-fase, módulo da tensão transformado pela base configurada e instante do máximo
-coincidiram com a referência. A base de 100~kV usada na reprodução serve para
-verificar a transformação determinística; a justificativa elétrica da base em
-P.U. é uma etapa de validação separada.
+Observation structure was revalidated on 10 September 2026 after the CRPI
+parser correction. The five sizes in each of the SRPI and CRPI scenarios
+yielded 204,300 scalar observations across ten files. Every declared simulation
+contained all nine expected terminal--phase combinations with unique composite
+keys, including the three restored phases at \texttt{T\_OPO} in CRPI.
+All input hashes matched. Sixty independently transcribed phase-A voltage/time
+pairs from first/last runs matched exactly under the mapping $|V|/100000$.
+The electrical justification of the 100~kV audit base remains separate.
+
+Source paths preserve distinct identities across files, also verified by a
+multi-file regression test. Procedure, revision, SHA-256 manifest, results
+and acceptance decision are recorded in
+\texttt{doc/observation\_structure\_validation\_report.md}.
+Codex performed the comparison; no independent human review is claimed.
+Structural coverage is exhaustive for these ten files; independent numerical
+comparison covers only the stated phase-A checkpoints. Acceptance does not
+estimate an error rate, validate other layouts or classify physical versus
+numerical anomalies. Old CRPI exports require regeneration and their own
+downstream validation before reuse.
 
 Portanto, essa tabela sustenta conclusões sobre a distribuição dos máximos de
 tensão, mas não representa as séries temporais nem a forma das ondas. Ela não
