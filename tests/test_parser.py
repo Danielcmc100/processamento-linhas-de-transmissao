@@ -8,6 +8,28 @@ from src.parser import LisParseError, parse_statistical_data
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
+
+def test_parse_preserves_leading_internal_and_trailing_blank_nodes() -> None:
+    """Keep ground and branch columns attached to their source values."""
+    text = (FIXTURES / "blank_header_cells.txt").read_text()
+    result = parse_statistical_data(text)
+    expected = [
+        ("T_OPOA", "", -142524.41, 0.02664),
+        ("T_MANA", "T_MANC", -200111.15, 0.02777),
+        ("T_OPOB", "", -120925.79, 0.02915),
+        ("T_MANB", "T_MANA", 198253.299, 0.04003),
+        ("T_OPOC", "", 154077.847, 0.02751),
+    ]
+    assert [
+        (header.variable_name, header.node_name)
+        for header in result.variable_headers
+    ] == [(variable, node) for variable, node, _, _ in expected]
+    assert [
+        (item.variable_name, item.node_name, item.value, item.time)
+        for item in result.runs[0].maxima_data
+    ] == expected
+
+
 DUMMY_LIS = """
 NENERG = 2
 

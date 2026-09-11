@@ -1,0 +1,7 @@
+PASS 100-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 100 runs, 48 pairs/run, 2 checkpoints
+PASS 1000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 1000 runs, 48 pairs/run, 2 checkpoints
+PASS 10000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 10000 runs, 48 pairs/run, 2 checkpoints
+PASS 200-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 200 runs, 48 pairs/run, 2 checkpoints
+PASS 50-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 50 runs, 48 pairs/run, 2 checkpoints
+PASS complete scan: 235 files, 533450 runs, 20 NENERG/header layouts
+ACCEPTED: 5 files and 10 source checkpoints passed

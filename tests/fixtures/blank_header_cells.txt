@@ -1,0 +1,13 @@
+NENERG = 1
+otherwise blank space.
+
+                       T_OPOA     T_MANA     T_OPOB     T_MANB     T_OPOC
+  Reference angle                 T_MANC                T_MANA
+
+ Random switching times for simulation number 1 :
+ 10 0.026
+
+ 153.161 -142524.41 -200111.15 -120925.79 198253.299 154077.847
+Times of maxima :
+ .02664 .02777 .02915 .04003 .02751
+

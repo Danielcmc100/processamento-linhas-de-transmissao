@@ -1,0 +1,31 @@
+1782: Well, almost identical!  Output of the reference angle in degrees has been added at the extreme left in otherwise blank space.
+1783: 
+1784:                        RPI_C      RPI_B      RPI_A      TERRA      TERRA      TERRA      TERRA      TERRA      TERRA      T_MANC
+1785:   Reference angle      MEASUC     MEASUB     MEASUA     PRMANA     PRMANB     PRMANC     PROPOA     PROPOB     PROPOC     MEASUC
+1786: 
+1787:                        T_MANA     T_MANB     9049A      9049B      9049C      T_MANA     T_MANB     T_MANC     1_2LTC     1_2LTA
+1788:                        MEASUA     MEASUB
+1789: 
+1790:                        1_2LTB     T_OPOA     T_OPOB     T_OPOC     T_MANA     T_MANB     T_MANC     1_2LTC     1_2LTA     1_2LTB
+1791:                                                                    T_MANC     T_MANA     T_MANB     1_2LTB     1_2LTC     1_2LTA
+1792: 
+1793:                        T_OPOA     T_OPOB     T_OPOC     XX0014     XX0015     XX0016     T_MANC     T_MANA     T_MANB     TERRA
+1794:                        T_OPOC     T_OPOA     T_OPOB     RPI_C      RPI_B      RPI_A      MEASUC     MEASUA     MEASUB     PRMANA
+1795: 
+1796:                        TERRA      TERRA      TERRA      TERRA      TERRA      RPI_C      RPI_B      RPI_A
+1797:                        PRMANB     PRMANC     PROPOA     PROPOB     PROPOC     MEASUC     MEASUB     MEASUA
+1798:              Random switching times for simulation number  1  :
+1799:                                   10  2.6631773E-02   11  2.8287203E-02   12  2.5762842E-02   16  3.6283924E-02   17  3.6668159E-02
+1800:                                   18  3.8410969E-02
+1801:              ==== Table dumping for all subsequent restorations.  Time [sec] = 1.75000000E-02
+1802: 
+1803:  153.161           .4294448E7 .3125418E7 .2496326E7 95.5838593 95.8756086 435.180415 595.375074 107.709303  1480.2888 -130047.97
+1804:                    -112774.07 -112863.66 -118060.34 -115936.11 134626.935 -113915.96 -114089.68 140238.814 139510.503 -130911.81
+1805:                     -115945.2 -142524.41 -120925.79 154077.847 -200111.15 198253.299 212215.478 209909.459 -205941.18 201951.285
+1806:                    -213913.03  206650.77 222880.046 -146.53409 125.008353 111.721217 -46.023925 52.8194958 37.9983308 12.8114189
+1807:                    12.8360601 12.7944862 12.9950566 12.9884411 13.0797329 2897.87103 2027.72981 2424.13397
+1808: Times of maxima :      .02685     .02876     .02591     .04164     .03061     .02778     .02664     .02915     .02751     .02664
+1809:                        .01672     .00561     .02635      .0306     .02739     .04164     .03061     .02778     .02765     .02649
+1810:                        .03072     .02664     .02915     .02751     .02777     .04003     .02941     .02928     .02737     .03996
+1811:                         .0275     .04015     .02914     .02685     .02876     .02591      .0395     .03721     .04305        0.3
+1812:                           0.3        0.3        0.3        0.3        0.3      .0363     .03843     .03668

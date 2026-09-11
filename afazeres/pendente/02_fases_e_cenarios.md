@@ -40,7 +40,7 @@ processados, conferidos e resumidos em uma tabela-mestra.
 The [CRPI findings](../../doc/crpi_validation_findings.md) identify shifted
 headers, duplicate terminal/phase observations, and absent `T_OPO` values in
 all five examined CRPI sizes. Before consolidating CRPI results, complete
-[TCCKL-8](../validando/01_parser_arquivos_atp.md) header correction and
+[TCCKL-8](../concluido/01_parser_arquivos_atp.md) header correction and
 [TCCKL-9](../validando/02_estruturacao_observacoes.md) source mapping,
 completeness, and uniqueness validation. Correct total row counts alone are
 insufficient. This task remains pending; the previous SRPI acceptance does

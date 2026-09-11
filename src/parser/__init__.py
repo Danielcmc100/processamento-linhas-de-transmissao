@@ -130,21 +130,21 @@ def _parse_variable_headers(
         if not lines:
             continue
 
-        var_tokens = lines[0].strip().split()
+        variables = list(re.finditer(r"\S+", lines[0]))
+        node_line = lines[1] if len(lines) > 1 else ""
 
-        node_tokens: list[str] = []
-        if len(lines) > 1:
-            node_str = lines[1].strip()
-            ref_prefix = "Reference angle"
-            if node_str.startswith(ref_prefix):
-                node_str = node_str[len(ref_prefix) :].strip()
-            node_tokens = node_str.split() if node_str else []
-
-        for j, var in enumerate(var_tokens):
-            node = node_tokens[j] if j < len(node_tokens) else ""
+        # ATP left-aligns names in shared columns. Keep empty node cells;
+        # splitting the node row would shift branch nodes onto ground outputs.
+        for index, variable in enumerate(variables):
+            end = (
+                variables[index + 1].start()
+                if index + 1 < len(variables)
+                else len(node_line)
+            )
+            node = node_line[variable.start() : end].strip()
             headers.append(
                 VariableHeader(
-                    variable_name=var,
+                    variable_name=variable.group(),
                     node_name=node,
                 )
             )

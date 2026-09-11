@@ -1,8 +1,8 @@
 """Reproduce the source-to-parser audit for selected real ATP cases."""
 
-import argparse
-import csv
+from argparse import ArgumentParser, Namespace
 from collections import Counter, defaultdict
+from csv import DictReader
 from hashlib import sha256
 from pathlib import Path
 
@@ -10,9 +10,9 @@ from src.parser import parse_statistical_data
 from src.parser.models import MaximaData, SimulationRun
 
 
-def _arguments() -> argparse.Namespace:
+def _arguments() -> Namespace:
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ArgumentParser(description=__doc__)
     parser.add_argument(
         "--input-root",
         type=Path,
@@ -91,6 +91,21 @@ def _audit_file(
         expected_headers,
         f"{path} header count",
     )
+    if "/CRPI/" in relative_path:
+        header_path = Path("doc/evidence/parser_crpi_headers.csv")
+        with header_path.open(encoding="utf-8", newline="") as file:
+            expected = [
+                (row["variable_name"], row["node_name"])
+                for row in DictReader(file)
+            ]
+        _assert_equal(
+            [
+                (header.variable_name, header.node_name)
+                for header in result.variable_headers
+            ],
+            expected,
+            f"{path} independently transcribed ordered CRPI headers",
+        )
     _assert_equal(
         {len(run.maxima_data) for run in result.runs},
         {expected_headers},
@@ -160,7 +175,7 @@ def main() -> None:
     arguments = _arguments()
     grouped: dict[str, list[dict[str, str]]] = defaultdict(list)
     with arguments.checkpoints.open(encoding="utf-8", newline="") as file:
-        for row in csv.DictReader(file):
+        for row in DictReader(file):
             grouped[row["path"]].append(row)
 
     checkpoint_count = sum(

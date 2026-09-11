@@ -2,6 +2,12 @@
 
 Assessment date: 2026-09-10. Reviewer: Codex.
 
+## Follow-up — 2026-09-10
+
+TCCKL-8 was subsequently corrected and accepted for its stated source-checkpoint
+scope; see the [current parser report](parser_validation_report.md). TCCKL-9
+remains in validation. The original investigation below is retained as history.
+
 ## Decision and scope
 
 TCCKL-8 and TCCKL-9 return to **Validando** following a CRPI layout defect

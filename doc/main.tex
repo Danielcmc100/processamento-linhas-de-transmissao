@@ -908,24 +908,38 @@ execuções divergente de \texttt{NENERG} ou comprimentos incompatíveis entre
 máximos e tempos são rejeitados. Arquivos \texttt{.lis} sem \texttt{NENERG}
 são tratados como saídas não estatísticas e não geram observações.
 
-A fidelidade da extração foi auditada em 8 de setembro de 2026. Foram
-transcritos diretamente do texto-fonte os blocos inicial e final do cenário
-\texttt{T\_MAN/SRPI/CASO-COMPLETO/SDEF} para 50, 100, 200, 1.000 e 10.000
-simulações. Os dez blocos de referência compreenderam trinta pares de máximo
-com sinal e instante de ocorrência nos pontos $T_{MAN}$, $1/2\,LT$ e
-$T_{OPO}$, além de dez tempos de chaveamento. Todos coincidiram exatamente com
-a estrutura produzida pelo \textit{parser}. Em verificação complementar, os
-235 arquivos estatísticos principais disponíveis foram processados sem falha,
-totalizando 533.450 execuções. Em todas elas, a quantidade de pares
-máximo--tempo coincidiu com os cabeçalhos; foram observados leiautes com 42,
-43, 48 e 49 variáveis.
+The source-fidelity audit was extended on 10 September 2026 after a CRPI
+header-alignment defect was identified. Splitting node names on whitespace
+removed empty cells and associated branch nodes with the wrong variables.
+The corrected parser uses the printed variable-column positions to preserve
+leading, internal, and trailing empty node cells. A synthetic regression
+fixture reproduces the original failure and verifies the corrected mapping.
 
-Essa aceitação fica restrita aos leiautes e marcadores presentes na coleção
-auditada. Alterações de versão ou de formato do ATP exigem novo teste de
-regressão. A validação comprova a fidelidade sintática entre a saída e o modelo
-estruturado, mas não atribui causa física ou numérica aos valores extremos. O
-relatório, os resumos criptográficos e os valores de referência estão
-versionados junto ao código para permitir a reprodução da auditoria.
+The evaluated source-checkpoint scope comprises
+\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, with 50, 100, 200,
+1,000, and 10,000 simulations per scenario. The CRPI reference records all
+48 ordered variable/node pairs, transcribed from source lines 1,784--1,797,
+and compares them in each of the five files. First and last runs provide
+signed phase-A maxima and occurrence times at $T_{MAN}$, $1/2\,LT$, and
+$T_{OPO}$, together with switch 10 times. References are read directly from
+ATP text, independently of the production parser; SHA-256 digests identify
+the complete local input files. Existing SRPI checkpoints are retained.
+
+All 240 CRPI header-pair comparisons matched. Across both scenarios, the
+20 switching checkpoints and 60 signed maximum/time pairs matched exactly.
+The complete scan reconciled 235 files and 533,450 runs. The software gate
+passed all 100 tests, Ruff and BasedPyright. These results support acceptance
+of the corrected parser for the stated source-checkpoint scope.
+
+The acceptance record and reproducible results are maintained in
+\texttt{doc/parser\_validation\_report.md}, with the reference CSV files
+under \texttt{doc/evidence/}. The collection-wide scan checks run counts
+and table lengths; it is not an independent verification of every column
+or every numerical value. Source-checkpoint acceptance is restricted to the
+ten selected files and printed precision. New layouts require renewed
+validation. This supporting-software audit does not classify extremes as
+physical or numerical events, and does not close the separate observation
+validation under TCCKL-9.
 
 Na base tabular, a unidade de observação é um máximo escalar de tensão
 fase--terra, identificado pela combinação entre arquivo de origem, número da
