@@ -36,3 +36,13 @@ resultado visual desejado.
 - Métricas e critérios de decisão definidos antecipadamente.
 - Configurações versionadas junto aos resultados finais.
 
+## Validation dependencies — 2026-09-10
+
+The [CRPI findings](../../doc/crpi_validation_findings.md) are tracked in
+[TCCKL-8](../validando/01_parser_arquivos_atp.md) for header alignment repair
+and [TCCKL-9](../validando/02_estruturacao_observacoes.md) for observation
+completeness and uniqueness. TCCKL-20 remains pending and owns the protocol,
+not these corrections. Protocol drafting can continue, but CRPI-based evidence
+must wait for source-to-observation validation. No identical switching vectors
+were found between sample sizes within either scenario; this does not establish
+statistical independence or require new batches by itself.

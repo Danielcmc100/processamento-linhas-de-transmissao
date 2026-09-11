@@ -1,5 +1,28 @@
 # ATP File Parser
 
+## Reopened validation — 2026-09-10
+
+**Validando.** CRPI header alignment must be corrected and independently
+validated under TCCKL-8. `_parse_variable_headers` discards empty column
+positions when splitting the node line, shifting node-to-variable mappings.
+The previous SRPI checkpoints remain historical evidence; the collection-wide
+count scan did not establish column fidelity for every layout.
+
+Evidence: [CRPI findings](../../doc/crpi_validation_findings.md).
+
+### Required evidence before Concluído
+
+- [ ] Add a regression fixture with leading and internal blank node cells.
+- [ ] Preserve column positions and compare CRPI headers, signed maxima, and
+  times with independently transcribed `.lis` records.
+- [ ] Recheck all five CRPI sizes and preserve the accepted SRPI checkpoints.
+- [ ] Record revision, inputs, results, limitations, reviewer, acceptance date,
+  decision, and corresponding thesis location before closing again.
+
+The correction belongs here; TCCKL-9 validates the resulting observations.
+
+## Historical record (superseded current status)
+
 ## Status
 
 **Concluído.** The parser is implemented and scientifically accepted for the

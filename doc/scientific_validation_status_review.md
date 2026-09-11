@@ -4,6 +4,12 @@ Assessment date: 2026-09-07.
 
 ## Subsequent validation
 
+On 2026-09-10, TCCKL-8 and TCCKL-9 returned to **Validando** after a CRPI
+header alignment defect produced duplicate and incomplete observations.
+The earlier SRPI acceptance records below remain historical evidence, not
+acceptance of CRPI. See the [CRPI findings](crpi_validation_findings.md).
+Current workflow totals are 0 Concluído, 12 Validando, and 8 Pendente.
+
 On 2026-09-08, TCCKL-8 was promoted to `Concluído` after the parser was
 checked against independently transcribed records from five real ATP files and
 all 235 primary statistical files were scanned successfully. See the

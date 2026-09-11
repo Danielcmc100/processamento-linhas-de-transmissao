@@ -1,6 +1,6 @@
 # TCC progress review
 
-Assessment date: 2026-09-07. Classification is based on the implementation in
+Assessment date: 2026-09-07. Workflow updated: 2026-09-10. Classification is based on the implementation in
 `src/`, automated test definitions, saved experimental artifacts, and the
 current text of [the thesis](../doc/main.tex).
 
@@ -23,35 +23,38 @@ prove every downstream statistical hypothesis.
 
 ## Concluído
 
-1. [Parser dos arquivos ATP](concluido/01_parser_arquivos_atp.md)
-   ([Plane TCCKL-8](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-8))
-2. [Estruturação das observações](concluido/02_estruturacao_observacoes.md)
-   ([Plane TCCKL-9](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-9))
+No items currently closed. The historical SRPI acceptance records are retained
+in the reopened cards.
 
 ## Validando
 
-The 10 remaining items record the
-remaining acceptance criteria and links to the pending work that supports it.
+The 12 items below require the recorded acceptance evidence. TCCKL-8 and
+TCCKL-9 were reopened after the
+[CRPI findings](../doc/crpi_validation_findings.md).
 
-1. [Conversão das tensões para P.U.](validando/03_conversao_para_pu.md)
+1. [Parser dos arquivos ATP](validando/01_parser_arquivos_atp.md)
+   ([Plane TCCKL-8](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-8))
+2. [Estruturação das observações](validando/02_estruturacao_observacoes.md)
+   ([Plane TCCKL-9](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-9))
+3. [Conversão das tensões para P.U.](validando/03_conversao_para_pu.md)
    ([Plane TCCKL-10](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-10))
-2. [Validação e limpeza dos dados](validando/04_validacao_limpeza_dados.md)
+4. [Validação e limpeza dos dados](validando/04_validacao_limpeza_dados.md)
    ([Plane TCCKL-11](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-11))
-3. [Estatística descritiva e regra de três sigmas](validando/05_estatistica_tres_sigmas.md)
+5. [Estatística descritiva e regra de três sigmas](validando/05_estatistica_tres_sigmas.md)
    ([Plane TCCKL-12](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-12))
-4. [Ajuste Gaussiano e probabilidades de excedência](validando/06_ajuste_gaussiano_excedencia.md)
+6. [Ajuste Gaussiano e probabilidades de excedência](validando/06_ajuste_gaussiano_excedencia.md)
    ([Plane TCCKL-13](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-13))
-5. [Implementação do DBSCAN e do K-Means](validando/07_implementacao_clusterizacao.md)
+7. [Implementação do DBSCAN e do K-Means](validando/07_implementacao_clusterizacao.md)
    ([Plane TCCKL-14](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-14))
-6. [Comparação computacional dos indícios de anomalia](validando/08_comparacao_indicios_anomalia.md)
+8. [Comparação computacional dos indícios de anomalia](validando/08_comparacao_indicios_anomalia.md)
    ([Plane TCCKL-15](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-15))
-7. [Artefatos e reprodutibilidade das execuções](validando/09_artefatos_reprodutibilidade.md)
+9. [Artefatos e reprodutibilidade das execuções](validando/09_artefatos_reprodutibilidade.md)
    ([Plane TCCKL-16](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-16))
-8. [Execuções por tamanho de amostra](validando/10_execucoes_tamanhos_amostra.md)
+10. [Execuções por tamanho de amostra](validando/10_execucoes_tamanhos_amostra.md)
     ([Plane TCCKL-17](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-17))
-9. [Qualidade e testes do software](validando/11_qualidade_testes_software.md)
+11. [Qualidade e testes do software](validando/11_qualidade_testes_software.md)
     ([Plane TCCKL-18](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-18))
-10. [Capítulos iniciais do TCC](validando/12_capitulos_iniciais_tcc.md)
+12. [Capítulos iniciais do TCC](validando/12_capitulos_iniciais_tcc.md)
     ([Plane TCCKL-19](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-19))
 
 ## Pendente
@@ -90,7 +93,7 @@ additional copies of the implemented features.
 5. Move the card from `validando/` to `concluido/` and update this index. Reopen
    validation if changes invalidate the recorded evidence or extend its scope.
 
-Current totals: **2 Concluído, 10 Validando, 8 Pendente**. These are workflow
+Current totals: **0 Concluído, 12 Validando, 8 Pendente**. These are workflow
 counts, not a percentage estimate of scientific completion.
 
 ## Dependency and priority tree
@@ -102,11 +105,11 @@ a strictly linear sequence.
 Priority follows the Plane cards: **URGENT**, **HIGH**, **MEDIUM**, and **LOW**.
 
 - Parser dos arquivos ATP
-  ([local evidence](concluido/01_parser_arquivos_atp.md),
+  ([local evidence](validando/01_parser_arquivos_atp.md),
   [Plane TCCKL-8](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-8))
   **[MEDIUM]**
   - Estruturação das observações
-    ([local evidence](concluido/02_estruturacao_observacoes.md),
+    ([local evidence](validando/02_estruturacao_observacoes.md),
     [Plane TCCKL-9](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-9))
     **[MEDIUM]**
     - Conversão das tensões para P.U.

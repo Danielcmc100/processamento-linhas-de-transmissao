@@ -1,5 +1,27 @@
 # Observation structure
 
+## Reopened validation — 2026-09-10
+
+**Validando.** All five examined CRPI sizes produce duplicate terminal/phase
+keys and omit `T_OPO` despite the expected total row count. The historical
+acceptance below is restricted to SRPI and does not validate CRPI.
+
+Evidence: [CRPI findings](../../doc/crpi_validation_findings.md).
+Prerequisite: [TCCKL-8 parser validation](01_parser_arquivos_atp.md).
+
+### Required evidence before Concluído
+
+- [ ] After the parser correction, verify all five CRPI files contain exactly
+  one observation for every simulation, terminal, and phase combination.
+- [ ] Require all nine combinations of `T_MAN`, `1_2LT`, `T_OPO` and A/B/C;
+  require uniqueness of source file, simulation, terminal, and phase.
+- [ ] Compare extracted voltages and times against independent CRPI records,
+  not merely row counts; preserve the SRPI regression evidence.
+- [ ] Record revision, input hashes, procedure, results, limitations, reviewer,
+  acceptance date, decision, and thesis location before closing again.
+
+## Historical record (superseded current status)
+
 ## Status
 
 **Completed.** Accepted on 2026-09-09 for the selected scalar-maximum
