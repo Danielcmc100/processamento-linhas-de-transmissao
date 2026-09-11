@@ -7,8 +7,15 @@ Assessment date: 2026-09-07.
 On 2026-09-08, TCCKL-8 was promoted to `Concluído` after the parser was
 checked against independently transcribed records from five real ATP files and
 all 235 primary statistical files were scanned successfully. See the
-[parser validation report](parser_validation_report.md). The remaining table
-and conclusions below preserve the scope of the original 2026-09-07 review.
+[parser validation report](parser_validation_report.md).
+
+On 2026-09-09, TCCKL-9 was promoted to `Concluído` after the observation table
+was checked for source mapping, completeness, uniqueness, and multi-file
+identity. The audit covered 102,150 rows and matched all 30 independently
+transcribed terminal records. See the
+[observation structure validation report](observation_structure_validation_report.md).
+The remaining table and conclusions below preserve the scope of the original
+2026-09-07 review.
 
 ## Decision and scope
 

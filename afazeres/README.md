@@ -25,33 +25,33 @@ prove every downstream statistical hypothesis.
 
 1. [Parser dos arquivos ATP](concluido/01_parser_arquivos_atp.md)
    ([Plane TCCKL-8](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-8))
+2. [Estruturação das observações](concluido/02_estruturacao_observacoes.md)
+   ([Plane TCCKL-9](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-9))
 
 ## Validando
 
-The 11 remaining items record the
+The 10 remaining items record the
 remaining acceptance criteria and links to the pending work that supports it.
 
-1. [Estruturação das observações](validando/02_estruturacao_observacoes.md)
-   ([Plane TCCKL-9](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-9))
-2. [Conversão das tensões para P.U.](validando/03_conversao_para_pu.md)
+1. [Conversão das tensões para P.U.](validando/03_conversao_para_pu.md)
    ([Plane TCCKL-10](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-10))
-3. [Validação e limpeza dos dados](validando/04_validacao_limpeza_dados.md)
+2. [Validação e limpeza dos dados](validando/04_validacao_limpeza_dados.md)
    ([Plane TCCKL-11](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-11))
-4. [Estatística descritiva e regra de três sigmas](validando/05_estatistica_tres_sigmas.md)
+3. [Estatística descritiva e regra de três sigmas](validando/05_estatistica_tres_sigmas.md)
    ([Plane TCCKL-12](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-12))
-5. [Ajuste Gaussiano e probabilidades de excedência](validando/06_ajuste_gaussiano_excedencia.md)
+4. [Ajuste Gaussiano e probabilidades de excedência](validando/06_ajuste_gaussiano_excedencia.md)
    ([Plane TCCKL-13](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-13))
-6. [Implementação do DBSCAN e do K-Means](validando/07_implementacao_clusterizacao.md)
+5. [Implementação do DBSCAN e do K-Means](validando/07_implementacao_clusterizacao.md)
    ([Plane TCCKL-14](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-14))
-7. [Comparação computacional dos indícios de anomalia](validando/08_comparacao_indicios_anomalia.md)
+6. [Comparação computacional dos indícios de anomalia](validando/08_comparacao_indicios_anomalia.md)
    ([Plane TCCKL-15](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-15))
-8. [Artefatos e reprodutibilidade das execuções](validando/09_artefatos_reprodutibilidade.md)
+7. [Artefatos e reprodutibilidade das execuções](validando/09_artefatos_reprodutibilidade.md)
    ([Plane TCCKL-16](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-16))
-9. [Execuções por tamanho de amostra](validando/10_execucoes_tamanhos_amostra.md)
+8. [Execuções por tamanho de amostra](validando/10_execucoes_tamanhos_amostra.md)
     ([Plane TCCKL-17](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-17))
-10. [Qualidade e testes do software](validando/11_qualidade_testes_software.md)
+9. [Qualidade e testes do software](validando/11_qualidade_testes_software.md)
     ([Plane TCCKL-18](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-18))
-11. [Capítulos iniciais do TCC](validando/12_capitulos_iniciais_tcc.md)
+10. [Capítulos iniciais do TCC](validando/12_capitulos_iniciais_tcc.md)
     ([Plane TCCKL-19](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-19))
 
 ## Pendente
@@ -90,7 +90,7 @@ additional copies of the implemented features.
 5. Move the card from `validando/` to `concluido/` and update this index. Reopen
    validation if changes invalidate the recorded evidence or extend its scope.
 
-Current totals: **1 Concluído, 11 Validando, 8 Pendente**. These are workflow
+Current totals: **2 Concluído, 10 Validando, 8 Pendente**. These are workflow
 counts, not a percentage estimate of scientific completion.
 
 ## Dependency and priority tree
@@ -106,7 +106,8 @@ Priority follows the Plane cards: **URGENT**, **HIGH**, **MEDIUM**, and **LOW**.
   [Plane TCCKL-8](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-8))
   **[MEDIUM]**
   - Estruturação das observações
-    ([Plane TCCKL-9](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-9))
+    ([local evidence](concluido/02_estruturacao_observacoes.md),
+    [Plane TCCKL-9](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-9))
     **[MEDIUM]**
     - Conversão das tensões para P.U.
       ([Plane TCCKL-10](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-10))

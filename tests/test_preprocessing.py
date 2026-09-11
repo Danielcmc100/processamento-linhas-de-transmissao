@@ -1,6 +1,7 @@
 """Unit tests for the preprocessing service."""
 
 from pathlib import Path
+from shutil import copyfile
 
 import polars as pl
 
@@ -13,6 +14,7 @@ from src.parser.models import (
 )
 from src.services.preprocessing import (
     extract_maxima_dataframe,
+    load_directory,
     load_switching_times_directory,
 )
 
@@ -104,8 +106,6 @@ def test_extract_maxima_dataframe_terminal_filter():
 
 
 def test_load_directory_normalizes_representative_fixture():
-    from src.services.preprocessing import load_directory
-
     frame = load_directory(
         directory=FIXTURES,
         base_voltage=100_000.0,
@@ -221,8 +221,6 @@ def test_load_directory_normalizes_representative_fixture():
 
 
 def test_load_directory_with_only_empty_input_returns_declared_schema():
-    from src.services.preprocessing import load_directory
-
     frame = load_directory(
         directory=FIXTURES / "empty",
         base_voltage=100_000.0,
@@ -238,6 +236,37 @@ def test_load_directory_with_only_empty_input_returns_declared_schema():
         "value_pu",
         "time",
     ]
+
+
+def test_load_directory_keeps_files_as_distinct_observation_units(
+    tmp_path: Path,
+) -> None:
+    first_directory = tmp_path / "scenario-a"
+    second_directory = tmp_path / "scenario-b"
+    first_directory.mkdir()
+    second_directory.mkdir()
+    source = FIXTURES / "representative.lis"
+    copyfile(source, first_directory / "case.lis")
+    copyfile(source, second_directory / "case.lis")
+
+    frame = load_directory(
+        directory=tmp_path,
+        base_voltage=100_000.0,
+        terminal_names={"T_MAN", "T_OPO"},
+    )
+    observation_key = [
+        "source_file",
+        "simulation",
+        "terminal",
+        "phase",
+    ]
+
+    assert frame.height == 24
+    assert frame.n_unique(subset=observation_key) == frame.height
+    assert set(frame["source_file"].to_list()) == {
+        "scenario-a/case.lis",
+        "scenario-b/case.lis",
+    }
 
 
 def test_load_switching_times_uses_configured_gaussian():
