@@ -972,6 +972,143 @@ estimate an error rate, validate other layouts or classify physical versus
 numerical anomalies. Old CRPI exports require regeneration and their own
 downstream validation before reuse.
 
+\subsection{Per-unit reference and conversion validation}
+\label{sec:per-unit-validation}
+
+For the nominal 138~kV line-to-line RMS reference, the phase-to-ground
+sinusoidal peak base follows from the balanced three-phase reference:
+\begin{equation}
+V_{\mathrm{phase,RMS}} = \frac{138000}{\sqrt{3}}\ \mathrm{V},
+\qquad
+V_{\mathrm{phase,peak}} = \sqrt{2}V_{\mathrm{phase,RMS}}.
+\end{equation}
+Therefore,
+\begin{equation}
+V_{\mathrm{base,peak}} = 138000\sqrt{\frac{2}{3}}
+= 112676.528168\ \mathrm{V}.
+\end{equation}
+The ATP source associated with bus 9049 uses 112676.528~V at 60~Hz.
+The statistical cards round the phase-to-ground base to 112677~V, and the
+LIS explicitly prints this base for the monitored peak distributions.
+The equivalent-network file
+\path{input_files/CEPEL_DATA/BR2612PJ-CC-MIN-EQUIV.ana}, lines 34 and 38,
+identifies buses 9049 and 48461 as 138~kV. In the 100-run SRPI case,
+\texttt{case.atp} lines 392--395 specify the source amplitude, while
+lines 330--333 specify the statistical base. The corresponding
+\texttt{case.lis}, line 3095, explicitly declares
+\texttt{V-base = 1.12677000E+05} for \texttt{T\_MANA}.
+These records reconcile the nominal system voltage with the actual
+normalization used by ATP. The rounded base differs from the calculated
+nominal peak by only 0.471832~V, or approximately 4.1875 parts per million.
+Accordingly, the conversion reproducing those ATP tables is
+\begin{equation}
+V_{\mathrm{pu}} = \frac{|V_{\mathrm{peak,signed}}|}{112677}.
+\end{equation}
+The nominal sinusoidal RMS-to-peak relation defines the reference, not the
+RMS of a distorted transient. The signed value is the simulation peak
+reported by ATP with its occurrence time. Taking its magnitude preserves
+negative-polarity peaks. The parser preserves their sign and the time
+reported in \texttt{Times of maxima}; preprocessing takes the magnitude
+only when normalizing. The pipeline does not reconstruct waveform extrema.
+Consequently, this procedure does not establish whether the integration
+step captured a continuous-time global maximum.
+
+On 11 September 2026, ten files from
+\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, with 50, 100, 200,
+1000 and 10000 runs per scenario, were audited. All 60 independently
+transcribed phase-A checkpoints agreed with the exported CSV using Decimal
+arithmetic within $10^{-12}$~P.U. All 90 terminal/phase ungrouped means
+agreed with ATP's own P.U. summaries within $10^{-7}$~P.U., supporting both
+the base and magnitude convention at printed precision.
+The individual comparisons use the first and last runs of each file,
+with phase-A checkpoints at all three terminals. The signed references
+were independently transcribed from the LIS and their SHA-256 hashes
+checked before processing. Expected ratios were calculated using Decimal
+arithmetic and compared with values read back from the generated CSV.
+All 204300 observations were exported and read back. The three examples
+in Table~\ref{tab:pu-validation} come from simulation 1 of the 100-run SRPI
+case, with signed values printed on LIS line 1789.
+
+\begin{table}[htbp]
+\centering
+\caption{Independent phase-A conversion checks using the 112677~V base.
+Source: ATP output and calculations performed in this study.}
+\label{tab:pu-validation}
+\small
+\begin{tabular}{lrrr}
+\hline
+Terminal & Signed peak (V) & Independent P.U. & CSV P.U. \\
+\hline
+$T_{MAN}$ & $-152178.51$ & 1.350572965201416438 & 1.3505729652014165 \\
+$1/2\,LT$ & $-211732.87$ & 1.879113483674574225 & 1.8791134836745742 \\
+$T_{OPO}$ & $-204404.45$ & 1.814074300877730149 & 1.8140743008777303 \\
+\hline
+\end{tabular}
+\end{table}
+
+The comparison with ATP ungrouped means covers the three phases at all
+three terminals in every file. The absolute tolerance of $10^{-7}$~P.U.
+accommodates the precision printed for peaks and summary means; the
+$10^{-12}$~P.U. checkpoint tolerance checks arithmetic agreement with the
+transcribed decimal values. Agreement of aggregate means supports the
+magnitude convention but does not independently verify every observation.
+
+The former 100000~V configuration overstates P.U. values by 12.677\%
+relative to the ATP reference. It is rejected for reproducing these cases.
+A threshold of 2.3~P.U. now corresponds to 259157.1~V; previous statistical
+results require regeneration and separate validation. In contrast, the
+former base mapped the same numerical threshold to 230000~V. An arbitrary
+100000~V reference is mathematically possible, but it would require an
+explicit different interpretation and consistently rescaled thresholds;
+it does not reproduce these ATP tables.
+
+\subsubsection{Reproducibility and acceptance limits}
+
+The production code evaluated corresponds to revision
+\path{f3ee4f257950c2ef858810af6a78406ef7c3dca7}, with the audit script and
+this documentation added in the working tree. The audit can be reproduced
+from the repository root, with the original local case files available, by
+running \texttt{uv run python -m scripts.audit\_per\_unit}.
+The script fixes the base at 112677~V. The existing local configurations
+for 100, 1000 and 10000 simulations were corrected to this value;
+the production conversion formula itself required no change.
+
+Supporting artifacts are retained under \path{doc/evidence/}:
+\path{pu_source_excerpt.txt} contains the source excerpts,
+\path{pu_conversion_checkpoints.csv} records all 60 numerical comparisons,
+and \path{pu_validation_2026-09-11.txt} records the execution outcome.
+The independent source references are
+\path{parser_audit_checkpoints.csv} and
+\path{parser_crpi_checkpoints.csv} in the same directory.
+The complete 100-run exports are retained as
+\path{pu_srpi_100-simulacoes.csv} and
+\path{pu_crpi_100-simulacoes.csv}. The remaining eight exports are
+regenerated, checked and removed by the audit to keep the evidence compact.
+The manifest \path{pu_validation.sha256} identifies all ten LIS and ATP
+inputs, retained exports and comparison results. It can be checked with
+\texttt{sha256sum -c doc/evidence/pu\_validation.sha256}.
+
+On 11 September 2026, Codex performed the source and numerical review;
+no independent human engineering approval is claimed. All 60 checkpoint
+comparisons and 90 ATP mean comparisons passed. The software checks
+\texttt{task format}, \texttt{task lint}, 100 automated tests and
+BasedPyright also passed, with no type errors or warnings. These software
+checks support reproducibility but do not alone establish electrical
+validity. The acceptance decision is supported by the nominal-reference
+derivation, explicit ATP base and independent numerical comparisons
+presented in this subsection.
+
+Conversion is therefore accepted for the ten declared complete-model,
+no-defect SRPI/CRPI cases, at $T_{MAN}$, $1/2\,LT$ and $T_{OPO}$ in phases
+A, B and C, using 112677~V. Historical 100000~V audits remain evidence of
+arithmetic and observation structure, while their electrical reference is
+superseded here. Old downstream artifacts were not overwritten and require
+regeneration and validation before reuse. Changed sources, other scenarios
+or different output conventions require renewed validation. No new ATP
+simulation or waveform audit was performed. Acceptance does not validate
+Gaussian adequacy, the physical cause of extreme values or insulation
+choices; those interpretations require their own technical assessment.
+
 Portanto, essa tabela sustenta conclusões sobre a distribuição dos máximos de
 tensão, mas não representa as séries temporais nem a forma das ondas. Ela não
 permite, isoladamente, concluir sobre duração, frequência, taxa de variação ou

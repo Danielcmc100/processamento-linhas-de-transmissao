@@ -1,0 +1,65 @@
+Source: input_files/casos/100-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis
+1765: In the following output, for each simulation there will be a tabulation of switch times that were used, followed by a display of
+1766: peak values that occurred during the simulation.  Format for this latter output is identical to that for the extrema of a
+1767: conventional (non-statistical) simulation.
+1768: Well, almost identical!  Output of the reference angle in degrees has been added at the extreme left in otherwise blank space.
+1769: 
+1770:                        XX0015     XX0017     XX0019     TERRA      TERRA      TERRA      TERRA      TERRA      TERRA      9049A
+1771:   Reference angle      MEASUC     MEASUB     MEASUA     PRMANA     PRMANB     PRMANC     PROPOA     PROPOB     PROPOC
+1772: 
+1773:                        9049B      9049C      T_MANA     T_MANB     T_MANC     1_2LTC     1_2LTA     1_2LTB     T_OPOA     T_OPOB
+1774:  
+1775: 
+1776:                        T_OPOC     T_MANA     T_MANB     T_MANC     1_2LTC     1_2LTA     1_2LTB     T_OPOA     T_OPOB     T_OPOC
+1777:                                   T_MANC     T_MANA     T_MANB     1_2LTB     1_2LTC     1_2LTA     T_OPOC     T_OPOA     T_OPOB
+1778: 
+1779:                        XX0014     XX0016     XX0018     TERRA      TERRA      TERRA      TERRA      TERRA      TERRA      XX0015
+1780:                        XX0015     XX0017     XX0019     PRMANA     PRMANB     PRMANC     PROPOA     PROPOB     PROPOC     MEASUC
+1781: 
+1782:                        XX0017     XX0019
+1783:                        MEASUB     MEASUA
+1784:              Random switching times for simulation number  1  :
+1785:                                   10  2.5831195E-02   11  2.5138332E-02   12  2.4992268E-02
+1786:              ==== Table dumping for all subsequent restorations.  Time [sec] = 1.75000000E-02
+1787: 
+1788:   135.56            77.098584 76.6092134 60.5553631 1326.19429 202.798625 1328.00498 .2366772E8 .9812452E7 .2143508E8 -152178.86
+1789:                    -136790.65 152201.174 -152178.51 -136790.71 152201.069 221970.758 -211732.87 -204986.59 -204404.45 -198215.69
+1790:                    203431.473 -251101.67 -227971.82  238420.09 303062.765   -288539. 296512.367 -313294.95  290690.84 315658.962
+1791:                    -277.66632 276.783694 246.079993 13.0308231 12.9236716 13.0475048 4951.85229 1229.14666 2542.74705 .280635894
+1792:                    .298121906 .244606386
+1793: Times of maxima :      .02638     .02727      .0254     .02559     .03039     .02652      .0255     .02918      .0267     .02559
+1794:                        .03039     .02652     .02559     .03039     .02652     .02656     .02572     .02901      .0255     .02918
+1795:                         .0267     .02649     .03155     .02901     .02781     .02657     .02572     .02673     .02584     .02923
+3091: MODTAB, AINCR, XMAXMX =      3    0.050   10.000  |STATISTICS DATA                3
+3092: Statistical output of  node  voltage   0.1127E+06 |0      112677.T_MANAT_MANBT_MANC
+3093: 
+3094: 1 ) -------------------------------------------------------------------------------------------------------------------------------
+3095: Statistical distribution of peak voltage at node  "T_MANA".   The base voltage for per unit printout is  V-base = 1.12677000E+05
+3096:   Interval             voltage         voltage  in     Frequency    Cumulative               Per cent
+3097:     number         in per unit      physical units     (density)     frequency     .GE. current value
+3098:         21           1.0500000      1.18310850E+05             0             0          100.000000
+3099:         22           1.1000000      1.23944700E+05             2             2           98.000000
+3100:         23           1.1500000      1.29578550E+05            10            12           88.000000
+3101:         24           1.2000000      1.35212400E+05            13            25           75.000000
+3102:         25           1.2500000      1.40846250E+05            20            45           55.000000
+3103:         26           1.3000000      1.46480100E+05            17            62           38.000000
+3104:         27           1.3500000      1.52113950E+05             4            66           34.000000
+3105:         28           1.4000000      1.57747800E+05             9            75           25.000000
+3106:         29           1.4500000      1.63381650E+05            10            85           15.000000
+3107:         30           1.5000000      1.69015500E+05             8            93            7.000000
+3108:         31           1.5500000      1.74649350E+05             5            98            2.000000
+3109:         32           1.6000000      1.80283200E+05             2           100             .000000
+3110: Summary of preceding table follows:       Grouped data     Ungrouped data
+3111:                                  Mean = 1.29350000E+00     1.29486827E+00
+3112:                              Variance = 1.60431818E-02     1.56798577E-02
+3113:                    Standard deviation = 1.26661683E-01     1.25219239E-01
+
+Source: input_files/casos/100-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.atp
+330: STATISTICS DATA                3
+331: 0      112677.T_MANAT_MANBT_MANC
+332: 0      112677.1_2LTC1_2LTA1_2LTB
+333: 0      112677.T_OPOAT_OPOBT_OPOC
+392: C 1 - 9049
+393: 14X0009A  112676.528       60.                                     -1.      100.
+394: 14X0009B  112676.528       60.     -120.                           -1.      100.
+395: 14X0009C  112676.528       60.     -240.                           -1.      100.

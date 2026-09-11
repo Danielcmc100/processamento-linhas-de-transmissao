@@ -42,6 +42,9 @@ The main parameters are:
 
 - `input_path`: directory searched recursively for ATP `.lis` files.
 - `base_voltage`: voltage base in volts used for P.U. normalization.
+  For the validated 138 kV SRPI/CRPI cases, use **112677.0 V**, matching
+  the ATP phase-to-ground peak reference. The fixture example above uses an
+  arbitrary test base. See [the thesis justification](doc/main.tex).
 - `terminals`: terminal names without the phase suffix (`A`, `B`, or `C`).
 - `phase_policy`: the single phase analyzed in this run.
 - `dbscan`: DBSCAN neighborhood and minimum-sample parameters.

@@ -2,7 +2,26 @@
 
 ## Status
 
-**Validando.** P.U. conversion implemented; the electrical base remains unverified.
+**Concluído — 2026-09-11.** Accepted for the ten SRPI/CRPI complete-model,
+no-defect cases with 50–10000 runs. The ATP reference is **112677 V**.
+
+## Acceptance decision — 2026-09-11
+
+Reviewer: Codex (source/numerical review; no human engineering approval
+claimed). [Justification, evidence and limitations in the thesis](../../doc/main.tex).
+The original 100000 V base is rejected for reproducing these cases.
+All 60 independent Decimal-to-CSV checks and 90 ATP ungrouped-mean
+comparisons passed. See the thesis subsection `sec:per-unit-validation`.
+Old downstream results need regeneration and their own validation.
+
+### Completed evidence
+
+- [x] Derive the phase-to-ground peak base from the 138 kV nominal model.
+- [x] Reconcile the former base with ATP cards and explicit LIS V-base.
+- [x] Verify 60 conversions and document signed-peak magnitude semantics.
+- [x] Record date, reviewer, source hashes, procedure, thesis and decision.
+
+The following sections preserve the historical review before this decision.
 
 ## Scientific acceptance review — 2026-09-07
 

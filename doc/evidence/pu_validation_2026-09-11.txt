@@ -1,0 +1,11 @@
+PASS 100-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 900 rows, 9 ATP means
+PASS 1000-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 9000 rows, 9 ATP means
+PASS 10000-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 90000 rows, 9 ATP means
+PASS 200-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 1800 rows, 9 ATP means
+PASS 50-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 450 rows, 9 ATP means
+PASS 100-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 900 rows, 9 ATP means
+PASS 1000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 9000 rows, 9 ATP means
+PASS 10000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 90000 rows, 9 ATP means
+PASS 200-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 1800 rows, 9 ATP means
+PASS 50-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 450 rows, 9 ATP means
+PASS 60 independent decimal/CSV comparisons
