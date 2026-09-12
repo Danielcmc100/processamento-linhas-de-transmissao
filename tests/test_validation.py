@@ -47,8 +47,8 @@ def test_non_finite_rows_are_reported_and_excluded() -> None:
         phases=("A",),
     )
 
-    assert result.status is ValidationStatus.VALID_WITH_ISSUES
-    assert result.is_valid
+    assert result.status is ValidationStatus.EMPTY_SELECTION
+    assert not result.is_valid
     assert result.cleaned.is_empty()
     assert [issue.code for issue in result.issues] == [
         ValidationIssueCode.NON_FINITE_VALUE,

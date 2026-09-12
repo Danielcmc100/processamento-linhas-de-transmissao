@@ -133,7 +133,7 @@
 \universidade{CENTRO UNIVERSITÁRIO SERRA DOS ÓRGÃOS - UNIFESO}
 \instituto{DIREÇÃO ACADÊMICA DE CIÊNCIAS HUMANAS E TECNOLÓGICAS - DACHT}
 \curso{CURSO DE BACHARELADO EM CIÊNCIA DA COMPUTAÇÃO}
-\titulo{Detecção de Anomalias e Análise Probabilística em Manobras de Energização de Linhas de Transmissão Utilizando Machine Learning}
+\titulo{Detecção de Anomalias e Análise Probabilística em Manobras de Energização de Linhas de Transmissão Utilizando Aprendizagem de Máquina}
 \autor{Kleber Daniel Mattos Viana}
 \local{TERESÓPOLIS}
 \data{2026}
@@ -908,38 +908,42 @@ execuções divergente de \texttt{NENERG} ou comprimentos incompatíveis entre
 máximos e tempos são rejeitados. Arquivos \texttt{.lis} sem \texttt{NENERG}
 são tratados como saídas não estatísticas e não geram observações.
 
-The source-fidelity audit was extended on 10 September 2026 after a CRPI
-header-alignment defect was identified. Splitting node names on whitespace
-removed empty cells and associated branch nodes with the wrong variables.
-The corrected parser uses the printed variable-column positions to preserve
-leading, internal, and trailing empty node cells. A synthetic regression
-fixture reproduces the original failure and verifies the corrected mapping.
+Uma auditoria de fidelidade às fontes foi ampliada em 10 de setembro de 2026,
+após a identificação de um defeito de alinhamento do cabeçalho do CRPI. A
+separação dos nomes dos nós por espaços em branco removia células vazias e
+associava nós de ramificação às variáveis incorretas. O parser corrigido utiliza
+as posições impressas das colunas de variáveis para preservar células vazias no
+início, no interior e no final dos nós. Um caso de regressão sintético
+reproduz a falha original e verifica o mapeamento corrigido.
 
-The evaluated source-checkpoint scope comprises
-\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, with 50, 100, 200,
-1,000, and 10,000 simulations per scenario. The CRPI reference records all
-48 ordered variable/node pairs, transcribed from source lines 1,784--1,797,
-and compares them in each of the five files. First and last runs provide
-signed phase-A maxima and occurrence times at $T_{MAN}$, $1/2\,LT$, and
-$T_{OPO}$, together with switch 10 times. References are read directly from
-ATP text, independently of the production parser; SHA-256 digests identify
-the complete local input files. Existing SRPI checkpoints are retained.
+O escopo avaliado dos pontos de verificação das fontes compreende
+\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, com 50, 100, 200,
+1.000 e 10.000 simulações por cenário. A referência do CRPI registra todos os
+48 pares ordenados de variável/nó, transcritos das linhas 1.784--1.797 da
+e compara esses pares nos cinco arquivos. As primeiras e últimas execuções
+fornecem os máximos com sinal e os instantes de ocorrência da fase A em
+$T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, juntamente com os instantes da chave 10. As
+referências são lidas diretamente do texto do ATP, de forma independente do
+parser de produção; os resumos SHA-256 identificam os arquivos de entrada
+locais completos. Os pontos de verificação existentes do SRPI são mantidos.
 
-All 240 CRPI header-pair comparisons matched. Across both scenarios, the
-20 switching checkpoints and 60 signed maximum/time pairs matched exactly.
-The complete scan reconciled 235 files and 533,450 runs. The software gate
-passed all 100 tests, Ruff and BasedPyright. These results support acceptance
-of the corrected parser for the stated source-checkpoint scope.
+Todas as 240 comparações de pares de cabeçalho do CRPI coincidiram. Nos dois
+cenários, os 20 pontos de verificação de chaveamento e os 60 pares de
+máximo/instante com sinal coincidiram exatamente. A varredura completa
+reconciliou 235 arquivos e 533.450 execuções. A etapa de verificação de
+software foi aprovada nos 100 testes, pelo Ruff e pelo BasedPyright. Esses
+resultados sustentam a aceitação do parser corrigido para o escopo declarado
+dos pontos de verificação das fontes.
 
-The acceptance record and reproducible results are maintained in
-\texttt{doc/parser\_validation\_report.md}, with the reference CSV files
-under \texttt{doc/evidence/}. The collection-wide scan checks run counts
-and table lengths; it is not an independent verification of every column
-or every numerical value. Source-checkpoint acceptance is restricted to the
-ten selected files and printed precision. New layouts require renewed
-validation. This supporting-software audit does not classify extremes as
-physical or numerical events, and does not close the separate observation
-validation under TCCKL-9.
+O registro de aceitação e os resultados reproduzíveis são mantidos em
+\texttt{doc/parser\_validation\_report.md}, com os arquivos CSV de referência
+em \texttt{doc/evidence/}. A varredura de toda a coleção verifica as contagens
+de execuções e os comprimentos das tabelas; ela não constitui uma verificação
+independente de cada coluna ou de cada valor numérico. A aceitação dos pontos
+de verificação das fontes é restrita aos dez arquivos selecionados e à
+precisão impressa. Novos leiautes exigem nova validação. Essa auditoria do
+software de apoio não classifica extremos como eventos físicos ou numéricos e
+não encerra a validação independente das observações prevista no TCCKL-9.
 
 Na base tabular, a unidade de observação é um máximo escalar de tensão
 fase--terra, identificado pela combinação entre arquivo de origem, número da
@@ -952,92 +956,96 @@ simulações, pois sua identidade permanece no caminho de origem. A inclusão de
 novos cenários exige conferir previamente quais terminais e fases são esperados
 nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 
-Observation structure was revalidated on 10 September 2026 after the CRPI
-parser correction. The five sizes in each of the SRPI and CRPI scenarios
-yielded 204,300 scalar observations across ten files. Every declared simulation
-contained all nine expected terminal--phase combinations with unique composite
-keys, including the three restored phases at \texttt{T\_OPO} in CRPI.
-All input hashes matched. Sixty independently transcribed phase-A voltage/time
-pairs from first/last runs matched exactly under the mapping $|V|/100000$.
-The electrical justification of the 100~kV audit base remains separate.
+ A estrutura das observações foi revalidada em 10 de setembro de 2026, após a
+correção do parser do CRPI. Os cinco tamanhos de cada cenário SRPI e CRPI
+produziram 204.300 observações escalares em dez arquivos. Cada simulação
+declarada continha todas as nove combinações esperadas de terminal e fase, com
+chaves compostas únicas, incluindo as três fases restauradas em
+\texttt{T\_OPO} no CRPI. Todos os hashes de entrada coincidiram. Os 60 pares
+de tensão/tempo da fase A, transcritos independentemente das primeiras e
+últimas execuções, coincidiram exatamente sob o mapeamento $|V|/100000$.
+A justificativa elétrica da base de auditoria de 100~kV permanece separada.
 
-Source paths preserve distinct identities across files, also verified by a
-multi-file regression test. Procedure, revision, SHA-256 manifest, results
-and acceptance decision are recorded in
+Os caminhos das fontes preservam identidades distintas entre os arquivos,
+verificação também realizada por um teste de regressão com múltiplos arquivos.
+O procedimento, a revisão, o manifesto SHA-256, os resultados e a decisão de
+aceitação estão registrados em
 \texttt{doc/observation\_structure\_validation\_report.md}.
-Codex performed the comparison; no independent human review is claimed.
-Structural coverage is exhaustive for these ten files; independent numerical
-comparison covers only the stated phase-A checkpoints. Acceptance does not
-estimate an error rate, validate other layouts or classify physical versus
-numerical anomalies. Old CRPI exports require regeneration and their own
-downstream validation before reuse.
+A comparação foi realizada de forma automatizada; não se afirma a realização
+de uma revisão humana independente.
+A cobertura estrutural é exaustiva para esses dez arquivos; a comparação
+numérica independente abrange apenas os pontos de verificação declarados da
+fase A. A aceitação não estima uma taxa de erro, não valida outros leiautes nem
+classifica anomalias como físicas ou numéricas. Exportações antigas do CRPI
+exigem regeneração e sua própria validação posterior antes do reúso.
 
-\subsection{Per-unit reference and conversion validation}
+\subsection{Referência em unidade por unidade e validação da conversão}
 \label{sec:per-unit-validation}
 
-For the nominal 138~kV line-to-line RMS reference, the phase-to-ground
-sinusoidal peak base follows from the balanced three-phase reference:
+Para a referência nominal de 138~kV de tensão eficaz entre fases, a base de
+pico senoidal fase-terra decorre da referência trifásica equilibrada:
 \begin{equation}
 V_{\mathrm{phase,RMS}} = \frac{138000}{\sqrt{3}}\ \mathrm{V},
 \qquad
 V_{\mathrm{phase,peak}} = \sqrt{2}V_{\mathrm{phase,RMS}}.
 \end{equation}
-Therefore,
+Portanto,
 \begin{equation}
 V_{\mathrm{base,peak}} = 138000\sqrt{\frac{2}{3}}
 = 112676.528168\ \mathrm{V}.
 \end{equation}
-The ATP source associated with bus 9049 uses 112676.528~V at 60~Hz.
-The statistical cards round the phase-to-ground base to 112677~V, and the
-LIS explicitly prints this base for the monitored peak distributions.
-The equivalent-network file
-\path{input_files/CEPEL_DATA/BR2612PJ-CC-MIN-EQUIV.ana}, lines 34 and 38,
-identifies buses 9049 and 48461 as 138~kV. In the 100-run SRPI case,
-\texttt{case.atp} lines 392--395 specify the source amplitude, while
-lines 330--333 specify the statistical base. The corresponding
-\texttt{case.lis}, line 3095, explicitly declares
-\texttt{V-base = 1.12677000E+05} for \texttt{T\_MANA}.
-These records reconcile the nominal system voltage with the actual
-normalization used by ATP. The rounded base differs from the calculated
-nominal peak by only 0.471832~V, or approximately 4.1875 parts per million.
-Accordingly, the conversion reproducing those ATP tables is
+Uma fonte do ATP associada ao barramento 9049 utiliza 112676,528~V a 60~Hz.
+Os cartões estatísticos arredondam a base fase-terra para 112677~V, e o LIS
+imprime explicitamente essa base para as distribuições dos picos monitorados.
+O arquivo de rede equivalente
+\path{input_files/CEPEL_DATA/BR2612PJ-CC-MIN-EQUIV.ana}, nas linhas 34 e 38,
+identifica os barramentos 9049 e 48461 como 138~kV. No caso SRPI de 100
+execuções, as linhas 392--395 de \texttt{case.atp} especificam a amplitude da
+fonte, enquanto as linhas 330--333 especificam a base estatística. O arquivo
+\texttt{case.lis}, linha 3095, declara explicitamente
+\texttt{V-base = 1.12677000E+05} para \texttt{T\_MANA}.
+Esses registros conciliam a tensão nominal do sistema com a normalização
+efetivamente utilizada pelo ATP. A base arredondada difere do pico nominal
+calculado em apenas 0,471832~V, ou aproximadamente 4,1875 partes por milhão.
+Assim, a conversão que reproduz essas tabelas do ATP é
 \begin{equation}
 V_{\mathrm{pu}} = \frac{|V_{\mathrm{peak,signed}}|}{112677}.
 \end{equation}
-The nominal sinusoidal RMS-to-peak relation defines the reference, not the
-RMS of a distorted transient. The signed value is the simulation peak
-reported by ATP with its occurrence time. Taking its magnitude preserves
-negative-polarity peaks. The parser preserves their sign and the time
-reported in \texttt{Times of maxima}; preprocessing takes the magnitude
-only when normalizing. The pipeline does not reconstruct waveform extrema.
-Consequently, this procedure does not establish whether the integration
-step captured a continuous-time global maximum.
+ A relação nominal senoidal entre tensão eficaz e pico define a referência, e
+não a tensão eficaz de um transitório distorcido. O valor com sinal é o pico da
+simulação informado pelo ATP, juntamente com seu instante de ocorrência. O uso
+do módulo preserva os picos de polaridade negativa. O parser preserva o sinal e
+o instante informado em \texttt{Times of maxima}; o pré-processamento utiliza o
+módulo apenas na normalização. O fluxo não reconstrói os extremos da forma de
+onda. Consequentemente, esse procedimento não estabelece se o passo de
+integração capturou o máximo global em tempo contínuo.
 
-On 11 September 2026, ten files from
-\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, with 50, 100, 200,
-1000 and 10000 runs per scenario, were audited. All 60 independently
-transcribed phase-A checkpoints agreed with the exported CSV using Decimal
-arithmetic within $10^{-12}$~P.U. All 90 terminal/phase ungrouped means
-agreed with ATP's own P.U. summaries within $10^{-7}$~P.U., supporting both
-the base and magnitude convention at printed precision.
-The individual comparisons use the first and last runs of each file,
-with phase-A checkpoints at all three terminals. The signed references
-were independently transcribed from the LIS and their SHA-256 hashes
-checked before processing. Expected ratios were calculated using Decimal
-arithmetic and compared with values read back from the generated CSV.
-All 204300 observations were exported and read back. The three examples
-in Table~\ref{tab:pu-validation} come from simulation 1 of the 100-run SRPI
-case, with signed values printed on LIS line 1789.
+Em 11 de setembro de 2026, dez arquivos de
+\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, com 50, 100, 200,
+1000 e 10000 execuções por cenário, foram auditados. Todos os 60 pontos de
+verificação da fase A, transcritos independentemente, coincidiram com o CSV
+exportado, usando aritmética Decimal com tolerância de $10^{-12}$~P.U. Todas
+as 90 médias não agrupadas por terminal e fase coincidiram com os próprios
+resumos em P.U. do ATP, dentro de $10^{-7}$~P.U., sustentando a base e a
+convenção de módulo na precisão impressa. As comparações individuais utilizam
+a primeira e a última execução de cada arquivo, com pontos de verificação da
+fase A nos três terminais. As referências com sinal foram transcritas
+independentemente do LIS e seus hashes SHA-256 foram verificados antes do
+processamento. As razões esperadas foram calculadas com aritmética Decimal e
+comparadas com os valores relidos do CSV gerado. Todas as 204300 observações
+foram exportadas e relidas. Os três exemplos da Tabela~\ref{tab:pu-validation}
+vêm da simulação 1 do caso SRPI de 100 execuções, com valores com sinal
+impressos na linha 1789 do LIS.
 
 \begin{table}[htbp]
 \centering
-\caption{Independent phase-A conversion checks using the 112677~V base.
-Source: ATP output and calculations performed in this study.}
+\caption{Verificações independentes da conversão da fase A utilizando a base
+de 112677~V. Fonte: saída do ATP e cálculos realizados neste estudo.}
 \label{tab:pu-validation}
 \small
 \begin{tabular}{lrrr}
 \hline
-Terminal & Signed peak (V) & Independent P.U. & CSV P.U. \\
+Terminal & Pico com sinal (V) & P.U. independente & P.U. do CSV \\
 \hline
 $T_{MAN}$ & $-152178.51$ & 1.350572965201416438 & 1.3505729652014165 \\
 $1/2\,LT$ & $-211732.87$ & 1.879113483674574225 & 1.8791134836745742 \\
@@ -1046,68 +1054,126 @@ $T_{OPO}$ & $-204404.45$ & 1.814074300877730149 & 1.8140743008777303 \\
 \end{tabular}
 \end{table}
 
-The comparison with ATP ungrouped means covers the three phases at all
-three terminals in every file. The absolute tolerance of $10^{-7}$~P.U.
-accommodates the precision printed for peaks and summary means; the
-$10^{-12}$~P.U. checkpoint tolerance checks arithmetic agreement with the
-transcribed decimal values. Agreement of aggregate means supports the
-magnitude convention but does not independently verify every observation.
+ A comparação com as médias não agrupadas do ATP abrange as três fases nos
+três terminais de cada arquivo. A tolerância absoluta de $10^{-7}$~P.U.
+acomoda a precisão impressa dos picos e das médias resumidas; a tolerância de
+$10^{-12}$~P.U. dos pontos de verificação testa a concordância aritmética com
+os valores decimais transcritos. A concordância das médias agregadas sustenta
+a convenção de módulo, mas não verifica independentemente cada observação.
 
-The former 100000~V configuration overstates P.U. values by 12.677\%
-relative to the ATP reference. It is rejected for reproducing these cases.
-A threshold of 2.3~P.U. now corresponds to 259157.1~V; previous statistical
-results require regeneration and separate validation. In contrast, the
-former base mapped the same numerical threshold to 230000~V. An arbitrary
-100000~V reference is mathematically possible, but it would require an
-explicit different interpretation and consistently rescaled thresholds;
-it does not reproduce these ATP tables.
+ A configuração anterior de 100000~V superestima os valores em P.U. em
+12,677\% em relação à referência do ATP. Ela é rejeitada para a reprodução
+desses casos. Um limiar de 2,3~P.U. corresponde agora a 259157,1~V; resultados
+estatísticos anteriores exigem regeneração e validação separada. Em
+contrapartida, a base anterior mapeava o mesmo limiar numérico para 230000~V.
+Uma referência arbitrária de 100000~V é matematicamente possível, mas exigiria
+uma interpretação diferente explicitamente definida e limiares
+consistentemente reescalados; ela não reproduz essas tabelas do ATP.
 
-\subsubsection{Reproducibility and acceptance limits}
+\subsubsection{Reprodutibilidade e limites de aceitação}
 
-The production code evaluated corresponds to revision
-\path{f3ee4f257950c2ef858810af6a78406ef7c3dca7}, with the audit script and
-this documentation added in the working tree. The audit can be reproduced
-from the repository root, with the original local case files available, by
-running \texttt{uv run python -m scripts.audit\_per\_unit}.
-The script fixes the base at 112677~V. The existing local configurations
-for 100, 1000 and 10000 simulations were corrected to this value;
-the production conversion formula itself required no change.
+O código de produção avaliado corresponde à revisão
+\path{f3ee4f257950c2ef858810af6a78406ef7c3dca7}, com o script de auditoria e
+esta documentação adicionados à árvore de
+trabalho. A auditoria pode ser reproduzida a partir da raiz do repositório,
+com os arquivos de casos locais originais disponíveis, executando
+\texttt{uv run python -m scripts.audit\_per\_unit}. O script fixa a base em
+112677~V. As configurações locais existentes para 100, 1000 e 10000
+simulações foram corrigidas para esse valor; a própria fórmula de conversão
+de produção não exigiu alteração.
 
-Supporting artifacts are retained under \path{doc/evidence/}:
-\path{pu_source_excerpt.txt} contains the source excerpts,
-\path{pu_conversion_checkpoints.csv} records all 60 numerical comparisons,
-and \path{pu_validation_2026-09-11.txt} records the execution outcome.
-The independent source references are
-\path{parser_audit_checkpoints.csv} and
-\path{parser_crpi_checkpoints.csv} in the same directory.
-The complete 100-run exports are retained as
-\path{pu_srpi_100-simulacoes.csv} and
-\path{pu_crpi_100-simulacoes.csv}. The remaining eight exports are
-regenerated, checked and removed by the audit to keep the evidence compact.
-The manifest \path{pu_validation.sha256} identifies all ten LIS and ATP
-inputs, retained exports and comparison results. It can be checked with
+Os artefatos de apoio são mantidos em \path{doc/evidence/}:
+\path{pu_source_excerpt.txt} contém os excertos das fontes,
+\path{pu_conversion_checkpoints.csv} registra todas as 60 comparações
+numéricas e \path{pu_validation_2026-09-11.txt} registra o resultado da
+execução. As referências independentes das fontes são
+\path{parser_audit_checkpoints.csv} e
+\path{parser_crpi_checkpoints.csv} no mesmo diretório. As exportações
+completas de 100 execuções são mantidas como
+\path{pu_srpi_100-simulacoes.csv} e
+\path{pu_crpi_100-simulacoes.csv}. As oito exportações restantes são
+regeneradas, verificadas e removidas pela
+auditoria para manter as evidências compactas. O manifesto
+\path{pu_validation.sha256} identifica as dez entradas LIS e ATP, as
+exportações mantidas e os resultados das comparações. Ele pode ser verificado
+com
 \texttt{sha256sum -c doc/evidence/pu\_validation.sha256}.
 
-On 11 September 2026, Codex performed the source and numerical review;
-no independent human engineering approval is claimed. All 60 checkpoint
-comparisons and 90 ATP mean comparisons passed. The software checks
-\texttt{task format}, \texttt{task lint}, 100 automated tests and
-BasedPyright also passed, with no type errors or warnings. These software
-checks support reproducibility but do not alone establish electrical
-validity. The acceptance decision is supported by the nominal-reference
-derivation, explicit ATP base and independent numerical comparisons
-presented in this subsection.
+Em 11 de setembro de 2026, foi realizada a revisão das fontes e dos cálculos;
+não se afirma a aprovação independente por um engenheiro. Todas as 60
+comparações e as 90 comparações de médias do ATP foram aprovadas. As
+verificações de software
+\texttt{task format}, \texttt{task lint}, 100 testes automatizados e o
+BasedPyright também foram aprovados, sem erros de tipagem ou avisos. Essas
+verificações de software apoiam a reprodutibilidade, mas não estabelecem,
+sozinhas, a validade
+elétrica. A decisão de aceitação é sustentada pela derivação da referência
+nominal, pela base explícita do ATP e pelas comparações numéricas
+independentes apresentadas nesta subseção.
 
-Conversion is therefore accepted for the ten declared complete-model,
-no-defect SRPI/CRPI cases, at $T_{MAN}$, $1/2\,LT$ and $T_{OPO}$ in phases
-A, B and C, using 112677~V. Historical 100000~V audits remain evidence of
-arithmetic and observation structure, while their electrical reference is
-superseded here. Old downstream artifacts were not overwritten and require
-regeneration and validation before reuse. Changed sources, other scenarios
-or different output conventions require renewed validation. No new ATP
-simulation or waveform audit was performed. Acceptance does not validate
-Gaussian adequacy, the physical cause of extreme values or insulation
-choices; those interpretations require their own technical assessment.
+A conversão é, portanto, aceita para os dez casos SRPI/CRPI declarados como
+modelo completo e sem defeitos, em $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, nas fases
+A, B e C, utilizando 112677~V. As auditorias históricas com 100000~V
+permanecem como evidência da aritmética e da estrutura das observações,
+enquanto sua referência elétrica é substituída nesta análise. Artefatos
+posteriores antigos não foram sobrescritos e exigem regeneração e validação
+antes do reúso. Fontes alteradas, outros cenários ou convenções de saída
+diferentes exigem nova validação. Não foi realizada nova simulação no ATP nem
+auditoria das formas de onda. A aceitação não valida a adequação gaussiana, a
+causa física dos valores extremos ou escolhas de isolamento; essas
+interpretações exigem avaliação técnica própria.
+
+\subsection{Validação da integridade e da limpeza dos dados}
+\label{sec:data-cleaning-validation}
+
+Em 11 de setembro de 2026, a integridade dos dados foi avaliada separadamente
+para os dez casos SRPI/CRPI de modelo completo, sem defeito, com 50, 100, 200,
+1000 e 10000 execuções, utilizando a base aceita de 112677~V. A chave de cada
+observação é composta pelo arquivo de origem, pela execução, pelo terminal e
+pela fase. A unicidade das chaves e a igualdade entre seu conjunto e o produto
+cartesiano das execuções declaradas (de 1 a NENERG), dos três terminais e das
+fases A/B/C estabelecem a completude antes da limpeza. As declarações nos
+arquivos de origem são lidas independentemente da contagem de linhas extraídas.
+Chaves duplicadas ou incompletas bloqueiam a análise, em vez de alterar
+silenciosamente a unidade amostral.
+
+Os instantes de ocorrência devem pertencer ao intervalo fechado $[0,0.3]$~s,
+conforme declarado na reprodução do cartão de parâmetros diversos no LIS e
+confirmado em cada arquivo de entrada ATP correspondente. Trata-se de uma
+verificação de consistência com a janela de simulação, e não de uma
+classificação física. Medições não finitas ou instantes fora desse intervalo
+são excluídos, preservando-se a identificação de origem, os valores originais e
+o motivo da exclusão. Valores extremos finitos de tensão são preservados.
+Seleções vazias após a limpeza bloqueiam a análise. Nesta etapa, não se aplica
+nenhum critério de corte baseado no instante de chaveamento ou na amplitude
+estatística.
+
+Todas as 204300 observações eram únicas, estavam completas e foram mantidas
+inalteradas: 102150 por cenário, sem exclusões. Todos os 60 pontos de
+verificação de tensão e tempo transcritos de forma independente coincidiram.
+Os instantes observados variaram de 0.01870 a 0.09997~s. A independência da
+referência diz respeito ao método de extração; não implica a participação de
+um revisor humano independente nem uma auditoria numérica exaustiva.
+A introdução artificial de falhas no caso CRPI de 900 linhas bloqueou
+corretamente a análise diante de uma observação duplicada e de uma observação
+ausente. Um instante de 0.30001~s ou um valor de tensão NaN provocou, em cada
+teste, exatamente uma exclusão registrada, restando 899 linhas. Verificações
+adicionais especificadas manualmente abrangem os limites do intervalo,
+instantes negativos e ausentes, identificações alteradas e combinações
+incompletas de terminal e fase. Assim, a limpeza não altera a amostra real
+aceita; as exclusões artificiais servem apenas para validar as regras.
+
+A aceitação desse escopo de apoio à validação da integridade dos dados foi
+registrada em \path{doc/data_cleaning_validation_report.md}. A reprodução utiliza
+\texttt{uv run python -m scripts.audit\_data\_cleaning}; os resultados por
+arquivo, os registros de falhas introduzidas e os hashes exatos dos arquivos
+de origem e do código encontram-se em \path{doc/evidence/}, nos arquivos
+\path{cleaning_cases.csv}, \path{cleaning_corruptions.csv} e
+\path{cleaning_validation.sha256}. Essa aceitação não estabelece a adequação
+à distribuição gaussiana, a independência estatística entre arquivos, as
+causas físicas dos extremos nem a completude de cenários fora da matriz de
+dez arquivos. Formatos ou convenções de janela temporal diferentes exigem
+nova validação.
 
 Portanto, essa tabela sustenta conclusões sobre a distribuição dos máximos de
 tensão, mas não representa as séries temporais nem a forma das ondas. Ela não

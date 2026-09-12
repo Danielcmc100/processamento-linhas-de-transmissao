@@ -1,0 +1,15 @@
+PASS 100-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 100 runs, 900 unique complete observations, 6 source records
+PASS corruption duplicate: invalid_input; 901 -> 900
+PASS corruption missing: invalid_input; 899 -> 899
+PASS corruption late_time: valid_with_issues; 900 -> 899
+PASS corruption nan_voltage: valid_with_issues; 900 -> 899
+PASS 100-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 100 runs, 900 unique complete observations, 6 source records
+PASS 1000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 1000 runs, 9000 unique complete observations, 6 source records
+PASS 1000-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 1000 runs, 9000 unique complete observations, 6 source records
+PASS 10000-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 10000 runs, 90000 unique complete observations, 6 source records
+PASS 10000-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 10000 runs, 90000 unique complete observations, 6 source records
+PASS 200-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 200 runs, 1800 unique complete observations, 6 source records
+PASS 200-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 200 runs, 1800 unique complete observations, 6 source records
+PASS 50-simulacoes/casos/T_MAN/CRPI/CASO-COMPLETO/SDEF/case.lis: 50 runs, 450 unique complete observations, 6 source records
+PASS 50-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.lis: 50 runs, 450 unique complete observations, 6 source records
+ACCEPTED scope: 10 files, 204300 unchanged observations

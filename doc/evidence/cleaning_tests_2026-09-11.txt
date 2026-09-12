@@ -1,0 +1,20 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.9, pytest-9.0.2, pluggy-1.6.0
+rootdir: /home/daniel/projects/processamento-linhas-de-transmissao
+configfile: pyproject.toml
+plugins: cov-7.0.0
+collected 112 items
+
+tests/test_clustering.py ......................                          [ 19%]
+tests/test_comparison.py .......                                         [ 25%]
+tests/test_config.py .......................                             [ 46%]
+tests/test_parser.py ........                                            [ 53%]
+tests/test_pipeline.py ...                                               [ 56%]
+tests/test_preprocessing.py .......                                      [ 62%]
+tests/test_reporting.py .....                                            [ 66%]
+tests/test_statistics.py .........                                       [ 75%]
+tests/test_validation.py ........                                        [ 82%]
+tests/test_validation_integrity.py ...........                           [ 91%]
+tests/test_visualization.py .........                                    [100%]
+
+============================= 112 passed in 4.68s ==============================

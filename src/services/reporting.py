@@ -3,6 +3,7 @@
 import hashlib
 import json
 import platform
+from dataclasses import asdict
 from datetime import UTC, datetime
 from importlib.metadata import version
 from pathlib import Path
@@ -95,6 +96,22 @@ def _build_metadata(
             }
             for path in input_files
         ],
+        "validation": {
+            "status": result.validation.status.value,
+            "issues": [
+                {
+                    **asdict(issue),
+                    "observation": (
+                        result.raw_observations.row(
+                            issue.row_index, named=True
+                        )
+                        if issue.row_index is not None
+                        else None
+                    ),
+                }
+                for issue in result.validation.issues
+            ],
+        },
         "runtime": {
             "generated_at_utc": datetime.now(UTC).isoformat(),
         },

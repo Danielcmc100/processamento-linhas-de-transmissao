@@ -10,6 +10,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import polars as pl
 import pytest
+from polars import Series
 
 matplotlib.use("Agg")
 
@@ -191,4 +192,34 @@ def test_writer_overwrites_only_known_artifacts(tmp_path: Path) -> None:
 
     assert known.read_text(encoding="utf-8") != "stale\n"
     assert unrelated.read_text(encoding="utf-8") == "keep me\n"
+    plt.close("all")
+
+
+def test_metadata_retains_excluded_measurement(tmp_path: Path) -> None:
+    """Keep source values and the exact reason for a temporal exclusion."""
+    from dataclasses import replace
+
+    from src.services.validation import validate_observations
+
+    config = _config(tmp_path)
+    result = run_pipeline(config)
+    raw = result.raw_observations.with_columns(
+        Series("time", [-0.1, *result.raw_observations["time"].to_list()[1:]])
+    )
+    validation = validate_observations(
+        raw,
+        terminals=config.terminals,
+        phases=("A",),
+        time_bounds={"representative.lis": (0.0, 0.3)},
+    )
+    write_result_artifacts(
+        config,
+        replace(result, raw_observations=raw, validation=validation),
+    )
+    metadata = json.loads((config.output_dir / "metadata.json").read_text())
+    issue = metadata["validation"]["issues"][0]
+    assert issue["code"] == "out_of_range_time"
+    assert issue["row_index"] == 0
+    assert issue["observation"]["time"] == -0.1
+    assert issue["observation"]["source_file"] == "representative.lis"
     plt.close("all")

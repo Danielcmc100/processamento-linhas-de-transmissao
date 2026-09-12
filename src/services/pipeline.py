@@ -21,7 +21,11 @@ from src.services.statistics import (
     fit_gaussian,
     summarize_statistics,
 )
-from src.services.validation import ValidationResult, validate_observations
+from src.services.validation import (
+    ValidationResult,
+    load_validation_contract,
+    validate_observations,
+)
 from src.services.visualization import (
     plot_combined,
     plot_exceedance_curve,
@@ -72,10 +76,16 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         directory=config.input_path,
         encoding=config.encoding,
     )
+    expected_runs, time_bounds = load_validation_contract(
+        config.input_path,
+        config.encoding,
+    )
     validation = validate_observations(
         raw_observations,
         terminals=config.terminals,
         phases=(config.phase_policy,),
+        expected_runs=expected_runs,
+        time_bounds=time_bounds,
     )
     if not validation.is_valid:
         message = (

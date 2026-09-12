@@ -32,6 +32,13 @@ prove every downstream statistical hypothesis.
 3. [Conversão das tensões para P.U.](concluido/03_conversao_para_pu.md)
    ([Plane TCCKL-10](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-10))
 
+4. [Validação e limpeza dos dados](concluido/04_validacao_limpeza_dados.md)
+   ([Plane TCCKL-11](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-11))
+
+Data cleaning was accepted on 2026-09-11 for the ten SRPI/CRPI cases,
+with 204,300 unchanged observations; see the
+[validation report](../doc/data_cleaning_validation_report.md).
+
 Accepted on 2026-09-11 with the ATP base of 112677 V;
 see the [P.U. justification in the thesis](../doc/main.tex).
 
@@ -40,27 +47,25 @@ source-fidelity audit. Historical decisions remain in its evidence record.
 
 ## Validando
 
-The 9 items below require the recorded acceptance evidence. TCCKL-9 was
+The 8 items below require the recorded acceptance evidence. TCCKL-9 was
 accepted again on 2026-09-10 after its separate SRPI/CRPI observation audit;
 see the [validation report](../doc/observation_structure_validation_report.md).
 
-1. [Validação e limpeza dos dados](validando/04_validacao_limpeza_dados.md)
-   ([Plane TCCKL-11](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-11))
-2. [Estatística descritiva e regra de três sigmas](validando/05_estatistica_tres_sigmas.md)
+1. [Estatística descritiva e regra de três sigmas](validando/05_estatistica_tres_sigmas.md)
    ([Plane TCCKL-12](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-12))
-3. [Ajuste Gaussiano e probabilidades de excedência](validando/06_ajuste_gaussiano_excedencia.md)
+2. [Ajuste Gaussiano e probabilidades de excedência](validando/06_ajuste_gaussiano_excedencia.md)
    ([Plane TCCKL-13](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-13))
-4. [Implementação do DBSCAN e do K-Means](validando/07_implementacao_clusterizacao.md)
+3. [Implementação do DBSCAN e do K-Means](validando/07_implementacao_clusterizacao.md)
    ([Plane TCCKL-14](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-14))
-5. [Comparação computacional dos indícios de anomalia](validando/08_comparacao_indicios_anomalia.md)
+4. [Comparação computacional dos indícios de anomalia](validando/08_comparacao_indicios_anomalia.md)
    ([Plane TCCKL-15](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-15))
-6. [Artefatos e reprodutibilidade das execuções](validando/09_artefatos_reprodutibilidade.md)
+5. [Artefatos e reprodutibilidade das execuções](validando/09_artefatos_reprodutibilidade.md)
    ([Plane TCCKL-16](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-16))
-7. [Execuções por tamanho de amostra](validando/10_execucoes_tamanhos_amostra.md)
+6. [Execuções por tamanho de amostra](validando/10_execucoes_tamanhos_amostra.md)
     ([Plane TCCKL-17](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-17))
-8. [Qualidade e testes do software](validando/11_qualidade_testes_software.md)
+7. [Qualidade e testes do software](validando/11_qualidade_testes_software.md)
     ([Plane TCCKL-18](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-18))
-9. [Capítulos iniciais do TCC](validando/12_capitulos_iniciais_tcc.md)
+8. [Capítulos iniciais do TCC](validando/12_capitulos_iniciais_tcc.md)
     ([Plane TCCKL-19](https://app.plane.so/tcc-kleber-viana/browse/TCCKL-19))
 
 ## Pendente
@@ -99,7 +104,7 @@ additional copies of the implemented features.
 5. Move the card from `validando/` to `concluido/` and update this index. Reopen
    validation if changes invalidate the recorded evidence or extend its scope.
 
-Current totals: **3 Concluído, 9 Validando, 8 Pendente**. These are workflow
+Current totals: **4 Concluído, 8 Validando, 8 Pendente**. These are workflow
 counts, not a percentage estimate of scientific completion.
 
 ## Dependency and priority tree
