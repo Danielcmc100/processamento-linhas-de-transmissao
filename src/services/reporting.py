@@ -22,6 +22,8 @@ ARTIFACT_NAMES = (
     "exceedance.png",
     "overvoltage_histogram.png",
     "switching_time.png",
+    "kmeans_clusters.png",
+    "dbscan_clusters.png",
 )
 
 
@@ -67,6 +69,12 @@ def write_result_artifacts(
     )
     result.figures.switching_time.savefig(
         config.output_dir / "switching_time.png"
+    )
+    result.figures.kmeans_clusters.savefig(
+        config.output_dir / "kmeans_clusters.png"
+    )
+    result.figures.dbscan_clusters.savefig(
+        config.output_dir / "dbscan_clusters.png"
     )
     _write_json(
         config.output_dir / "metadata.json",

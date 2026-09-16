@@ -28,7 +28,9 @@ from src.services.validation import (
 )
 from src.services.visualization import (
     plot_combined,
+    plot_dbscan_clusters,
     plot_exceedance_curve,
+    plot_kmeans_clusters,
     plot_overvoltage_histogram,
     plot_switching_time_curve,
 )
@@ -42,6 +44,8 @@ class PipelineFigures:
     exceedance: Figure
     overvoltage_histogram: Figure
     switching_time: Figure
+    kmeans_clusters: Figure
+    dbscan_clusters: Figure
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,6 +136,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
     )
     overvoltage_histogram, _ = plot_overvoltage_histogram(compared)
     switching_time, _ = plot_switching_time_curve(switching_times)
+    kmeans_clusters, _ = plot_kmeans_clusters(compared)
+    dbscan_clusters, _ = plot_dbscan_clusters(compared)
 
     return PipelineResult(
         raw_observations=raw_observations,
@@ -143,6 +149,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
             exceedance=exceedance,
             overvoltage_histogram=overvoltage_histogram,
             switching_time=switching_time,
+            kmeans_clusters=kmeans_clusters,
+            dbscan_clusters=dbscan_clusters,
         ),
     )
 

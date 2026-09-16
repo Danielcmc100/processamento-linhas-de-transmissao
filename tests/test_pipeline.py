@@ -70,12 +70,16 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     assert isinstance(result.figures.exceedance, Figure)
     assert isinstance(result.figures.overvoltage_histogram, Figure)
     assert isinstance(result.figures.switching_time, Figure)
+    assert isinstance(result.figures.kmeans_clusters, Figure)
+    assert isinstance(result.figures.dbscan_clusters, Figure)
     assert list(config.output_dir.iterdir()) == []
 
     plt.close(result.figures.combined)
     plt.close(result.figures.exceedance)
     plt.close(result.figures.overvoltage_histogram)
     plt.close(result.figures.switching_time)
+    plt.close(result.figures.kmeans_clusters)
+    plt.close(result.figures.dbscan_clusters)
 
 
 def test_pipeline_rejects_unanalyzable_selection(tmp_path: Path) -> None:
@@ -117,5 +121,7 @@ def test_main_loads_json_config_and_reports_counts(
         "exceedance.png",
         "overvoltage_histogram.png",
         "switching_time.png",
+        "kmeans_clusters.png",
+        "dbscan_clusters.png",
     }
     assert plt.get_fignums() == []

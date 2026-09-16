@@ -498,7 +498,15 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 
 \section{Organização do trabalho}
 
-Este trabalho está organizado em capítulos que contemplam os principais elementos da investigação. Após esta introdução, o capítulo de fundamentação teórica apresenta os conceitos necessários para compreender o problema, incluindo aspectos de transitórios eletromagnéticos, simulação computacional, análise estatística, análise probabilística e técnicas de aprendizagem de máquina aplicadas à detecção de anomalias. O capítulo seguinte descreve a modelagem do sistema elétrico utilizada como ambiente de geração dos dados. Na sequência, o capítulo de metodologia e desenvolvimento apresenta os procedimentos de extração, tratamento e análise dos resultados, bem como a construção da solução proposta. Por fim, o capítulo de conclusão retoma os objetivos do estudo, sintetiza os resultados alcançados e aponta possibilidades de continuidade da pesquisa.
+Após a introdução, o Capítulo 2 apresenta a fundamentação teórica sobre
+transitórios eletromagnéticos, simulação, estatística e aprendizagem de
+máquina. O Capítulo 3 descreve a modelagem do sistema elétrico e a geração
+dos dados. O Capítulo 4 apresenta a metodologia de extração, organização e
+pré-processamento, seus critérios de validação e as etapas de análise
+previstas. O Capítulo 5 reúne os resultados das validações e discute seus
+limites. O capítulo de conclusão, ainda a ser desenvolvido, retomará os objetivos
+e sintetizará os resultados ao término das análises. O apêndice reúne os
+registros técnicos de apoio à reprodução das verificações.
 
 \chapter{Fundamentação teórica}
 
@@ -693,7 +701,7 @@ Apesar de suas vantagens, o DBSCAN apresenta limitações. A escolha inadequada 
 
 Com base nos conceitos apresentados, observa-se que a análise de sobretensões transitórias em manobras de energização exige a integração entre conhecimento físico do sistema elétrico, simulação computacional, tratamento estatístico, análise probabilística e técnicas de reconhecimento de padrões. O ATP fornece os dados necessários para representar diferentes condições de operação, enquanto a estatística e a visualização auxiliam na compreensão da distribuição dos valores máximos obtidos. Os algoritmos de clusterização, por sua vez, podem apoiar a identificação de comportamentos predominantes e de observações discrepantes. Essa fundamentação sustenta a etapa metodológica do trabalho, na qual serão definidos os procedimentos de extração, organização, análise probabilística e classificação das sobretensões simuladas.
 
-\chapter{Modelagem do sistema elétrico}
+\chapter{Modelagem do sistema elétrico e geração dos dados}
 
 Este capítulo descreve o sistema elétrico utilizado para gerar os dados
 sintéticos analisados neste trabalho. Seu objetivo não é desenvolver um novo
@@ -896,7 +904,17 @@ e transforma cada máximo observado em um registro estruturado. Assim, o fluxo
 de dados pode ser resumido como: caso do ONS, rede equivalente, modelo no ATP,
 simulações estatísticas, arquivos de saída e base tabular analisada em Python.
 
-\subsection{Escopo e validação do parser}
+\chapter{Metodologia e desenvolvimento}
+\label{chap:methodology}
+
+Este capítulo apresenta os procedimentos computacionais utilizados para
+transformar as saídas do ATP em uma base tabular rastreável. A sequência
+compreende a extração dos máximos, a definição da unidade de observação, a
+normalização em P.U. e a verificação da integridade e da limpeza dos dados.
+São descritos os critérios de validação dessas etapas; os resultados das
+verificações são apresentados no Capítulo~\ref{chap:results}.
+
+\section{Extração dos dados e validação do parser}
 
 O reconhecimento do arquivo estatístico utiliza os marcadores textuais
 \texttt{NENERG}, \texttt{otherwise blank space}, a identificação numerada de
@@ -908,42 +926,22 @@ execuções divergente de \texttt{NENERG} ou comprimentos incompatíveis entre
 máximos e tempos são rejeitados. Arquivos \texttt{.lis} sem \texttt{NENERG}
 são tratados como saídas não estatísticas e não geram observações.
 
-Uma auditoria de fidelidade às fontes foi ampliada em 10 de setembro de 2026,
-após a identificação de um defeito de alinhamento do cabeçalho do CRPI. A
-separação dos nomes dos nós por espaços em branco removia células vazias e
-associava nós de ramificação às variáveis incorretas. O parser corrigido utiliza
-as posições impressas das colunas de variáveis para preservar células vazias no
-início, no interior e no final dos nós. Um caso de regressão sintético
-reproduz a falha original e verifica o mapeamento corrigido.
+O parser utiliza as posições impressas das colunas de variáveis para
+preservar células vazias no início, no interior e no final dos nós. Esse
+procedimento mantém a associação entre cada variável e seu ponto de medição.
 
 O escopo avaliado dos pontos de verificação das fontes compreende
 \texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, com 50, 100, 200,
 1.000 e 10.000 simulações por cenário. A referência do CRPI registra todos os
-48 pares ordenados de variável/nó, transcritos das linhas 1.784--1.797 da
-e compara esses pares nos cinco arquivos. As primeiras e últimas execuções
+48 pares ordenados de variável/nó, transcritos diretamente do arquivo de saída do ATP. A auditoria
+compara esses pares nos cinco arquivos. As primeiras e últimas execuções
 fornecem os máximos com sinal e os instantes de ocorrência da fase A em
 $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, juntamente com os instantes da chave 10. As
 referências são lidas diretamente do texto do ATP, de forma independente do
 parser de produção; os resumos SHA-256 identificam os arquivos de entrada
 locais completos. Os pontos de verificação existentes do SRPI são mantidos.
 
-Todas as 240 comparações de pares de cabeçalho do CRPI coincidiram. Nos dois
-cenários, os 20 pontos de verificação de chaveamento e os 60 pares de
-máximo/instante com sinal coincidiram exatamente. A varredura completa
-reconciliou 235 arquivos e 533.450 execuções. A etapa de verificação de
-software foi aprovada nos 100 testes, pelo Ruff e pelo BasedPyright. Esses
-resultados sustentam a aceitação do parser corrigido para o escopo declarado
-dos pontos de verificação das fontes.
-
-O registro de aceitação e os resultados reproduzíveis são mantidos em
-\texttt{doc/parser\_validation\_report.md}, com os arquivos CSV de referência
-em \texttt{doc/evidence/}. A varredura de toda a coleção verifica as contagens
-de execuções e os comprimentos das tabelas; ela não constitui uma verificação
-independente de cada coluna ou de cada valor numérico. A aceitação dos pontos
-de verificação das fontes é restrita aos dez arquivos selecionados e à
-precisão impressa. Novos leiautes exigem nova validação. Essa auditoria do
-software de apoio não classifica extremos como eventos físicos ou numéricos e
-não encerra a validação independente das observações prevista no TCCKL-9.
+\section{Estrutura da base e unidade de observação}
 
 Na base tabular, a unidade de observação é um máximo escalar de tensão
 fase--terra, identificado pela combinação entre arquivo de origem, número da
@@ -956,30 +954,7 @@ simulações, pois sua identidade permanece no caminho de origem. A inclusão de
 novos cenários exige conferir previamente quais terminais e fases são esperados
 nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 
- A estrutura das observações foi revalidada em 10 de setembro de 2026, após a
-correção do parser do CRPI. Os cinco tamanhos de cada cenário SRPI e CRPI
-produziram 204.300 observações escalares em dez arquivos. Cada simulação
-declarada continha todas as nove combinações esperadas de terminal e fase, com
-chaves compostas únicas, incluindo as três fases restauradas em
-\texttt{T\_OPO} no CRPI. Todos os hashes de entrada coincidiram. Os 60 pares
-de tensão/tempo da fase A, transcritos independentemente das primeiras e
-últimas execuções, coincidiram exatamente sob o mapeamento $|V|/100000$.
-A justificativa elétrica da base de auditoria de 100~kV permanece separada.
-
-Os caminhos das fontes preservam identidades distintas entre os arquivos,
-verificação também realizada por um teste de regressão com múltiplos arquivos.
-O procedimento, a revisão, o manifesto SHA-256, os resultados e a decisão de
-aceitação estão registrados em
-\texttt{doc/observation\_structure\_validation\_report.md}.
-A comparação foi realizada de forma automatizada; não se afirma a realização
-de uma revisão humana independente.
-A cobertura estrutural é exaustiva para esses dez arquivos; a comparação
-numérica independente abrange apenas os pontos de verificação declarados da
-fase A. A aceitação não estima uma taxa de erro, não valida outros leiautes nem
-classifica anomalias como físicas ou numéricas. Exportações antigas do CRPI
-exigem regeneração e sua própria validação posterior antes do reúso.
-
-\subsection{Referência em unidade por unidade e validação da conversão}
+\section{Normalização em unidade por unidade}
 \label{sec:per-unit-validation}
 
 Para a referência nominal de 138~kV de tensão eficaz entre fases, a base de
@@ -1020,6 +995,132 @@ módulo apenas na normalização. O fluxo não reconstrói os extremos da forma 
 onda. Consequentemente, esse procedimento não estabelece se o passo de
 integração capturou o máximo global em tempo contínuo.
 
+A validação da conversão compara os valores relidos do CSV com razões
+calculadas em aritmética Decimal a partir de referências com sinal
+transcritas independentemente do LIS. São consideradas a primeira e a última
+execução de cada um dos dez arquivos, na fase A dos três terminais. Também
+são comparadas as médias não agrupadas das três fases nos três terminais
+com os resumos em P.U. impressos pelo ATP.
+
+A comparação com as médias não agrupadas do ATP abrange as três fases nos
+três terminais de cada arquivo. A tolerância absoluta de $10^{-7}$~P.U.
+acomoda a precisão impressa dos picos e das médias resumidas; a tolerância de
+$10^{-12}$~P.U. dos pontos de verificação testa a concordância aritmética com
+os valores decimais transcritos. A concordância das médias agregadas sustenta
+a convenção de módulo, mas não verifica independentemente cada observação.
+
+\section{Integridade e limpeza dos dados}
+\label{sec:data-cleaning-validation}
+
+A integridade dos dados é avaliada separadamente
+para os dez casos SRPI/CRPI de modelo completo, sem defeito, com 50, 100, 200,
+1000 e 10000 execuções, utilizando a base aceita de 112677~V. A chave de cada
+observação é composta pelo arquivo de origem, pela execução, pelo terminal e
+pela fase. A unicidade das chaves e a igualdade entre seu conjunto e o produto
+cartesiano das execuções declaradas (de 1 a NENERG), dos três terminais e das
+fases A/B/C estabelecem a completude antes da limpeza. As declarações nos
+arquivos de origem são lidas independentemente da contagem de linhas extraídas.
+Chaves duplicadas ou incompletas bloqueiam a análise, em vez de alterar
+silenciosamente a unidade amostral.
+
+Os instantes de ocorrência devem pertencer ao intervalo fechado $[0,0.3]$~s,
+conforme declarado na reprodução do cartão de parâmetros diversos no LIS e
+confirmado em cada arquivo de entrada ATP correspondente. Trata-se de uma
+verificação de consistência com a janela de simulação, e não de uma
+classificação física. Medições não finitas ou instantes fora desse intervalo
+são excluídos, preservando-se a identificação de origem, os valores originais e
+o motivo da exclusão. Valores extremos finitos de tensão são preservados.
+Seleções vazias após a limpeza bloqueiam a análise. Nesta etapa, não se aplica
+nenhum critério de corte baseado no instante de chaveamento ou na amplitude
+estatística.
+
+\section{Reprodutibilidade e critérios de aceitação}
+
+As verificações utilizam referências extraídas diretamente dos arquivos de
+origem, de forma independente do parser de produção. Os arquivos são
+identificados por resumos SHA-256, permitindo conferir se as entradas
+correspondem às utilizadas nas auditorias. A independência refere-se ao
+procedimento de extração e não pressupõe revisão humana independente.
+
+A aceitação exige concordância dos cabeçalhos e dos pontos de verificação,
+completude e unicidade das observações e concordância da conversão segundo
+as tolerâncias declaradas. A limpeza deve preservar os registros válidos e
+registrar as exclusões previstas. Testes com falhas introduzidas verificam
+se registros duplicados ou ausentes bloqueiam a análise e se valores
+inválidos são excluídos com rastreabilidade.
+
+Os comandos, os manifestos, os relatórios e o histórico das correções são
+reunidos no Apêndice~\ref{app:validation-records}. As verificações de software
+apoiam a reprodutibilidade, mas não substituem a validação elétrica nem
+estabelecem a causa física dos valores extremos.
+
+% TODO: Develop the applied statistical and probabilistic methodology.
+% TODO: Specify clustering features, parameters, and evaluation criteria.
+\section{Etapas previstas de análise dos dados}
+
+Após a validação da base, a proposta prevê análise exploratória, cálculo de
+medidas descritivas, análise probabilística e aplicação de K-Means e DBSCAN,
+conforme os objetivos e a fundamentação teórica. O detalhamento experimental
+dessas etapas, incluindo seleção de atributos, parâmetros dos algoritmos e
+critérios de comparação, permanece a ser desenvolvido. Os resultados
+apresentados a seguir limitam-se às validações de extração e
+pré-processamento já documentadas.
+
+\chapter{Resultados e discussão}
+\label{chap:results}
+
+Este capítulo reúne os resultados das validações do parser, da estrutura
+das observações, da conversão em P.U. e da limpeza. As evidências se referem
+aos escopos declarados em cada verificação e não constituem resultados de
+análise probabilística ou de clusterização.
+
+\section{Fidelidade da extração}
+
+Todas as 240 comparações de pares de cabeçalho do CRPI coincidiram. Nos dois
+cenários, os 20 pontos de verificação de chaveamento e os 60 pares de
+máximo/instante com sinal coincidiram exatamente. A varredura completa
+reconciliou 235 arquivos e 533.450 execuções. A etapa de verificação de
+software foi aprovada nos 100 testes, pelo Ruff e pelo BasedPyright. Esses
+resultados sustentam a aceitação do parser corrigido para o escopo declarado
+dos pontos de verificação das fontes.
+
+O registro de aceitação e os resultados reproduzíveis são mantidos em
+\texttt{doc/parser\_validation\_report.md}, com os arquivos CSV de referência
+em \texttt{doc/evidence/}. A varredura de toda a coleção verifica as contagens
+de execuções e os comprimentos das tabelas; ela não constitui uma verificação
+independente de cada coluna ou de cada valor numérico. A aceitação dos pontos
+de verificação das fontes é restrita aos dez arquivos selecionados e à
+precisão impressa. Novos leiautes exigem nova validação. Essa auditoria do
+software de apoio não classifica extremos como eventos físicos ou numéricos e
+não encerra a validação independente das observações prevista neste trabalho.
+
+\section{Completude e identidade das observações}
+
+A estrutura das observações foi revalidada em 10 de setembro de 2026, após a
+correção do parser do CRPI. Os cinco tamanhos de cada cenário SRPI e CRPI
+produziram 204.300 observações escalares em dez arquivos. Cada simulação
+declarada continha todas as nove combinações esperadas de terminal e fase, com
+chaves compostas únicas, incluindo as três fases restauradas em
+\texttt{T\_OPO} no CRPI. Todos os hashes de entrada coincidiram. Os 60 pares
+de tensão/tempo da fase A, transcritos independentemente das primeiras e
+últimas execuções, coincidiram exatamente sob o mapeamento $|V|/100000$.
+A justificativa elétrica da base de auditoria de 100~kV permanece separada.
+
+Os caminhos das fontes preservam identidades distintas entre os arquivos,
+verificação também realizada por um teste de regressão com múltiplos arquivos.
+O procedimento, a revisão, o manifesto SHA-256, os resultados e a decisão de
+aceitação estão registrados em
+\texttt{doc/observation\_structure\_validation\_report.md}.
+A comparação foi realizada de forma automatizada; não se afirma a realização
+de uma revisão humana independente.
+A cobertura estrutural é exaustiva para esses dez arquivos; a comparação
+numérica independente abrange apenas os pontos de verificação declarados da
+fase A. A aceitação não estima uma taxa de erro, não valida outros leiautes nem
+classifica anomalias como físicas ou numéricas. Exportações antigas do CRPI
+exigem regeneração e sua própria validação posterior antes do reúso.
+
+\section{Validação da conversão em P.U.}
+
 Em 11 de setembro de 2026, dez arquivos de
 \texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, com 50, 100, 200,
 1000 e 10000 execuções por cenário, foram auditados. Todos os 60 pontos de
@@ -1054,14 +1155,7 @@ $T_{OPO}$ & $-204404.45$ & 1.814074300877730149 & 1.8140743008777303 \\
 \end{tabular}
 \end{table}
 
- A comparação com as médias não agrupadas do ATP abrange as três fases nos
-três terminais de cada arquivo. A tolerância absoluta de $10^{-7}$~P.U.
-acomoda a precisão impressa dos picos e das médias resumidas; a tolerância de
-$10^{-12}$~P.U. dos pontos de verificação testa a concordância aritmética com
-os valores decimais transcritos. A concordância das médias agregadas sustenta
-a convenção de módulo, mas não verifica independentemente cada observação.
-
- A configuração anterior de 100000~V superestima os valores em P.U. em
+A configuração anterior de 100000~V superestima os valores em P.U. em
 12,677\% em relação à referência do ATP. Ela é rejeitada para a reprodução
 desses casos. Um limiar de 2,3~P.U. corresponde agora a 259157,1~V; resultados
 estatísticos anteriores exigem regeneração e validação separada. Em
@@ -1070,12 +1164,118 @@ Uma referência arbitrária de 100000~V é matematicamente possível, mas exigir
 uma interpretação diferente explicitamente definida e limiares
 consistentemente reescalados; ela não reproduz essas tabelas do ATP.
 
-\subsubsection{Reprodutibilidade e limites de aceitação}
+Em 11 de setembro de 2026, foi realizada a revisão das fontes e dos cálculos;
+não se afirma a aprovação independente por um engenheiro. Todas as 60
+comparações e as 90 comparações de médias do ATP foram aprovadas. As
+verificações de software
+\texttt{task format}, \texttt{task lint}, 100 testes automatizados e o
+BasedPyright também foram aprovados, sem erros de tipagem ou avisos. Essas
+verificações de software apoiam a reprodutibilidade, mas não estabelecem,
+sozinhas, a validade
+elétrica. A decisão de aceitação é sustentada pela derivação da referência
+nominal, pela base explícita do ATP e pelas comparações numéricas
+independentes apresentadas neste capítulo.
+
+A conversão é, portanto, aceita para os dez casos SRPI/CRPI declarados como
+modelo completo e sem defeitos, em $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, nas fases
+A, B e C, utilizando 112677~V. As auditorias históricas com 100000~V
+permanecem como evidência da aritmética e da estrutura das observações,
+enquanto sua referência elétrica é substituída nesta análise. Artefatos
+posteriores antigos não foram sobrescritos e exigem regeneração e validação
+antes do reúso. Fontes alteradas, outros cenários ou convenções de saída
+diferentes exigem nova validação. Não foi realizada nova simulação no ATP nem
+auditoria das formas de onda. A aceitação não valida a adequação gaussiana, a
+causa física dos valores extremos ou escolhas de isolamento; essas
+interpretações exigem avaliação técnica própria.
+
+\section{Resultados da integridade e da limpeza}
+
+Todas as 204300 observações eram únicas, estavam completas e foram mantidas
+inalteradas: 102150 por cenário, sem exclusões. Todos os 60 pontos de
+verificação de tensão e tempo transcritos de forma independente coincidiram.
+Os instantes observados variaram de 0.01870 a 0.09997~s. A independência da
+referência diz respeito ao método de extração; não implica a participação de
+um revisor humano independente nem uma auditoria numérica exaustiva.
+A introdução artificial de falhas no caso CRPI de 900 linhas bloqueou
+corretamente a análise diante de uma observação duplicada e de uma observação
+ausente. Um instante de 0.30001~s ou um valor de tensão NaN provocou, em cada
+teste, exatamente uma exclusão registrada, restando 899 linhas. Verificações
+adicionais especificadas manualmente abrangem os limites do intervalo,
+instantes negativos e ausentes, identificações alteradas e combinações
+incompletas de terminal e fase. Assim, a limpeza não altera a amostra real
+aceita; as exclusões artificiais servem apenas para validar as regras.
+
+A aceitação abrange os dez arquivos declarados. Formatos ou convenções de
+janela temporal diferentes exigem nova validação. Os registros de execução
+e as evidências por arquivo estão relacionados no
+Apêndice~\ref{app:validation-records}.
+
+\section{Alcance e limitações dos resultados}
+
+A base tabular de máximos sustenta conclusões sobre a distribuição dos máximos de
+tensão, mas não representa as séries temporais nem a forma das ondas. Ela não
+permite, isoladamente, concluir sobre duração, frequência, taxa de variação ou
+conteúdo oscilatório do transitório. Tais conclusões exigiriam armazenar e
+analisar as formas de onda ou atributos temporais adicionais.
+
+Como consequência, as anomalias identificadas posteriormente descrevem
+comportamentos discrepantes dentro desse ambiente de simulação. A classificação
+estatística, isoladamente, não comprova que um ponto seja um erro numérico nem
+que corresponda a um evento físico real. Essa distinção requer a conferência do
+caso de origem, dos parâmetros de chaveamento e da coerência do resultado com
+os demais pontos e fases. As validações apresentadas sustentam a extração, a organização e o
+pré-processamento dos dados no escopo declarado. A análise estatística, a
+análise probabilística e a clusterização constituem as etapas seguintes da
+investigação e precisam ser avaliadas segundo seus próprios critérios.
+
+% TODO: Write the conclusion after completing the methodology and results.
+% \chapter{Conclusão}
+
+% ----------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ----------------------------------------------------------
+\postextual
+% ----------------------------------------------------------
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+\bibliography{bibliografia}
+% ---
+
+
+\begin{apendicesenv}
+\chapter{Registros técnicos das validações}
+\label{app:validation-records}
+
+Este apêndice reúne o histórico de correções e os artefatos de apoio às
+validações apresentadas nos capítulos de metodologia e resultados. As
+revisões e as datas identificam as auditorias originais, não uma nova
+execução decorrente da organização deste texto.
+
+\section{Histórico do parser e estrutura das observações}
+
+Uma auditoria de fidelidade às fontes foi ampliada em 10 de setembro de 2026,
+após a identificação de um defeito de alinhamento do cabeçalho do CRPI. A
+separação dos nomes dos nós por espaços em branco removia células vazias e
+associava nós de ramificação às variáveis incorretas. O parser corrigido utiliza
+as posições impressas das colunas de variáveis para preservar células vazias no
+início, no interior e no final dos nós. Um caso de regressão sintético
+reproduz a falha original e verifica o mapeamento corrigido.
+
+Os registros de aceitação são mantidos em
+\path{doc/parser_validation_report.md} e
+\path{doc/observation_structure_validation_report.md}, com referências e
+manifestos em \path{doc/evidence/}. A revalidação estrutural ocorreu em
+10 de setembro de 2026, após a correção do cabeçalho do CRPI. As exportações
+anteriores à correção exigem regeneração e validação antes do reúso.
+
+\section{Reprodução da auditoria de conversão em P.U.}
 
 O código de produção avaliado corresponde à revisão
 \path{f3ee4f257950c2ef858810af6a78406ef7c3dca7}, com o script de auditoria e
-esta documentação adicionados à árvore de
-trabalho. A auditoria pode ser reproduzida a partir da raiz do repositório,
+a documentação da auditoria adicionados à árvore de
+trabalho naquele momento. A auditoria pode ser reproduzida a partir da raiz do repositório,
 com os arquivos de casos locais originais disponíveis, executando
 \texttt{uv run python -m scripts.audit\_per\_unit}. O script fixa a base em
 112677~V. As configurações locais existentes para 100, 1000 e 10000
@@ -1099,69 +1299,7 @@ exportações mantidas e os resultados das comparações. Ele pode ser verificad
 com
 \texttt{sha256sum -c doc/evidence/pu\_validation.sha256}.
 
-Em 11 de setembro de 2026, foi realizada a revisão das fontes e dos cálculos;
-não se afirma a aprovação independente por um engenheiro. Todas as 60
-comparações e as 90 comparações de médias do ATP foram aprovadas. As
-verificações de software
-\texttt{task format}, \texttt{task lint}, 100 testes automatizados e o
-BasedPyright também foram aprovados, sem erros de tipagem ou avisos. Essas
-verificações de software apoiam a reprodutibilidade, mas não estabelecem,
-sozinhas, a validade
-elétrica. A decisão de aceitação é sustentada pela derivação da referência
-nominal, pela base explícita do ATP e pelas comparações numéricas
-independentes apresentadas nesta subseção.
-
-A conversão é, portanto, aceita para os dez casos SRPI/CRPI declarados como
-modelo completo e sem defeitos, em $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, nas fases
-A, B e C, utilizando 112677~V. As auditorias históricas com 100000~V
-permanecem como evidência da aritmética e da estrutura das observações,
-enquanto sua referência elétrica é substituída nesta análise. Artefatos
-posteriores antigos não foram sobrescritos e exigem regeneração e validação
-antes do reúso. Fontes alteradas, outros cenários ou convenções de saída
-diferentes exigem nova validação. Não foi realizada nova simulação no ATP nem
-auditoria das formas de onda. A aceitação não valida a adequação gaussiana, a
-causa física dos valores extremos ou escolhas de isolamento; essas
-interpretações exigem avaliação técnica própria.
-
-\subsection{Validação da integridade e da limpeza dos dados}
-\label{sec:data-cleaning-validation}
-
-Em 11 de setembro de 2026, a integridade dos dados foi avaliada separadamente
-para os dez casos SRPI/CRPI de modelo completo, sem defeito, com 50, 100, 200,
-1000 e 10000 execuções, utilizando a base aceita de 112677~V. A chave de cada
-observação é composta pelo arquivo de origem, pela execução, pelo terminal e
-pela fase. A unicidade das chaves e a igualdade entre seu conjunto e o produto
-cartesiano das execuções declaradas (de 1 a NENERG), dos três terminais e das
-fases A/B/C estabelecem a completude antes da limpeza. As declarações nos
-arquivos de origem são lidas independentemente da contagem de linhas extraídas.
-Chaves duplicadas ou incompletas bloqueiam a análise, em vez de alterar
-silenciosamente a unidade amostral.
-
-Os instantes de ocorrência devem pertencer ao intervalo fechado $[0,0.3]$~s,
-conforme declarado na reprodução do cartão de parâmetros diversos no LIS e
-confirmado em cada arquivo de entrada ATP correspondente. Trata-se de uma
-verificação de consistência com a janela de simulação, e não de uma
-classificação física. Medições não finitas ou instantes fora desse intervalo
-são excluídos, preservando-se a identificação de origem, os valores originais e
-o motivo da exclusão. Valores extremos finitos de tensão são preservados.
-Seleções vazias após a limpeza bloqueiam a análise. Nesta etapa, não se aplica
-nenhum critério de corte baseado no instante de chaveamento ou na amplitude
-estatística.
-
-Todas as 204300 observações eram únicas, estavam completas e foram mantidas
-inalteradas: 102150 por cenário, sem exclusões. Todos os 60 pontos de
-verificação de tensão e tempo transcritos de forma independente coincidiram.
-Os instantes observados variaram de 0.01870 a 0.09997~s. A independência da
-referência diz respeito ao método de extração; não implica a participação de
-um revisor humano independente nem uma auditoria numérica exaustiva.
-A introdução artificial de falhas no caso CRPI de 900 linhas bloqueou
-corretamente a análise diante de uma observação duplicada e de uma observação
-ausente. Um instante de 0.30001~s ou um valor de tensão NaN provocou, em cada
-teste, exatamente uma exclusão registrada, restando 899 linhas. Verificações
-adicionais especificadas manualmente abrangem os limites do intervalo,
-instantes negativos e ausentes, identificações alteradas e combinações
-incompletas de terminal e fase. Assim, a limpeza não altera a amostra real
-aceita; as exclusões artificiais servem apenas para validar as regras.
+\section{Reprodução da auditoria de integridade e limpeza}
 
 A aceitação desse escopo de apoio à validação da integridade dos dados foi
 registrada em \path{doc/data_cleaning_validation_report.md}. A reprodução utiliza
@@ -1175,62 +1313,7 @@ causas físicas dos extremos nem a completude de cenários fora da matriz de
 dez arquivos. Formatos ou convenções de janela temporal diferentes exigem
 nova validação.
 
-Portanto, essa tabela sustenta conclusões sobre a distribuição dos máximos de
-tensão, mas não representa as séries temporais nem a forma das ondas. Ela não
-permite, isoladamente, concluir sobre duração, frequência, taxa de variação ou
-conteúdo oscilatório do transitório. Tais conclusões exigiriam armazenar e
-analisar as formas de onda ou atributos temporais adicionais.
-
-Como consequência, as anomalias identificadas posteriormente descrevem
-comportamentos discrepantes dentro desse ambiente de simulação. A classificação
-estatística, isoladamente, não comprova que um ponto seja um erro numérico nem
-que corresponda a um evento físico real. Essa distinção requer a conferência do
-caso de origem, dos parâmetros de chaveamento e da coerência do resultado com
-os demais pontos e fases. O capítulo, portanto, define a origem e os limites
-dos dados, enquanto as etapas seguintes concentram a contribuição principal do
-trabalho: sua extração, organização e análise automatizada.
-
-%
-
-% % ----------------------------------------------------------
-% % Considerações Finais
-% % ----------------------------------------------------------
-% \chapter{Conclusão}
-
-% Escreva a sua conclusão do seu trabalho
-
-
-% ----------------------------------------------------------
-% ELEMENTOS PÓS-TEXTUAIS
-% ----------------------------------------------------------
-\postextual
-% ----------------------------------------------------------
-
-% ----------------------------------------------------------
-% Referências bibliográficas
-% ----------------------------------------------------------
-\bibliography{bibliografia}
-% ---
-
-
-% % ----------------------------------------------------------
-% % Apêndices
-% % ----------------------------------------------------------
-
-% % ---
-% % Inicia os apêndices
-% % ---
-% \begin{apendicesenv}
-	
-% 	% Imprime uma página indicando o início dos apêndices
-% 	\partapendices
-	
-% % ----------------------------------------------------------
-% \chapter{Exemplo}
-% % ----------------------------------------------------------
-	
-% \end{apendicesenv}
-% % ---
+\end{apendicesenv}
 
 % % ----------------------------------------------------------
 % % Anexos

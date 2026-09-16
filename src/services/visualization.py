@@ -335,6 +335,195 @@ def plot_pdf_overlay(
     return fig, ax
 
 
+_CLUSTER_PALETTE: list[str] = [
+    "#2196F3",  # blue
+    "#4CAF50",  # green
+    "#FF9800",  # orange
+    "#9C27B0",  # purple
+    "#F44336",  # red
+    "#00BCD4",  # cyan
+    "#8BC34A",  # light green
+    "#FFC107",  # amber
+]
+
+_NOISE_COLOR = "#9E9E9E"
+
+
+def _cluster_color(label: int) -> str:
+    """Return a consistent hex colour for a numeric cluster *label*."""
+    return _CLUSTER_PALETTE[label % len(_CLUSTER_PALETTE)]
+
+
+def plot_kmeans_clusters(
+    df: pl.DataFrame,
+    ax: Axes | None = None,
+    terminal_col: str = "terminal",
+    value_col: str = "value_pu",
+    cluster_col: str = "kmeans_cluster",
+    terminal_distances: dict[str, float] | None = None,
+    jitter_width: float = 0.01,
+    alpha: float = 0.5,
+    marker_size: float = 18.0,
+    figsize: tuple[float, float] = (10, 6),
+) -> tuple[Figure, Axes]:
+    """Plot overvoltage vs line position coloured by K-Means cluster label.
+
+    Unlike :func:`plot_overvoltage_scatter`, points are coloured by their
+    K-Means cluster label rather than by terminal, so cluster boundaries
+    across terminals become visible.
+
+    Returns:
+        A ``(figure, axes)`` tuple.  If *ax* is provided, the same figure that
+        owns it is returned.
+    """
+    distances = terminal_distances or TERMINAL_DISTANCES
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        raw_fig = ax.get_figure()
+        if raw_fig is None or not isinstance(raw_fig, Figure):
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            fig = raw_fig
+
+    terminals: Sequence[str] = df[terminal_col].unique().sort().to_list()
+    labels: Sequence[int] = (
+        df[cluster_col].unique().sort().to_list()
+        if cluster_col in df.columns
+        else []
+    )
+
+    for label in labels:
+        color = _cluster_color(int(label))
+        label_subset = df.filter(pl.col(cluster_col) == label)
+        for terminal in terminals:
+            subset = label_subset.filter(pl.col(terminal_col) == terminal)
+            if subset.is_empty():
+                continue
+            dist = distances.get(terminal, 0.0)
+            values = subset[value_col].to_numpy()
+            x_pos = dist + _jitter(len(values), jitter_width)
+            ax.scatter(
+                x_pos,
+                values,
+                color=color,
+                alpha=alpha,
+                s=marker_size,
+                edgecolors="none",
+                zorder=2,
+            )
+
+    handles = [
+        plt.Line2D(
+            [0],
+            [0],
+            marker="o",
+            linestyle="",
+            color=_cluster_color(int(label)),
+            label=f"Cluster {label}",
+        )
+        for label in labels
+    ]
+
+    ax.set_xlabel("Fractional line distance (p.u. of total length)")
+    ax.set_ylabel("Overvoltage (P.U.)")
+    ax.set_title("K-Means Clusters — Overvoltage vs. Line Position")
+    if handles:
+        ax.legend(handles=handles, title="K-Means cluster", fontsize=8)
+    ax.grid(visible=True, linestyle="--", alpha=0.4, zorder=1)
+    ax.set_xlim(-0.08, 1.08)
+    fig.tight_layout()
+
+    return fig, ax
+
+
+def plot_dbscan_clusters(
+    df: pl.DataFrame,
+    ax: Axes | None = None,
+    terminal_col: str = "terminal",
+    value_col: str = "value_pu",
+    cluster_col: str = "dbscan_cluster",
+    terminal_distances: dict[str, float] | None = None,
+    jitter_width: float = 0.01,
+    alpha: float = 0.5,
+    marker_size: float = 18.0,
+    figsize: tuple[float, float] = (10, 6),
+) -> tuple[Figure, Axes]:
+    """Plot overvoltage vs line position coloured by DBSCAN cluster label.
+
+    Points labelled ``-1`` (candidate noise / numerical outliers) are drawn
+    in grey with an ``x`` marker; every other cluster label gets its own
+    colour, independent of terminal.
+
+    Returns:
+        A ``(figure, axes)`` tuple.  If *ax* is provided, the same figure that
+        owns it is returned.
+    """
+    distances = terminal_distances or TERMINAL_DISTANCES
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        raw_fig = ax.get_figure()
+        if raw_fig is None or not isinstance(raw_fig, Figure):
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            fig = raw_fig
+
+    terminals: Sequence[str] = df[terminal_col].unique().sort().to_list()
+    labels: Sequence[int] = (
+        df[cluster_col].unique().sort().to_list()
+        if cluster_col in df.columns
+        else []
+    )
+
+    handles: list[plt.Line2D] = []
+    for label in labels:
+        is_noise = label == -1
+        color = _NOISE_COLOR if is_noise else _cluster_color(int(label))
+        label_subset = df.filter(pl.col(cluster_col) == label)
+        for terminal in terminals:
+            subset = label_subset.filter(pl.col(terminal_col) == terminal)
+            if subset.is_empty():
+                continue
+            dist = distances.get(terminal, 0.0)
+            values = subset[value_col].to_numpy()
+            x_pos = dist + _jitter(len(values), jitter_width)
+            ax.scatter(
+                x_pos,
+                values,
+                color=color,
+                alpha=0.75 if is_noise else alpha,
+                s=marker_size * 1.8 if is_noise else marker_size,
+                marker=MarkerStyle("x") if is_noise else MarkerStyle("o"),
+                linewidths=1.2 if is_noise else 0.0,
+                edgecolors="none" if not is_noise else None,
+                zorder=3 if is_noise else 2,
+            )
+        handles.append(
+            plt.Line2D(
+                [0],
+                [0],
+                marker="x" if is_noise else "o",
+                linestyle="",
+                color=color,
+                label="Noise (-1)" if is_noise else f"Cluster {label}",
+            )
+        )
+
+    ax.set_xlabel("Fractional line distance (p.u. of total length)")
+    ax.set_ylabel("Overvoltage (P.U.)")
+    ax.set_title("DBSCAN Clusters — Overvoltage vs. Line Position")
+    if handles:
+        ax.legend(handles=handles, title="DBSCAN cluster", fontsize=8)
+    ax.grid(visible=True, linestyle="--", alpha=0.4, zorder=1)
+    ax.set_xlim(-0.08, 1.08)
+    fig.tight_layout()
+
+    return fig, ax
+
+
 def plot_combined(
     df: pl.DataFrame,
     terminal_col: str = "terminal",
