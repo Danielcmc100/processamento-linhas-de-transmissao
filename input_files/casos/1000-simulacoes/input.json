@@ -1,0 +1,22 @@
+{
+    "input_path": "input_files/casos/1000-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF",
+    "encoding": "iso-8859-1",
+    "base_voltage": 112677.0,
+    "terminals": [
+        "T_MAN",
+        "1_2LT",
+        "T_OPO"
+    ],
+    "phase_policy": "A",
+    "dbscan": {
+        "eps": 3.0,
+        "min_samples": 2
+    },
+    "kmeans": {
+        "n_clusters": 2,
+        "random_state": 42
+    },
+    "threshold": 2.3,
+    "output_dir": "input_files/casos/1000-simulacoes/resultados",
+    "overwrite": false
+}

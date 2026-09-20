@@ -1,0 +1,44 @@
+{
+  "artifacts": [
+    "raw_observations.csv",
+    "annotated_observations.csv",
+    "summary.csv",
+    "configuration.json",
+    "metadata.json",
+    "combined.png",
+    "exceedance.png",
+    "overvoltage_histogram.png",
+    "switching_time.png",
+    "kmeans_clusters.png",
+    "dbscan_clusters.png"
+  ],
+  "counts": {
+    "annotated_observations": 3000,
+    "input_files": 1,
+    "raw_observations": 9000,
+    "summary_rows": 3,
+    "validation_issues": 0
+  },
+  "inputs": [
+    {
+      "path": "case.lis",
+      "sha256": "d4e0a28fb48fff28ec6c18c43d17e5d9242ab7c6207264866e3625632431d8df"
+    }
+  ],
+  "runtime": {
+    "generated_at_utc": "2026-09-16T17:48:53.387808+00:00"
+  },
+  "software": {
+    "matplotlib": "3.10.8",
+    "numpy": "2.4.2",
+    "polars": "1.38.1",
+    "pydantic": "2.12.5",
+    "python": "3.13.9",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.1"
+  },
+  "validation": {
+    "issues": [],
+    "status": "valid"
+  }
+}
