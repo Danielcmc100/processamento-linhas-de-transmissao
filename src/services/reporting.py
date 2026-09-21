@@ -14,6 +14,9 @@ from src.services.pipeline import PipelineResult
 
 ARTIFACT_NAMES = (
     "raw_observations.csv",
+    "validated_observations.csv",
+    "statistical_evidence.csv",
+    "distribution_adequacy.csv",
     "annotated_observations.csv",
     "summary.csv",
     "configuration.json",
@@ -42,7 +45,9 @@ def write_result_artifacts(
 
     Raises:
         FileExistsError: If a known artifact exists and overwrite is false.
+        ValueError: If result evidence uses an incomplete or stale schema.
     """
+    _validate_result_schema(config, result)
     targets = tuple(config.output_dir / name for name in ARTIFACT_NAMES)
     conflicts = [path for path in targets if path.exists()]
     if conflicts and not config.overwrite:
@@ -53,6 +58,15 @@ def write_result_artifacts(
     config.output_dir.mkdir(parents=True, exist_ok=True)
     result.raw_observations.write_csv(
         config.output_dir / "raw_observations.csv"
+    )
+    result.validated_observations.write_csv(
+        config.output_dir / "validated_observations.csv"
+    )
+    result.statistical_evidence.write_csv(
+        config.output_dir / "statistical_evidence.csv"
+    )
+    result.distribution_adequacy.write_csv(
+        config.output_dir / "distribution_adequacy.csv"
     )
     result.annotated_observations.write_csv(
         config.output_dir / "annotated_observations.csv"
@@ -89,12 +103,19 @@ def _build_metadata(
 ) -> dict[str, Any]:
     input_files = sorted(config.input_path.rglob("*.lis"))
     return {
+        "schema_version": config.schema_version,
+        "generator_version": config.generator_version,
         "artifacts": list(ARTIFACT_NAMES),
         "counts": {
             "annotated_observations": (result.annotated_observations.height),
+            "distribution_adequacy_rows": (
+                result.distribution_adequacy.height
+            ),
             "input_files": len(input_files),
             "raw_observations": result.raw_observations.height,
+            "statistical_evidence_rows": result.statistical_evidence.height,
             "summary_rows": result.summary.height,
+            "validated_observations": result.validated_observations.height,
             "validation_issues": len(result.validation.issues),
         },
         "inputs": [
@@ -133,6 +154,84 @@ def _build_metadata(
             "scipy": version("scipy"),
         },
     }
+
+
+def _validate_result_schema(
+    config: AnalysisConfig,
+    result: PipelineResult,
+) -> None:
+    """Fail closed before writing stale or internally inconsistent evidence."""
+    identity_columns = (
+        "source_file",
+        "simulation",
+        "terminal",
+        "phase",
+        "source_value",
+        "value_pu",
+        "time",
+        "scenario",
+        "sample_size",
+        "source_lineage",
+        "base_voltage",
+        "event_definition",
+    )
+    for label, table in (
+        ("raw_observations", result.raw_observations),
+        ("validated_observations", result.validated_observations),
+        ("annotated_observations", result.annotated_observations),
+    ):
+        missing = [
+            column for column in identity_columns if column not in table
+        ]
+        if missing:
+            fields = ", ".join(missing)
+            raise ValueError(f"{label} uses stale schema; missing: {fields}.")
+
+    statistical_columns = (
+        "scenario",
+        "sample_size",
+        "terminal",
+        "phase",
+        "occurrence_count",
+        "denominator",
+        "empirical_probability",
+        "confidence_interval_lower",
+        "confidence_interval_upper",
+        "validation_status",
+    )
+    adequacy_columns = (
+        "scenario",
+        "sample_size",
+        "terminal",
+        "phase",
+        "decision",
+        "applicability",
+        "gaussian_inference_status",
+    )
+    for label, table, required in (
+        (
+            "statistical_evidence",
+            result.statistical_evidence,
+            statistical_columns,
+        ),
+        (
+            "distribution_adequacy",
+            result.distribution_adequacy,
+            adequacy_columns,
+        ),
+    ):
+        missing = [column for column in required if column not in table]
+        if missing:
+            fields = ", ".join(missing)
+            raise ValueError(f"{label} uses stale schema; missing: {fields}.")
+
+    denominator = sum(result.statistical_evidence["denominator"].to_list())
+    if denominator != result.validated_observations.height:
+        raise ValueError(
+            "Primary statistics denominator must equal validated row count."
+        )
+    if config.schema_version != "1.0.0":
+        raise ValueError("Unsupported result schema version.")
 
 
 def _sha256(path: Path) -> str:

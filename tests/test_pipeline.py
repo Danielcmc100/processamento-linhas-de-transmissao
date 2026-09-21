@@ -28,8 +28,14 @@ def _config(tmp_path: Path) -> AnalysisConfig:
     shutil.copy2(FIXTURES / "representative.lis", input_path)
     return AnalysisConfig.model_validate({
         "input_path": input_path,
+        "schema_version": "1.0.0",
+        "generator_version": "1.0.0",
         "encoding": "iso-8859-1",
-        "base_voltage": 100_000.0,
+        "base_voltage": 112_677.0,
+        "scenario": "SRPI",
+        "sample_size": 2,
+        "source_lineage": "representative-srpi-2",
+        "event_definition": "absolute_phase_to_ground_maximum",
         "terminals": ["T_MAN", "T_OPO"],
         "phase_policy": "A",
         "dbscan": {"eps": 3.0, "min_samples": 2},
@@ -49,23 +55,50 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     assert result.validation.status is ValidationStatus.VALID
     assert result.validation.cleaned.height == 4
     assert result.annotated_observations.height == 4
-    assert result.annotated_observations.columns == [
+    assert result.validated_observations.equals(result.validation.cleaned)
+    assert result.annotated_observations.select([
         "source_file",
         "simulation",
         "terminal",
         "phase",
         "value_pu",
         "time",
-        "dbscan_cluster",
-        "kmeans_cluster",
+        "source_value",
+        "scenario",
+        "sample_size",
+        "source_lineage",
+        "base_voltage",
+        "event_definition",
+    ]).equals(result.validated_observations)
+    assert {
+        "score",
+        "threshold",
+        "flag",
+        "applicability",
+        "dbscan_score",
+        "dbscan_threshold",
+        "dbscan_flag",
+        "dbscan_applicability",
+        "modified_mad_score",
+        "mad_flag",
+        "mad_applicability",
         "sigma_flag",
+        "sigma_applicability",
         "method_agreement",
+        "method_disagreement",
         "anomaly_candidate",
         "anomaly_reasons",
-    ]
+    }.issubset(result.annotated_observations.columns)
     assert result.summary.height == 2
     assert set(result.summary["terminal"]) == {"T_MAN", "T_OPO"}
     assert set(result.summary["validation_status"]) == {"valid"}
+    assert result.statistical_evidence.height == 2
+    assert result.statistical_evidence["denominator"].sum() == 4
+    assert result.distribution_adequacy.height == 2
+    assert set(result.distribution_adequacy["decision"]) == {"undersized"}
+    assert result.annotated_observations.height == (
+        result.statistical_evidence["denominator"].sum()
+    )
     assert isinstance(result.figures.combined, Figure)
     assert isinstance(result.figures.exceedance, Figure)
     assert isinstance(result.figures.overvoltage_histogram, Figure)
@@ -113,8 +146,11 @@ def test_main_loads_json_config_and_reports_counts(
     )
     assert {path.name for path in config.output_dir.iterdir()} == {
         "raw_observations.csv",
+        "validated_observations.csv",
         "annotated_observations.csv",
         "summary.csv",
+        "statistical_evidence.csv",
+        "distribution_adequacy.csv",
         "configuration.json",
         "metadata.json",
         "combined.png",

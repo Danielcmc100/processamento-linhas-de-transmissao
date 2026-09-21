@@ -2,20 +2,22 @@
 
 from dataclasses import dataclass
 
-import polars as pl
 from matplotlib.figure import Figure
+from polars import Boolean, DataFrame, col, concat_str, lit, when
 
-from src.services.clustering import (
-    cluster_kmeans,
-    detect_outliers_dbscan_per_terminal,
-    filter_valid_events,
-)
 from src.services.comparison import compare_anomaly_methods
 from src.services.config import AnalysisConfig
+from src.services.dbscan_evidence import evaluate_dbscan_evidence
+from src.services.distribution_adequacy import (
+    evaluate_distribution_adequacy,
+    evaluate_mad_evidence,
+)
+from src.services.kmeans_evidence import evaluate_kmeans_evidence
 from src.services.preprocessing import (
     load_directory,
     load_switching_times_directory,
 )
+from src.services.statistical_evidence import summarize_statistical_evidence
 from src.services.statistics import (
     GaussianFitResult,
     fit_gaussian,
@@ -52,10 +54,13 @@ class PipelineFigures:
 class PipelineResult:
     """In-memory evidence produced by an analysis run."""
 
-    raw_observations: pl.DataFrame
+    raw_observations: DataFrame
     validation: ValidationResult
-    annotated_observations: pl.DataFrame
-    summary: pl.DataFrame
+    validated_observations: DataFrame
+    annotated_observations: DataFrame
+    summary: DataFrame
+    statistical_evidence: DataFrame
+    distribution_adequacy: DataFrame
     figures: PipelineFigures
 
 
@@ -75,6 +80,10 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         base_voltage=config.base_voltage,
         terminal_names=set(config.terminals),
         encoding=config.encoding,
+        scenario=config.scenario,
+        sample_size=config.sample_size,
+        source_lineage=config.source_lineage,
+        event_definition=config.event_definition,
     )
     switching_times = load_switching_times_directory(
         directory=config.input_path,
@@ -99,51 +108,62 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         raise ValueError(message)
 
     analyzed = validation.cleaned
-    if config.kmeans.n_clusters > analyzed.height:
-        message = (
-            "K-Means n_clusters must not exceed the analyzed row count "
-            f"({analyzed.height})."
-        )
-        raise ValueError(message)
-
-    dbscan_labelled = detect_outliers_dbscan_per_terminal(
+    statistical_evidence = summarize_statistical_evidence(
         analyzed,
-        eps=config.dbscan.eps,
-        min_samples=config.dbscan.min_samples,
-    )
-    clustered = cluster_kmeans(
-        dbscan_labelled,
-        n_clusters=config.kmeans.n_clusters,
-        random_state=config.kmeans.random_state,
-    )
-    valid_events = filter_valid_events(clustered)
-    summary = summarize_statistics(
-        valid_events,
         threshold=config.threshold,
     )
-    annotated = _add_sigma_flags(clustered, summary)
-    compared = compare_anomaly_methods(annotated)
-    fits = _build_plot_fits(valid_events, summary)
+    distribution_adequacy = evaluate_distribution_adequacy(
+        analyzed,
+        threshold=config.threshold,
+    )
+    summary = summarize_statistics(analyzed, threshold=config.threshold)
+
+    with_sigma = _add_sigma_evidence(analyzed, distribution_adequacy)
+    with_mad = evaluate_mad_evidence(
+        with_sigma,
+        threshold=config.mad_threshold,
+    )
+    with_kmeans = evaluate_kmeans_evidence(
+        with_mad,
+        n_clusters=config.kmeans.n_clusters,
+        random_state=config.kmeans.random_state,
+        group_columns=config.grouping_policy,
+    )
+    with_dbscan = evaluate_dbscan_evidence(
+        with_kmeans,
+        min_samples=config.dbscan.min_samples,
+        effective_eps=config.dbscan.eps,
+        group_columns=config.grouping_policy,
+    )
+    compared = compare_anomaly_methods(with_dbscan)
+    fits = _build_plot_fits(analyzed, summary)
 
     combined, _ = plot_combined(
         compared,
-        cluster_col="dbscan_cluster",
+        cluster_col=None,
     )
     exceedance, _ = plot_exceedance_curve(
         df=compared,
         fits=fits,
-        cluster_col="dbscan_cluster",
+        cluster_col=None,
     )
     overvoltage_histogram, _ = plot_overvoltage_histogram(compared)
     switching_time, _ = plot_switching_time_curve(switching_times)
-    kmeans_clusters, _ = plot_kmeans_clusters(compared)
-    dbscan_clusters, _ = plot_dbscan_clusters(compared)
+    kmeans_clusters, _ = plot_kmeans_clusters(
+        compared.filter(col("kmeans_cluster").is_not_null())
+    )
+    dbscan_clusters, _ = plot_dbscan_clusters(
+        compared.filter(col("dbscan_cluster").is_not_null())
+    )
 
     return PipelineResult(
         raw_observations=raw_observations,
         validation=validation,
+        validated_observations=analyzed,
         annotated_observations=compared,
         summary=summary,
+        statistical_evidence=statistical_evidence,
+        distribution_adequacy=distribution_adequacy,
         figures=PipelineFigures(
             combined=combined,
             exceedance=exceedance,
@@ -155,42 +175,59 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
     )
 
 
-def _add_sigma_flags(
-    observations: pl.DataFrame,
-    summary: pl.DataFrame,
-) -> pl.DataFrame:
-    thresholds = summary.select(
-        "terminal",
-        "phase",
-        "sigma_3_threshold",
+def _add_sigma_evidence(
+    observations: DataFrame,
+    adequacy: DataFrame,
+) -> DataFrame:
+    """Append adequacy-qualified three-sigma evidence by full scope."""
+    scope = ["scenario", "sample_size", "terminal", "phase"]
+    thresholds = adequacy.select(
+        *scope,
+        (col("fitted_mean") + 3.0 * col("fitted_standard_deviation")).alias(
+            "sigma_3_threshold"
+        ),
+        col("decision").alias("sigma_decision"),
     )
-    return (
-        observations
-        .join(
-            thresholds,
-            on=["terminal", "phase"],
-            how="left",
-            maintain_order="left",
+    joined = observations.join(
+        thresholds,
+        on=scope,
+        how="left",
+        maintain_order="left",
+    ).with_columns(
+        when(col("sigma_decision") == "not_rejected")
+        .then(lit("applicable"))
+        .otherwise(lit("non_applicable"))
+        .alias("sigma_applicability")
+    )
+    return joined.with_columns(
+        when(col("sigma_applicability") == "applicable")
+        .then(col("value_pu") > col("sigma_3_threshold"))
+        .otherwise(lit(None, dtype=Boolean))
+        .alias("sigma_flag"),
+        when(col("sigma_applicability") == "non_applicable")
+        .then(
+            concat_str(
+                lit("Gaussian adequacy status: "),
+                col("sigma_decision"),
+                lit("."),
+            )
         )
-        .with_columns(
-            (
-                pl.col("sigma_3_threshold").is_not_null()
-                & (pl.col("value_pu") > pl.col("sigma_3_threshold"))
-            ).alias("sigma_flag")
-        )
-        .drop("sigma_3_threshold")
+        .when(col("value_pu") > col("sigma_3_threshold"))
+        .then(lit("Value exceeds qualified three-sigma threshold."))
+        .otherwise(lit(None))
+        .alias("sigma_reason"),
     )
 
 
 def _build_plot_fits(
-    observations: pl.DataFrame,
-    summary: pl.DataFrame,
+    observations: DataFrame,
+    summary: DataFrame,
 ) -> dict[str, GaussianFitResult]:
     valid_terminals = set(
-        summary.filter(pl.col("validation_status") == "valid")["terminal"]
+        summary.filter(col("validation_status") == "valid")["terminal"]
     )
     fits: dict[str, GaussianFitResult] = {}
     for terminal in valid_terminals:
-        subset = observations.filter(pl.col("terminal") == terminal)
+        subset = observations.filter(col("terminal") == terminal)
         fits[terminal] = fit_gaussian(subset)
     return fits

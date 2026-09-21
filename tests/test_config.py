@@ -16,8 +16,14 @@ from src.services.config import (
 def _config_values(input_path: Path, output_dir: Path) -> dict[str, Any]:
     return {
         "input_path": input_path,
+        "schema_version": "1.0.0",
+        "generator_version": "1.0.0",
         "encoding": "iso-8859-1",
-        "base_voltage": 408_248.0,
+        "base_voltage": 112_677.0,
+        "scenario": "SRPI",
+        "sample_size": 2,
+        "source_lineage": "representative-srpi-2",
+        "event_definition": "absolute_phase_to_ground_maximum",
         "terminals": ("T_MAN", "T_OPO"),
         "phase_policy": "A",
         "dbscan": {"eps": 0.5, "min_samples": 5},
@@ -41,8 +47,14 @@ def test_analysis_config_is_json_serializable(tmp_path: Path) -> None:
     )
     assert config.model_dump(mode="json") == {
         "input_path": str(tmp_path),
+        "schema_version": "1.0.0",
+        "generator_version": "1.0.0",
         "encoding": "iso-8859-1",
-        "base_voltage": 408_248.0,
+        "base_voltage": 112_677.0,
+        "scenario": "SRPI",
+        "sample_size": 2,
+        "source_lineage": "representative-srpi-2",
+        "event_definition": "absolute_phase_to_ground_maximum",
         "terminals": ["T_MAN", "T_OPO"],
         "phase_policy": "A",
         "dbscan": {"eps": 0.5, "min_samples": 5},
@@ -50,6 +62,17 @@ def test_analysis_config_is_json_serializable(tmp_path: Path) -> None:
         "threshold": 2.3,
         "output_dir": str(output_dir),
         "overwrite": False,
+        "grouping_policy": [
+            "scenario",
+            "source_lineage",
+            "terminal",
+            "phase",
+        ],
+        "mad_threshold": 3.5,
+        "confidence_level": 0.95,
+        "adequacy_significance_level": 0.05,
+        "kmeans_threshold_percentile": 99.0,
+        "dbscan_threshold_percentile": 95.0,
     }
     assert AnalysisConfig.model_validate_json(config.model_dump_json())
 
@@ -180,3 +203,27 @@ def test_analysis_config_accepts_existing_output_with_policy(
     values = _config_values(tmp_path, output_dir)
 
     assert AnalysisConfig.model_validate(values).overwrite is False
+
+
+def test_analysis_config_rejects_stale_schema_and_changed_policies(
+    tmp_path: Path,
+) -> None:
+    values = _config_values(tmp_path, tmp_path / "results")
+    values["schema_version"] = "0.9.0"
+    with pytest.raises(ValidationError):
+        AnalysisConfig.model_validate(values)
+
+    values = _config_values(tmp_path, tmp_path / "results")
+    values["mad_threshold"] = 4.0
+    with pytest.raises(ValidationError):
+        AnalysisConfig.model_validate(values)
+
+
+def test_analysis_config_requires_complete_experiment_identity(
+    tmp_path: Path,
+) -> None:
+    for field in ("scenario", "sample_size", "source_lineage"):
+        values = _config_values(tmp_path, tmp_path / "results")
+        del values[field]
+        with pytest.raises(ValidationError):
+            AnalysisConfig.model_validate(values)

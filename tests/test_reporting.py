@@ -37,8 +37,14 @@ def _config(
     shutil.copy2(FIXTURES / "representative.lis", input_path)
     return AnalysisConfig.model_validate({
         "input_path": input_path,
+        "schema_version": "1.0.0",
+        "generator_version": "1.0.0",
         "encoding": "iso-8859-1",
-        "base_voltage": 100_000.0,
+        "base_voltage": 112_677.0,
+        "scenario": "SRPI",
+        "sample_size": 2,
+        "source_lineage": "representative-srpi-2",
+        "event_definition": "absolute_phase_to_ground_maximum",
         "terminals": ["T_MAN", "T_OPO"],
         "phase_policy": "A",
         "dbscan": {"eps": 3.0, "min_samples": 2},
@@ -66,11 +72,23 @@ def test_writer_saves_complete_rerunnable_artifact_package(
         == result.raw_observations.columns
     )
     assert (
+        pl.read_csv(config.output_dir / "validated_observations.csv").columns
+        == result.validated_observations.columns
+    )
+    assert (
         pl.read_csv(config.output_dir / "annotated_observations.csv").columns
         == result.annotated_observations.columns
     )
     assert pl.read_csv(config.output_dir / "summary.csv").columns == (
         result.summary.columns
+    )
+    assert (
+        pl.read_csv(config.output_dir / "statistical_evidence.csv").columns
+        == result.statistical_evidence.columns
+    )
+    assert (
+        pl.read_csv(config.output_dir / "distribution_adequacy.csv").columns
+        == result.distribution_adequacy.columns
     )
 
     saved_config_text = (config.output_dir / "configuration.json").read_text(
@@ -87,6 +105,9 @@ def test_writer_saves_complete_rerunnable_artifact_package(
     assert metadata["artifacts"] == list(ARTIFACT_NAMES)
     assert metadata["counts"] == {
         "annotated_observations": 4,
+        "validated_observations": 4,
+        "statistical_evidence_rows": 2,
+        "distribution_adequacy_rows": 2,
         "input_files": 1,
         "raw_observations": 12,
         "summary_rows": 2,
@@ -117,6 +138,8 @@ def test_writer_saves_complete_rerunnable_artifact_package(
         "scipy",
     }
     assert "physical_cause" not in metadata
+    assert metadata["schema_version"] == "1.0.0"
+    assert metadata["generator_version"] == "1.0.0"
     assert (config.output_dir / "combined.png").stat().st_size > 0
     assert (config.output_dir / "exceedance.png").stat().st_size > 0
     assert (config.output_dir / "overvoltage_histogram.png").stat().st_size > 0
@@ -145,8 +168,11 @@ def test_writer_produces_deterministic_tables_and_configuration(
 
     for name in (
         "raw_observations.csv",
+        "validated_observations.csv",
         "annotated_observations.csv",
         "summary.csv",
+        "statistical_evidence.csv",
+        "distribution_adequacy.csv",
     ):
         assert (first_config.output_dir / name).read_bytes() == (
             second_config.output_dir / name
@@ -226,4 +252,24 @@ def test_metadata_retains_excluded_measurement(tmp_path: Path) -> None:
     assert issue["row_index"] == 0
     assert issue["observation"]["time"] == -0.1
     assert issue["observation"]["source_file"] == "representative.lis"
+    plt.close("all")
+
+
+def test_writer_rejects_stale_result_schema_before_writing(
+    tmp_path: Path,
+) -> None:
+    """Fail closed when complete identity is absent from source evidence."""
+    from dataclasses import replace
+
+    config = _config(tmp_path)
+    result = run_pipeline(config)
+    stale = result.validated_observations.drop("source_lineage")
+
+    with pytest.raises(ValueError, match="source_lineage"):
+        write_result_artifacts(
+            config,
+            replace(result, validated_observations=stale),
+        )
+
+    assert list(config.output_dir.iterdir()) == []
     plt.close("all")
