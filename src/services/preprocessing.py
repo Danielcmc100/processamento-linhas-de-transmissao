@@ -29,6 +29,10 @@ def extract_maxima_dataframe(
     base_voltage: float,
     terminal_names: set[str],
     source_file: str = "",
+    scenario: str = "",
+    sample_size: int | None = None,
+    source_lineage: str = "",
+    event_definition: str = "absolute_phase_to_ground_maximum",
 ) -> DataFrame[MaximaObservation]:
     """Extract and normalize phase-to-ground maxima from a parsed LIS result.
 
@@ -44,11 +48,18 @@ def extract_maxima_dataframe(
             each variable name is the phase (A/B/C) and is stripped
             before comparison.
         source_file: Source identifier to preserve with each observation.
+        scenario: Experiment scenario identifier.
+        sample_size: Declared experiment size. Defaults to parsed total.
+        source_lineage: Stable source lineage identifier. Defaults to source
+            file.
+        event_definition: Definition used to select each voltage event.
 
     Returns:
         A Polars DataFrame with columns:
         ``source_file``, ``simulation``, ``terminal``, ``phase``,
-        ``value_pu``, ``time``.
+        ``value_pu``, ``time``, ``source_value``, ``scenario``,
+        ``sample_size``, ``source_lineage``, ``base_voltage``, and
+        ``event_definition``.
     """
     phase_ground_mask = [
         _is_phase_to_ground(h) for h in result.variable_headers
@@ -72,6 +83,16 @@ def extract_maxima_dataframe(
                 "phase": phase,
                 "value_pu": abs(m.value) / base_voltage,
                 "time": m.time,
+                "source_value": m.value,
+                "scenario": scenario,
+                "sample_size": (
+                    result.total_simulations
+                    if sample_size is None
+                    else sample_size
+                ),
+                "source_lineage": source_lineage or source_file,
+                "base_voltage": base_voltage,
+                "event_definition": event_definition,
             })
 
     if not rows:
@@ -87,6 +108,10 @@ def load_directory(
     base_voltage: float,
     terminal_names: set[str],
     encoding: str = "iso-8859-1",
+    scenario: str = "",
+    sample_size: int | None = None,
+    source_lineage: str = "",
+    event_definition: str = "absolute_phase_to_ground_maximum",
 ) -> DataFrame[MaximaObservation]:
     """Parse all .lis files in *directory* and aggregate into one DataFrame.
 
@@ -104,6 +129,10 @@ def load_directory(
             base_voltage=base_voltage,
             terminal_names=terminal_names,
             source_file=str(lis_file.relative_to(directory)),
+            scenario=scenario,
+            sample_size=sample_size,
+            source_lineage=source_lineage,
+            event_definition=event_definition,
         )
         if not df.is_empty():
             frames.append(df)

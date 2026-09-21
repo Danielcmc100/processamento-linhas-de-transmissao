@@ -95,6 +95,34 @@ def test_extract_maxima_dataframe_normalizes_pu():
     assert (df["value_pu"] >= 0).all()
 
 
+def test_extract_maxima_dataframe_preserves_experiment_identity():
+    result = _make_result()
+
+    frame = extract_maxima_dataframe(
+        result=result,
+        base_voltage=BASE_VOLTAGE,
+        terminal_names={"T_MAN"},
+        source_file="source/case.lis",
+        scenario="SRPI",
+        sample_size=50,
+        source_lineage="srpi-50",
+        event_definition="absolute phase-to-ground maximum",
+    ).sort("phase")
+
+    assert frame["source_value"].to_list() == [
+        600_000.0,
+        -550_000.0,
+        500_000.0,
+    ]
+    assert frame["scenario"].to_list() == ["SRPI"] * 3
+    assert frame["sample_size"].to_list() == [50] * 3
+    assert frame["source_lineage"].to_list() == ["srpi-50"] * 3
+    assert frame["base_voltage"].to_list() == [BASE_VOLTAGE] * 3
+    assert frame["event_definition"].to_list() == [
+        "absolute phase-to-ground maximum"
+    ] * 3
+
+
 def test_extract_maxima_dataframe_terminal_filter():
     result = _make_result()
     df = extract_maxima_dataframe(
@@ -119,8 +147,22 @@ def test_load_directory_normalizes_representative_fixture():
         "phase",
         "value_pu",
         "time",
+        "source_value",
+        "scenario",
+        "sample_size",
+        "source_lineage",
+        "base_voltage",
+        "event_definition",
     ]
-    assert frame.to_dicts() == [
+    legacy_columns = [
+        "source_file",
+        "simulation",
+        "terminal",
+        "phase",
+        "value_pu",
+        "time",
+    ]
+    assert frame.select(legacy_columns).to_dicts() == [
         {
             "source_file": "representative.lis",
             "simulation": 1,
@@ -235,6 +277,12 @@ def test_load_directory_with_only_empty_input_returns_declared_schema():
         "phase",
         "value_pu",
         "time",
+        "source_value",
+        "scenario",
+        "sample_size",
+        "source_lineage",
+        "base_voltage",
+        "event_definition",
     ]
 
 

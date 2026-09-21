@@ -13,6 +13,12 @@ class MaximaObservation(Model):
     phase: str
     value_pu: float
     time: float
+    source_value: float
+    scenario: str
+    sample_size: int = Field(dtype=Int64)
+    source_lineage: str
+    base_voltage: float
+    event_definition: str
 
 
 class SwitchingTimeObservation(Model):
