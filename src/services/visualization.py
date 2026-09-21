@@ -15,6 +15,7 @@ import numpy as np
 import polars as pl
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from matplotlib.lines import Line2D
 from matplotlib.markers import MarkerStyle
 from scipy import stats
 
@@ -415,7 +416,7 @@ def plot_kmeans_clusters(
             )
 
     handles = [
-        plt.Line2D(
+        Line2D(
             [0],
             [0],
             marker="o",
@@ -478,7 +479,7 @@ def plot_dbscan_clusters(
         else []
     )
 
-    handles: list[plt.Line2D] = []
+    handles: list[Line2D] = []
     for label in labels:
         is_noise = label == -1
         color = _NOISE_COLOR if is_noise else _cluster_color(int(label))
@@ -498,11 +499,11 @@ def plot_dbscan_clusters(
                 s=marker_size * 1.8 if is_noise else marker_size,
                 marker=MarkerStyle("x") if is_noise else MarkerStyle("o"),
                 linewidths=1.2 if is_noise else 0.0,
-                edgecolors="none" if not is_noise else None,
+                edgecolors=color if is_noise else "none",
                 zorder=3 if is_noise else 2,
             )
         handles.append(
-            plt.Line2D(
+            Line2D(
                 [0],
                 [0],
                 marker="x" if is_noise else "o",
