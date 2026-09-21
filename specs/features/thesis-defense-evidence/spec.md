@@ -105,6 +105,22 @@ Final evidence generation SHALL NOT begin until these gates pass:
 6. Final configurations write to new result directories and do not overwrite
    historical packages without preservation and provenance.
 
+## Manuscript language requirement
+
+All authored natural-language content inserted or changed in `doc/main.tex`
+SHALL be written in Brazilian Portuguese. This requirement overrides the
+repository-wide English documentation rule for that file.
+
+The requirement includes chapter and section prose, captions, table content,
+footnotes, appendices, generated figure text, and explanatory labels intended
+for inclusion in the manuscript. LaTeX commands, bibliography keys, paths,
+code identifiers, acronyms, and proper names that must retain their original
+technical form are not authored prose and SHALL remain unchanged.
+
+Review and generation workflows SHALL reject new or modified English prose in
+`doc/main.tex`. They SHALL NOT translate technical identifiers or source
+material whose original form is required for accuracy.
+
 ---
 
 ## User stories
@@ -499,6 +515,9 @@ clustering methodology as future work.
    selection, evidence fields, conclusion categories, and reviewer limits.
 9. WHEN software verification is described THEN manuscript SHALL separate
    code correctness from statistical and electrical validity.
+10. WHEN any manuscript prose, caption, table text, footnote, appendix text,
+    or generated figure label is inserted or changed THEN it SHALL be written
+    in Brazilian Portuguese.
 
 **Independent test:** Trace every methodology choice to configuration,
 versioned code, test, or predeclared review protocol before reading results.
@@ -721,8 +740,9 @@ explicit types, units, stable group keys, and version identifiers.
 | DEF-24 | Pass software and LaTeX quality gates | P1 | Pending |
 | DEF-25 | Compare robust statistical baselines | P2 | Pending |
 | DEF-26 | Add repeat-simulation numerical sensitivity evidence | P2 | Pending |
+| DEF-27 | Enforce Brazilian Portuguese for authored `main.tex` content | P1 | Pending |
 
-**Coverage:** 26 requirements; 0 mapped to design; 0 mapped to tasks.
+**Coverage:** 27 requirements; 0 mapped to design; 0 mapped to tasks.
 
 ## Success criteria
 
@@ -745,6 +765,9 @@ explicit types, units, stable group keys, and version identifiers.
 - [ ] Every conclusion maps to evidence, scope, limitation, and requirement.
 - [ ] `main.tex` contains no unresolved required-analysis TODO and compiles
   without new errors or unresolved references.
+- [ ] All authored content inserted or changed in `main.tex`, including text
+  embedded in generated manuscript figures, is written in Brazilian
+  Portuguese.
 - [ ] `task format`, `task lint`, `task typecheck`, and `task test` pass on the
   recorded final revision.
 - [ ] Manuscript makes no automatic insulation recommendation and no
@@ -768,4 +791,3 @@ Design phase must select and justify:
 
 These decisions must be recorded before final target-data results are used to
 select favorable parameters or acceptance thresholds.
-

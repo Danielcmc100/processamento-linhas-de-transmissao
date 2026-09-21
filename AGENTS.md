@@ -70,6 +70,13 @@ Para fundamentar o seu referencial teórico, recomendo buscar estas fontes:
 
 ## Idioma
 - **SEMPRE escreva documentações, comentários e docstrings em inglês**
+- **EXCEÇÃO OBRIGATÓRIA:** todo texto de autoria inserido ou alterado em
+  `doc/main.tex` deve ser escrito em português brasileiro. Esta regra
+  prevalece sobre a exigência geral de documentação em inglês para esse
+  arquivo.
+- Comandos LaTeX, chaves bibliográficas, caminhos, identificadores de código,
+  siglas e nomes próprios em idioma original não são considerados prosa de
+  autoria e devem preservar sua forma técnica.
 - Nomes de variáveis, funções e classes devem estar em inglês
 - Mensagens de commit e comentários de código em inglês
 
