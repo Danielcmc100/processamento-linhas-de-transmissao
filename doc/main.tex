@@ -1078,17 +1078,203 @@ reunidos no Apêndice~\ref{app:validation-records}. As verificações de softwar
 apoiam a reprodutibilidade, mas não substituem a validação elétrica nem
 estabelecem a causa física dos valores extremos.
 
-% TODO: Develop the applied statistical and probabilistic methodology.
-% TODO: Specify clustering features, parameters, and evaluation criteria.
-\section{Etapas previstas de análise dos dados}
+\section{Métodos de análise estatística e detecção de anomalias}
+\label{sec:analysis-methods}
 
-Após a validação da base, a proposta prevê análise exploratória, cálculo de
-medidas descritivas, análise probabilística e aplicação de K-Means e DBSCAN,
-conforme os objetivos e a fundamentação teórica. O detalhamento experimental
-dessas etapas, incluindo seleção de atributos, parâmetros dos algoritmos e
-critérios de comparação, permanece a ser desenvolvido. Os resultados
-apresentados a seguir limitam-se às validações de extração e
-pré-processamento já documentadas.
+\subsection{Escopo experimental e separação das evidências}
+
+A matriz final de análise compreende dez fontes: os cenários SRPI e CRPI,
+cada qual com 50, 100, 200, 1.000 e 10.000 simulações. Os cenários são
+analisados separadamente antes de qualquer comparação, pois representam
+definições distintas de chaveamento. Todas as fontes comparáveis devem usar a
+base de 112677~V, a mesma janela temporal e a mesma definição de evento.
+Configurações com base diferente ou sem procedência suficiente são excluídas
+da matriz comparável, com registro do motivo.
+
+A unidade de observação permanece o máximo escalar de tensão fase--terra de
+uma fase, em um terminal e em uma simulação. São considerados os terminais
+$T_{MAN}$, $1/2\,LT$ e $T_{OPO}$ e as fases A, B e C. Cada registro preserva
+cenário, tamanho da amostra, linhagem e arquivo de origem, resumo SHA-256,
+simulação, terminal, fase, valor máximo com sinal, valor em P.U., instante de
+ocorrência, base de tensão e definição do evento. A estatística primária é
+calculada sobre todas as observações que passaram pela validação de
+integridade; uma indicação analítica de anomalia não remove automaticamente o
+registro nem altera os denominadores.
+
+A validação é dividida em quatro camadas. A validade dos dados verifica
+extração, identidade, normalização e limpeza. A validade estatística examina
+medidas descritivas, probabilidades, incerteza e adequação de modelos. A
+validade dos detectores avalia o comportamento dos critérios diante de
+perturbações controladas e variações de parâmetros. Por fim, a validade
+elétrica trata da interpretação específica de cada caso. Evidência de uma
+camada não é usada como prova automática de outra: testes de software não
+demonstram adequação estatística, e concordância entre detectores não
+estabelece causa física ou numérica.
+
+\subsection{Estatística descritiva e probabilidade de excedência}
+
+Para cada combinação de cenário, tamanho da amostra, terminal e fase, são
+calculados número total e número válido de observações, média, desvio padrão
+amostral, mediana, primeiro e terceiro quartis, percentis 90, 95 e 99, mínimo
+e máximo. Valores nulos ou não finitos permanecem contabilizados como
+exclusões, mas não participam dos cálculos. O desvio padrão amostral utiliza
+um grau de liberdade; grupos sem observações válidas ou com apenas uma
+observação recebem estado de aplicabilidade explícito.
+
+A probabilidade empírica é o resultado primário. Para um limiar $v$, o evento
+é definido estritamente por $V_{pu}>v$; valores exatamente iguais ao limiar
+não são contados. O relatório preserva o operador, o limiar, o número de
+ocorrências, o denominador e a razão entre ambos. A incerteza da proporção é
+representada por um intervalo bilateral de Wilson com 95\% de confiança,
+inclusive quando nenhuma observação ou todas as observações excedem o limiar.
+Limiares fora da faixa observada produzem o resultado empírico de fronteira,
+sem extrapolação. Quando as tabelas de frequência ou de probabilidade do ATP
+estão disponíveis, suas contagens são reconciliadas com as observações
+diretas, respeitando o operador de fronteira e uma tolerância compatível com
+a precisão impressa.
+
+\subsection{Adequação gaussiana e referência robusta}
+
+O uso de uma distribuição gaussiana para os máximos de saída não decorre da
+distribuição configurada para os instantes de chaveamento. Em cada grupo, o
+ajuste registra tamanho amostral, média, desvio padrão amostral, exclusões e
+política de estimação. A adequação é examinada pelo teste de
+Anderson--Darling com nível de significância de 5\%, pelo gráfico quantil--
+quantil, pela assimetria, pelo excesso de curtose e pela diferença entre as
+probabilidades empírica e gaussiana nas caudas. Em amostras grandes, o teste
+formal é interpretado em conjunto com os diagnósticos gráficos e as medidas
+de efeito, sem equiparar significância estatística a relevância prática.
+
+Grupos com menos de oito valores finitos são classificados como insuficientes
+para essa avaliação, e grupos com variância nula são classificados como
+degenerados. Quando a normalidade é rejeitada, inconclusiva ou inaplicável, a
+estimativa empírica permanece principal e a inferência gaussiana é apresentada
+apenas como comparação qualificada. A regra de $3\sigma$ somente contribui
+como evidência quando sua aplicabilidade é declarada; o valor acima desse
+limiar é um candidato analítico, não um erro confirmado.
+
+Como referência robusta, também se calcula o escore baseado na mediana e no
+desvio absoluto mediano, ou MAD:
+\begin{equation}
+z_{MAD}=0{,}67448975\,
+\frac{x-\operatorname{mediana}(x)}
+{\operatorname{mediana}(|x-\operatorname{mediana}(x)|)}.
+\end{equation}
+Uma observação satisfaz esse critério quando $|z_{MAD}|>3{,}5$. Grupos com
+menos de oito valores finitos ou com MAD nulo são não aplicáveis e não
+contribuem para concordância entre métodos.
+
+\subsection{Evidência contextual de K-Means e DBSCAN}
+
+Os modelos operam separadamente por cenário, linhagem da fonte, terminal e
+fase. Essa separação evita que diferenças ordinárias de posição ao longo da
+linha ou assimetrias entre fases sejam convertidas em anomalias. O atributo
+numérico utilizado é $V_{pu}$ padronizado com parâmetros estimados apenas no
+subconjunto de desenvolvimento. As configurações, as sementes aleatórias e as
+regras de calibração são congeladas antes da execução nos dados-alvo.
+
+No K-Means, os rótulos identificam somente a pertença descritiva aos grupos.
+Nem o maior rótulo nem o agrupamento de maior centróide constitui, por si só,
+evidência de anomalia. Para cada observação, calcula-se a distância ao
+centróide atribuído no espaço padronizado. O critério explícito é a distância
+estritamente superior ao percentil 99 das distâncias do conjunto de
+desenvolvimento. O relatório preserva número de grupos, estado aleatório,
+centróides, escore, limiar, regra de escala, chave do grupo e identificador da
+configuração. Assim, um agrupamento denso de tensões elevadas pode permanecer
+inteiramente válido.
+
+No DBSCAN, o número mínimo de vizinhos é declarado na configuração e o raio
+efetivo é calibrado pelo percentil 95 das distâncias ao vizinho de ordem
+correspondente no conjunto de desenvolvimento padronizado. São registrados o
+espaço de atributos, a escala, a origem dos parâmetros, o raio efetivo, o
+número de grupos, a quantidade e a taxa de ruído. Um ponto classificado como
+ruído constitui evidência analítica somente quando o ajuste é aplicável.
+Grupos esparsos, constantes ou nos quais todos os pontos são classificados
+como ruído recebem estado não aplicável e não votam na comparação.
+
+A comparação considera quatro critérios booleanos explícitos: $3\sigma$, MAD,
+distância do K-Means e ruído do DBSCAN. Somente métodos aplicáveis participam
+da contagem. O artefato conserva, para cada método, escore, limiar, indicador,
+aplicabilidade e motivo; concordâncias e discordâncias permanecem visíveis.
+Os termos adotados para as saídas são ``candidato'' e ``evidência
+analítica'', nunca ``erro numérico confirmado do ATP''.
+
+\subsection{Ensaios controlados dos detectores}
+
+A avaliação controlada utiliza cópias dos dados e mantém as fontes originais
+inalteradas. Além de controles limpos, são previstas perturbações pontuais de
+magnitude, perturbações contextuais relativas ao grupo e deslocamentos
+coletivos em execuções contíguas. As proporções de contaminação são 1\%, 5\%
+e 10\%; intensidade, semente, identidade afetada, valor original e valor
+alterado são registrados em manifesto próprio.
+
+A separação entre desenvolvimento e avaliação é feita conjuntamente por
+linhagem da fonte e identidade da simulação, mantendo fases e terminais da
+mesma execução no mesmo subconjunto. Escalas, centróides e limiares são
+ajustados somente no desenvolvimento. Para cada família, intensidade e
+método, relatam-se primeiro verdadeiros positivos, falsos positivos,
+verdadeiros negativos e falsos negativos; em seguida, precisão, revocação,
+$F_1$ e taxa de falsos positivos. Métricas com denominador nulo são mantidas
+como indefinidas, acompanhadas do motivo. Esses rótulos comprovam apenas a
+detecção das intervenções declaradas e não representam erros numéricos reais
+produzidos pelo ATP.
+
+\subsection{Convergência, comparação e sensibilidade}
+
+A análise de convergência compara 50, 100, 200, 1.000 e 10.000 simulações
+somente sob o mesmo cenário, base, terminal, fase, limiar, agrupamento e
+política de método. Para cada tamanho, são confrontados medidas descritivas,
+percentis, probabilidade empírica, largura do intervalo de confiança, estado
+do ajuste, quantidade e taxa de candidatos. As diferenças absolutas e
+relativas entre tamanhos consecutivos são relatadas quando definidas. A
+amostra de 10.000 simulações é denominada referência empírica de maior
+amostragem, e não verdade fundamental. Estabilidade indica consistência
+amostral, não acurácia do detector. Como não se presume que as fontes sejam
+independentes ou aninhadas, essa limitação acompanha as comparações.
+
+As comparações entre SRPI e CRPI preservam suas definições de chaveamento; as
+comparações entre terminais preservam a posição ao longo da linha; e as fases
+permanecem vinculadas à mesma simulação. Diferenças de fase, isoladamente, não
+constituem erro. Toda comparação declara se seu caráter é descritivo,
+exploratório ou inferencial e, no último caso, explicita o tratamento da
+multiplicidade.
+
+A sensibilidade é avaliada com grades predefinidas para sementes e número de
+grupos do K-Means, limiares de distância e parâmetros ou calibração do
+DBSCAN, mantendo os demais controles fixos. Para cada política são informados
+aplicabilidade, quantidade e taxa de candidatos. A estabilidade de identidade
+é medida pelo índice de Jaccard entre dois conjuntos de candidatos, $A$ e $B$:
+\begin{equation}
+J(A,B)=\frac{|A\cap B|}{|A\cup B|}.
+\end{equation}
+Valores inferiores a 0,80 são descritos como sensíveis. Esse limiar qualifica
+a estabilidade da seleção; não mede acurácia nem valida uma configuração como
+única.
+
+\subsection{Revisão técnica e limites causais}
+
+A amostra de revisão técnica contempla casos com concordância entre métodos,
+discordância, escores elevados, proximidade do limiar e controles não
+sinalizados, distribuídos pelos cenários e grupos disponíveis. Cada ficha
+preserva fonte, simulação, terminal, fase, máximo com sinal, valor em P.U.,
+instante, condições de chaveamento, demais fases e terminais da execução e a
+evidência explícita de cada método.
+
+Quando disponíveis, as formas de onda e as repetições da simulação preservam
+fonte, parâmetros, passo de integração, tolerância de comparação e
+comportamento observado. A investigação numérica repete as mesmas condições
+de chaveamento e condições iniciais com passos de integração sucessivamente
+menores. Sensibilidade ao passo motiva investigação adicional, enquanto
+convergência numérica isolada não valida o modelo físico.
+
+As categorias permitidas são defeito de dados, artefato numérico suspeito,
+extremo fisicamente plausível e caso não resolvido. A conclusão registra
+revisor, data, evidências e justificativa. A ausência de forma de onda, de
+repetição comparável ou de revisor elétrico qualificado força o estado não
+resolvido e impede atribuição causal. Quando não houver revisão elétrica
+independente qualificada, essa limitação será declarada no texto dos
+resultados. Nenhuma dessas etapas produz recomendação automática de nível de
+isolamento ou remoção automática de observações.
 
 \chapter{Resultados e discussão}
 \label{chap:results}
