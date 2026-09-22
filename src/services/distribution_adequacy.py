@@ -223,14 +223,10 @@ def _evaluate_group(
         absolute_difference = abs(empirical - gaussian)
         row["absolute_tail_difference"] = absolute_difference
         if empirical > 0.0:
-            row["relative_tail_difference"] = (
-                absolute_difference / empirical
-            )
+            row["relative_tail_difference"] = absolute_difference / empirical
 
     row["skewness"] = float(skew(values, bias=False))
-    row["excess_kurtosis"] = float(
-        kurtosis(values, fisher=True, bias=False)
-    )
+    row["excess_kurtosis"] = float(kurtosis(values, fisher=True, bias=False))
     probability_plot = probplot(values, dist=norm, fit=True)
     row["qq_correlation"] = float(probability_plot[1][2])
 
@@ -240,9 +236,7 @@ def _evaluate_group(
     anderson_with_p_value = cast(
         Callable[..., _AndersonPValueResult], anderson
     )
-    result = anderson_with_p_value(
-        values, dist="norm", method="interpolate"
-    )
+    result = anderson_with_p_value(values, dist="norm", method="interpolate")
     statistic = float(result.statistic)
     p_value = float(result.pvalue)
     row["anderson_statistic"] = statistic

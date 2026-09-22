@@ -51,9 +51,7 @@ def test_emits_calibrated_epsilon_and_group_diagnostics() -> None:
     assert result["dbscan_cluster_count"].unique().to_list() == [2]
     assert result["dbscan_noise_count"].unique().to_list() == [0]
     assert result["dbscan_noise_rate"].unique().to_list() == [0.0]
-    assert result["dbscan_applicability"].unique().to_list() == [
-        "applicable"
-    ]
+    assert result["dbscan_applicability"].unique().to_list() == ["applicable"]
     assert result["dbscan_configuration_id"].n_unique() == 1
     assert result["dbscan_group_key"].n_unique() == 1
 
@@ -76,9 +74,7 @@ def test_isolated_target_is_explicit_noise_evidence() -> None:
     assert isolated["dbscan_noise_count"] == 1
     assert isolated["dbscan_noise_rate"] == pytest.approx(1 / 7)
     assert isolated["dbscan_cluster_count"] == 2
-    assert isolated["dbscan_parameter_source"] == (
-        "explicit_calibration_mask"
-    )
+    assert isolated["dbscan_parameter_source"] == ("explicit_calibration_mask")
 
 
 def test_explicit_epsilon_policy_is_recorded() -> None:
@@ -165,9 +161,9 @@ def test_all_noise_group_is_non_applicable_and_does_not_vote() -> None:
 def test_calibration_column_preserves_original_row_order() -> None:
     observations = _observations([6.0, 0.9, 1.0, 1.1, 2.9, 3.0, 3.1])
     observations = observations.with_columns(
-        DataFrame({
-            "development": [False, True, True, True, True, True, True]
-        }).to_series().cast(Boolean)
+        DataFrame({"development": [False, True, True, True, True, True, True]})
+        .to_series()
+        .cast(Boolean)
     )
 
     result = evaluate_dbscan_evidence(
@@ -191,9 +187,7 @@ def test_rejects_invalid_values_and_parameters() -> None:
         evaluate_dbscan_evidence(_observations([1.0, 2.0]), min_samples=0)
 
     with pytest.raises(ValueError, match="effective_eps must be finite"):
-        evaluate_dbscan_evidence(
-            _observations([1.0, 2.0]), effective_eps=0.0
-        )
+        evaluate_dbscan_evidence(_observations([1.0, 2.0]), effective_eps=0.0)
 
 
 def test_rejects_missing_comparable_group_column() -> None:

@@ -175,9 +175,7 @@ def _evaluate_group(
 
     scaler = StandardScaler()  # type: ignore[reportUnknownVariableType]
     calibration_array = calibration[value_col].to_numpy().reshape(-1, 1)
-    scaled_calibration: ndarray[
-        tuple[int, int], dtype[float64]
-    ] = asarray(
+    scaled_calibration: ndarray[tuple[int, int], dtype[float64]] = asarray(
         scaler.fit_transform(  # type: ignore[reportUnknownMemberType]
             calibration_array
         )
@@ -315,9 +313,7 @@ def _metadata_columns(
     return [
         Series("dbscan_method", ["dbscan"] * row_count, dtype=String),
         Series("dbscan_group_key", [group_key] * row_count, dtype=String),
-        Series(
-            "dbscan_feature_space", [value_col] * row_count, dtype=String
-        ),
+        Series("dbscan_feature_space", [value_col] * row_count, dtype=String),
         Series(
             "dbscan_scaling_policy",
             ["standard_scaler_fit_on_calibration_group"] * row_count,

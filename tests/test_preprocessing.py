@@ -118,9 +118,10 @@ def test_extract_maxima_dataframe_preserves_experiment_identity():
     assert frame["sample_size"].to_list() == [50] * 3
     assert frame["source_lineage"].to_list() == ["srpi-50"] * 3
     assert frame["base_voltage"].to_list() == [BASE_VOLTAGE] * 3
-    assert frame["event_definition"].to_list() == [
-        "absolute phase-to-ground maximum"
-    ] * 3
+    assert (
+        frame["event_definition"].to_list()
+        == ["absolute phase-to-ground maximum"] * 3
+    )
 
 
 def test_extract_maxima_dataframe_terminal_filter():

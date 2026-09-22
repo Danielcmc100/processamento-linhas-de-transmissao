@@ -97,9 +97,7 @@ def test_reports_empirical_and_gaussian_tail_differences() -> None:
     expected_absolute = abs(
         row["empirical_exceedance"] - row["gaussian_exceedance"]
     )
-    assert row["absolute_tail_difference"] == pytest.approx(
-        expected_absolute
-    )
+    assert row["absolute_tail_difference"] == pytest.approx(expected_absolute)
     assert row["relative_tail_difference"] == pytest.approx(
         expected_absolute / row["empirical_exceedance"]
     )
