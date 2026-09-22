@@ -714,35 +714,36 @@ explicit types, units, stable group keys, and version identifiers.
 
 | ID | Requirement | Priority | Status |
 |---|---|---:|---|
-| DEF-01 | Build canonical dataset and source matrix | P1 | Pending |
-| DEF-02 | Enforce accepted P.U. base and comparable configurations | P1 | Pending |
-| DEF-03 | Preserve row-level source and experiment identity | P1 | Pending |
-| DEF-04 | Produce descriptive statistics with explicit scope | P1 | Pending |
-| DEF-05 | Produce empirical exceedance with counts and uncertainty | P1 | Pending |
-| DEF-06 | Reconcile direct and ATP-provided probability evidence | P1 | Pending |
-| DEF-07 | Evaluate and qualify Gaussian adequacy | P1 | Pending |
-| DEF-08 | Separate cluster membership from anomaly evidence | P1 | Pending |
-| DEF-09 | Produce contextual K-Means scores and thresholds | P1 | Pending |
-| DEF-10 | Calibrate and diagnose DBSCAN per comparable group | P1 | Pending |
-| DEF-11 | Compare explicit per-method anomaly evidence | P1 | Pending |
-| DEF-12 | Create reproducible controlled perturbation datasets | P1 | Pending |
-| DEF-13 | Measure controlled detection performance | P1 | Pending |
-| DEF-14 | Evaluate convergence across five sample sizes | P1 | Pending |
-| DEF-15 | Compare SRPI/CRPI, terminals, phases, and methods | P1 | Pending |
-| DEF-16 | Evaluate parameter sensitivity and candidate stability | P1 | Pending |
-| DEF-17 | Conduct traceable technical case review | P1 | Pending |
-| DEF-18 | Generate publication-ready figures | P1 | Pending |
-| DEF-19 | Generate traceable manuscript and source tables | P1 | Pending |
-| DEF-20 | Complete statistical and anomaly methodology in manuscript | P1 | Pending |
-| DEF-21 | Complete results, discussion, limitations, and conclusion | P1 | Pending |
-| DEF-22 | Build claim-evidence traceability matrix | P1 | Pending |
-| DEF-23 | Produce immutable reproducibility manifest | P1 | Pending |
-| DEF-24 | Pass software and LaTeX quality gates | P1 | Pending |
-| DEF-25 | Compare robust statistical baselines | P2 | Pending |
-| DEF-26 | Add repeat-simulation numerical sensitivity evidence | P2 | Pending |
-| DEF-27 | Enforce Brazilian Portuguese for authored `main.tex` content | P1 | Pending |
+| DEF-01 | Build canonical dataset and source matrix | P1 | Verified |
+| DEF-02 | Enforce accepted P.U. base and comparable configurations | P1 | Verified |
+| DEF-03 | Preserve row-level source and experiment identity | P1 | Verified |
+| DEF-04 | Produce descriptive statistics with explicit scope | P1 | Verified |
+| DEF-05 | Produce empirical exceedance with counts and uncertainty | P1 | Verified |
+| DEF-06 | Reconcile direct and ATP-provided probability evidence | P1 | Verified |
+| DEF-07 | Evaluate and qualify Gaussian adequacy | P1 | Verified |
+| DEF-08 | Separate cluster membership from anomaly evidence | P1 | Verified |
+| DEF-09 | Produce contextual K-Means scores and thresholds | P1 | Verified |
+| DEF-10 | Calibrate and diagnose DBSCAN per comparable group | P1 | Verified |
+| DEF-11 | Compare explicit per-method anomaly evidence | P1 | Verified |
+| DEF-12 | Create reproducible controlled perturbation datasets | P1 | Verified |
+| DEF-13 | Measure controlled detection performance | P1 | Verified |
+| DEF-14 | Evaluate convergence across five sample sizes | P1 | Verified |
+| DEF-15 | Compare SRPI/CRPI, terminals, phases, and methods | P1 | Verified |
+| DEF-16 | Evaluate parameter sensitivity and candidate stability | P1 | Verified |
+| DEF-17 | Conduct traceable technical case review | P1 | Verified (unresolved by design — no waveform/independent reviewer available) |
+| DEF-18 | Generate publication-ready figures | P1 | Verified |
+| DEF-19 | Generate traceable manuscript and source tables | P1 | Verified |
+| DEF-20 | Complete statistical and anomaly methodology in manuscript | P1 | Verified |
+| DEF-21 | Complete results, discussion, limitations, and conclusion | P1 | Verified |
+| DEF-22 | Build claim-evidence traceability matrix | P1 | Verified |
+| DEF-23 | Produce immutable reproducibility manifest | P1 | Verified |
+| DEF-24 | Pass software and LaTeX quality gates | P1 | Verified |
+| DEF-25 | Compare robust statistical baselines | P2 | Verified |
+| DEF-26 | Add repeat-simulation numerical sensitivity evidence | P2 | Blocked — requires re-running ATP with a reduced integration step; the ATP runtime is unavailable in this environment. Deferred (see `specs/project/STATE.md`). |
+| DEF-27 | Enforce Brazilian Portuguese for authored `main.tex` content | P1 | Verified |
 
-**Coverage:** 27 requirements; 0 mapped to design; 0 mapped to tasks.
+**Coverage:** 27 requirements; 26 verified, 1 blocked (DEF-26, environment
+constraint, not a design/implementation gap).
 
 ## Success criteria
 

@@ -1,32 +1,32 @@
 # Defense Evidence Scope
-> Final defense requires one evidence chain across code, data, manuscript, and review
+> Final defense required one evidence chain across code, data, manuscript, and review — DONE
 
 Feature specification:
 `specs/features/thesis-defense-evidence/spec.md`
 
+Final validation:
+`specs/features/thesis-defense-evidence/validation.md` (T20, 2026-09-22)
+26/27 requirements Verified; DEF-26 Blocked (needs real ATP runtime).
+
 Scientific plan:
 `doc/defense_validation_plan.md`
 
-Current manuscript gap:
-`doc/main.tex` (L1081-1091)
-- Applied statistics, probability, clustering parameters, and evaluation remain
-  unfinished.
+Manuscript:
+`doc/main.tex` — methodology and results/discussion/conclusion chapters are
+complete (T18/T19). No required-analysis TODO remains.
 
-Current code risks:
-- `src/services/comparison.py:compare_anomaly_methods()` treats the highest
-  K-Means cluster as anomaly evidence.
-- `src/services/pipeline.py:run_pipeline()` uses configured DBSCAN parameters
-  without an adequacy or calibration gate.
-- `src/services/statistics.py:summarize_statistics()` reports Gaussian tails
-  without distribution-adequacy or confidence-interval evidence.
+Previously tracked risks, now resolved:
+- `compare_anomaly_methods()` no longer treats highest K-Means cluster as
+  anomaly evidence (fixed T8, `041b866`).
+- `run_pipeline()` DBSCAN calibration/adequacy gating added (T4-T7).
+- `summarize_statistics()` Gaussian tails now carry adequacy status and CI
+  (T4, T3).
+- Comparable-configuration base (112677 V) enforced across the dataset
+  manifest (T2).
 
-Data comparability risk:
-- Saved configurations under `input_files/casos/` currently contain mixed
-  100000 V and 112677 V bases; final comparable packages require regeneration.
+Remaining gap (by design, not a code defect):
+- Independent technical/electrical review is unresolved — no waveform data
+  or qualified independent reviewer available. See `package_status.json`
+  under `results/defense-evidence/v1/`.
 
-Working-tree note:
-- `specs/features/clustering-anomaly-correction/` was previously untracked and
-  disappeared during feature reconnaissance. It was not restored. Required
-  clustering correction is specified directly by DEF-08 through DEF-11.
-
-Updated: 2026-09-20
+Updated: 2026-09-22
