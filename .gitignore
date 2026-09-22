@@ -27,3 +27,6 @@ doc/**/*.pdf
 doc/**/*.run.xml
 doc/**/*.synctex.gz
 doc/**/*.toc
+
+# Generated analysis packages
+results/

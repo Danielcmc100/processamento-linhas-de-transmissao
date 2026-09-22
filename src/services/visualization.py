@@ -491,17 +491,29 @@ def plot_dbscan_clusters(
             dist = distances.get(terminal, 0.0)
             values = subset[value_col].to_numpy()
             x_pos = dist + _jitter(len(values), jitter_width)
-            ax.scatter(
-                x_pos,
-                values,
-                color=color,
-                alpha=0.75 if is_noise else alpha,
-                s=marker_size * 1.8 if is_noise else marker_size,
-                marker=MarkerStyle("x") if is_noise else MarkerStyle("o"),
-                linewidths=1.2 if is_noise else 0.0,
-                edgecolors=color if is_noise else "none",
-                zorder=3 if is_noise else 2,
-            )
+            if is_noise:
+                ax.scatter(
+                    x_pos,
+                    values,
+                    color=color,
+                    alpha=0.75,
+                    s=marker_size * 1.8,
+                    marker=MarkerStyle("x"),
+                    linewidths=1.2,
+                    zorder=3,
+                )
+            else:
+                ax.scatter(
+                    x_pos,
+                    values,
+                    color=color,
+                    alpha=alpha,
+                    s=marker_size,
+                    marker=MarkerStyle("o"),
+                    linewidths=0.0,
+                    edgecolors="none",
+                    zorder=2,
+                )
         handles.append(
             Line2D(
                 [0],
