@@ -129,12 +129,11 @@ def run_controlled_benchmark(
                 seed=seed,
             )
         )
-        if not perturbation.manifest.is_empty():
-            manifests.append(
-                perturbation.manifest.with_columns(
-                    lit("evaluation").alias("benchmark_split")
-                )
+        manifests.append(
+            perturbation.manifest.with_columns(
+                lit("evaluation").alias("benchmark_split")
             )
+        )
 
     manifest = concat(manifests, how="vertical_relaxed")
     return ControlledBenchmarkResult(
@@ -237,7 +236,11 @@ def _evaluate_condition(
     )
     novelty_evidence = _density_novelty_evidence(combined)
     evidence = concat(
-        [kmeans_evidence, novelty_evidence], how="vertical_relaxed"
+        [
+            kmeans_evidence,
+            novelty_evidence.select(kmeans_evidence.columns),
+        ],
+        how="vertical_relaxed",
     )
     summary = summarize_controlled_benchmark(evidence)
     return summary.with_columns(
