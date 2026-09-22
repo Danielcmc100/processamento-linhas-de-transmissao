@@ -33,7 +33,10 @@ def test_runner_aligns_method_evidence_before_concatenation() -> None:
 
     methods = set(result.metrics["method"].to_list())
     assert methods == {"dbscan_density_novelty", "kmeans"}
-    assert result.metrics.filter(
-        result.metrics["intervention_family"] == "clean"
-    ).height == 2
+    assert (
+        result.metrics.filter(
+            result.metrics["intervention_family"] == "clean"
+        ).height
+        == 2
+    )
     assert not result.intervention_manifest.is_empty()

@@ -1279,10 +1279,11 @@ isolamento ou remoção automática de observações.
 \chapter{Resultados e discussão}
 \label{chap:results}
 
-Este capítulo reúne os resultados das validações do parser, da estrutura
-das observações, da conversão em P.U. e da limpeza. As evidências se referem
-aos escopos declarados em cada verificação e não constituem resultados de
-análise probabilística ou de clusterização.
+Este capítulo reúne as validações do parser, da estrutura das observações, da
+conversão em P.U. e da limpeza, seguidas pelos resultados estatísticos e pelas
+evidências analíticas de anomalia. Cada resultado permanece restrito ao
+escopo, ao método e à camada de validade declarados. Em particular, uma
+indicação analítica não constitui diagnóstico causal de erro do ATP.
 
 \section{Fidelidade da extração}
 
@@ -1313,8 +1314,9 @@ declarada continha todas as nove combinações esperadas de terminal e fase, com
 chaves compostas únicas, incluindo as três fases restauradas em
 \texttt{T\_OPO} no CRPI. Todos os hashes de entrada coincidiram. Os 60 pares
 de tensão/tempo da fase A, transcritos independentemente das primeiras e
-últimas execuções, coincidiram exatamente sob o mapeamento $|V|/100000$.
-A justificativa elétrica da base de auditoria de 100~kV permanece separada.
+últimas execuções, coincidiram exatamente sob o mapeamento $|V|/112677$.
+A justificativa elétrica dessa base é apresentada na
+Seção~\ref{sec:per-unit-validation}.
 
 Os caminhos das fontes preservam identidades distintas entre os arquivos,
 verificação também realizada por um teste de regressão com múltiplos arquivos.
@@ -1420,6 +1422,271 @@ janela temporal diferentes exigem nova validação. Os registros de execução
 e as evidências por arquivo estão relacionados no
 Apêndice~\ref{app:validation-records}.
 
+\section{Resultados estatísticos e probabilísticos}
+\label{sec:resultados-estatisticos}
+
+O pacote final de evidências foi gerado em 22 de setembro de 2026 a partir
+dos dez arquivos declarados, com a base de 112677~V, o limiar de 2,3~P.U. e
+os três terminais e as três fases já validados nas seções anteriores,
+totalizando noventa combinações de cenário, tamanho amostral, terminal e
+fase. Para cada combinação foram calculados contagem, contagem válida,
+média, desvio padrão amostral, mediana, quartis, percentis 90, 95 e 99,
+mínimo e máximo, conforme a metodologia da
+Seção~\ref{sec:resultados-estatisticos} do capítulo de metodologia. A título
+de exemplo, no grupo $T_{OPO}$, fase A, com 10.000 simulações, o CRPI
+apresentou média de 1,1769~P.U. e desvio padrão de 0,1209~P.U., enquanto o
+SRPI apresentou média de 1,7006~P.U. e desvio padrão de 0,1317~P.U., valores
+consistentes com a definição de chaveamento de cada cenário.
+
+A Tabela~\ref{tab:defesa-probabilidade}, reproduzida automaticamente de
+\texttt{results/defense-evidence/v1/tables/probability.tex}, apresenta a
+probabilidade empírica de excedência de 2,3~P.U. para as noventa
+combinações, com o número de eventos, o denominador, o intervalo de Wilson
+de 95\% e o estado de validação.
+
+\input{../results/defense-evidence/v1/tables/probability.tex}
+
+Nenhuma das 204.300 observações aceitas excedeu 2,3~P.U.; a probabilidade
+empírica é, portanto, zero em todos os noventa grupos, com o limite superior
+do intervalo de Wilson diminuindo de 0,0713 em $N=50$ para 0,0004 em
+$N=10\,000$. O resultado é relatado como zero com sua incerteza, conforme a
+definição metodológica, e não como ausência de resultado. A reconciliação
+entre as contagens diretas e as tabelas de frequência e de probabilidade
+impressas pelo ATP produziu 1.151 intervalos comparáveis, todos com estado
+de validação ``válido'' dentro da tolerância definida pela precisão impressa
+(fonte: \texttt{results/defense-evidence/v1/sources/}
+\texttt{probability\_reconciliation.csv}).
+
+A adequação gaussiana foi avaliada pelo teste de Anderson--Darling a 5\% de
+significância nos noventa grupos (fonte:
+\texttt{results/defense-evidence/v1/sources/distribution\_adequacy.csv}). A
+normalidade foi rejeitada em 88 dos 90 grupos; as duas exceções ocorrem em
+grupos do SRPI com apenas 50 simulações ($1/2\,LT$, fase B, e $T_{MAN}$, fase
+C), compatível com a menor potência do teste em amostras pequenas. No grupo
+de referência $T_{OPO}$, fase A, $N=10\,000$, a estatística de
+Anderson--Darling foi 397,77 no CRPI e 588,48 no SRPI ($p$ interpolado em
+0,01 para ambos), com assimetria de 0,7838 no CRPI contra $-1,6187$ no SRPI,
+excesso de curtose de $-0,4042$ no CRPI contra 2,2944 no SRPI e correlação
+quantil--quantil de 0,9460 no CRPI contra 0,9081 no SRPI. As
+Figuras~\ref{fig:defesa-distribuicao-crpi} e~\ref{fig:defesa-distribuicao-srpi}
+apresentam o histograma com densidade ajustada e o gráfico quantil--quantil
+desse grupo de referência.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]
+{../results/defense-evidence/v1/figures/distribution-crpi-t_opo-a.png}
+\caption{Histograma com densidade gaussiana ajustada e gráfico
+quantil--quantil para o CRPI, terminal $T_{OPO}$, fase A, $N=10\,000$. A
+normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
+empírica permanece principal. Fonte: elaborado pelo autor a partir de
+\texttt{sources/annotated\_observations.csv} e
+\texttt{sources/distribution\_adequacy.csv}.}
+\label{fig:defesa-distribuicao-crpi}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]
+{../results/defense-evidence/v1/figures/distribution-srpi-t_opo-a.png}
+\caption{Histograma com densidade gaussiana ajustada e gráfico
+quantil--quantil para o SRPI, terminal $T_{OPO}$, fase A, $N=10\,000$. A
+normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
+empírica permanece principal. Fonte: elaborado pelo autor a partir de
+\texttt{sources/annotated\_observations.csv} e
+\texttt{sources/distribution\_adequacy.csv}.}
+\label{fig:defesa-distribuicao-srpi}
+\end{figure}
+
+Apesar da rejeição da normalidade, a probabilidade gaussiana de excedência
+de 2,3~P.U. no grupo de referência também é praticamente nula
+($7,94\times10^{-21}$ no CRPI e $2,67\times10^{-6}$ no SRPI), de modo que a
+diferença absoluta entre as caudas empírica e gaussiana é desprezível nesse
+limiar específico. Isso não qualifica o modelo gaussiano como adequado: a
+decisão de adequação permanece ``rejeitado'' e a inferência gaussiana é
+apresentada apenas como comparação qualificada, nunca como substituta da
+probabilidade empírica, conforme a política declarada na metodologia.
+
+\section{Evidências analíticas de anomalia}
+\label{sec:evidencias-anomalia}
+
+As evidências de anomalia foram calculadas separadamente por cenário,
+linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:evidencias-anomalia}
+da metodologia, e cobrem as 204.300 observações do pacote
+(fonte: \texttt{results/defense-evidence/v1/sources/method\_comparison.csv}).
+No grupo de referência $T_{OPO}$, fase A, $N=10\,000$, o critério $3\sigma$
+não sinalizou nenhuma observação em nenhum dos dois cenários, enquanto o
+escore robusto MAD sinalizou 109 observações no CRPI (1,09\%) e 852 no SRPI
+(8,52\%). O K-Means, aplicável nos dois cenários, sinalizou 99 observações
+em cada um por distância ao centróide acima do percentil 99 do
+desenvolvimento; nesse mesmo grupo, todas as 99 observações sinalizadas pelo
+K-Means coincidem com observações também sinalizadas pelo MAD. O DBSCAN foi
+aplicável nos dois cenários, mas não classificou nenhuma observação como
+ruído nesse grupo específico, resultando em zero candidatos por esse
+método -- um resultado explícito de não aplicabilidade prática do parâmetro
+calibrado nessa combinação, e não de ausência de evidência. O número total de
+candidatos analíticos (união dos métodos aplicáveis) foi 109 no CRPI e 852
+no SRPI, coincidindo com a contagem apresentada na
+Seção~\ref{sec:convergencia-amostral}.
+
+Esses valores são evidência descritiva e candidata, produzida por métodos
+aplicáveis e explícitos; eles não constituem, isoladamente, diagnóstico de
+erro numérico do ATP nem confirmação de evento físico. A discordância entre
+o critério $3\sigma$ (nenhuma sinalização) e o escore MAD (dezenas a
+centenas de sinalizações) no mesmo grupo é relatada como tal, sem que um dos
+métodos seja tratado como referência de verdade -- a assimetria e o excesso
+de curtose registrados na Seção~\ref{sec:resultados-estatisticos} explicam a
+maior sensibilidade do MAD nesse cenário. A comparação foi realizada em modo
+exploratório, sem correção de multiplicidade, conforme registrado no próprio
+artefato (\texttt{analysis\_mode=exploratory}).
+
+\section{Convergência entre tamanhos amostrais}
+\label{sec:convergencia-amostral}
+
+A Tabela~\ref{tab:defesa-convergencia}, reproduzida de
+\texttt{results/defense-evidence/v1/tables/convergence.tex}, compara os
+cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000 simulações) sob a
+mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
+método, para os noventa grupos de cenário, terminal e fase.
+
+\input{../results/defense-evidence/v1/tables/convergence.tex}
+
+A largura do intervalo de confiança da probabilidade empírica diminui de
+forma monotônica com o tamanho amostral em todos os grupos, de 0,0713 em
+$N=50$ para 0,0004 em $N=10\,000$, evidenciando consistência amostral da
+estimativa de excedência. A taxa de candidatos analíticos, por outro lado,
+não converge de forma igualmente regular: no SRPI, terminal $T_{OPO}$, fase
+A, a taxa permanece entre 8,52\% e 13,50\% em quatro dos cinco tamanhos
+(50, 100, 200 e 10.000 simulações), enquanto no CRPI, mesmo terminal e fase,
+a taxa varia de 16\% em $N=50$ até valores inferiores a 2\% entre $N=200$ e
+$N=10\,000$. A referência de 10.000 simulações é tratada como referência
+empírica de maior amostragem, não como verdade fundamental; a estabilidade
+observada descreve consistência amostral e não acurácia do detector, e as
+dez fontes não são presumidas independentes ou aninhadas entre si.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]
+{../results/defense-evidence/v1/figures/convergence-crpi-t_opo-a.png}
+\caption{Convergência das medidas descritivas, da probabilidade empírica e
+da taxa de candidatos entre os cinco tamanhos amostrais, CRPI, terminal
+$T_{OPO}$, fase A. Fonte: elaborado pelo autor a partir de
+\texttt{sources/convergence.csv}.}
+\label{fig:defesa-convergencia-crpi}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]
+{../results/defense-evidence/v1/figures/convergence-srpi-t_opo-a.png}
+\caption{Convergência das medidas descritivas, da probabilidade empírica e
+da taxa de candidatos entre os cinco tamanhos amostrais, SRPI, terminal
+$T_{OPO}$, fase A. Fonte: elaborado pelo autor a partir de
+\texttt{sources/convergence.csv}.}
+\label{fig:defesa-convergencia-srpi}
+\end{figure}
+
+\section{Avaliação controlada, sensibilidade a parâmetros e revisão técnica}
+\label{sec:avaliacao-controlada}
+
+O pacote de evidências final registra, em
+\texttt{results/defense-evidence/v1/package\_status.json}, que a revisão
+técnica com evidência elétrica completa permanece pendente sobre o conjunto
+de dados-alvo real. O ensaio controlado com perturbações sintéticas e a
+repetição da grade de sensibilidade de parâmetros, por outro lado, foram
+efetivamente executados sobre o conjunto de dados-alvo declarado, sobre o
+grupo de referência CRPI/SRPI, terminal T\_OPO, fase A, no maior tamanho
+amostral (10.000 simulações), usando a divisão de desenvolvimento/avaliação
+por bloco de execução descrita na metodologia.
+
+A Tabela~\ref{tab:defesa-benchmark} reproduz as contagens de confusão e as
+métricas derivadas do ensaio controlado, para as três famílias de
+intervenção (pontual, contextual e coletiva) nas taxas de contaminação de
+1\%, 5\% e 10\%, mais a condição limpa de referência (fonte:
+\texttt{results/defense-evidence/v1/sources/controlled\_benchmark.csv}). Na
+condição limpa, o K-Means produziu 42 falsos positivos sobre 5.400
+observações de avaliação (taxa de falsos positivos de 0,0078), contra 391
+falsos positivos do DBSCAN calibrado por novidade de densidade (taxa de
+0,0724) -- diferença consistente com a maior sensibilidade do DBSCAN à
+calibração já discutida na Seção~\ref{sec:evidencias-anomalia}. Sob
+intervenção contextual, ambos os métodos alcançam revocação de 1,0000 em
+toda taxa de contaminação testada, com $F_1$ do K-Means entre 0,7200 e
+0,9660 e $F_1$ do DBSCAN entre 0,2173 e 0,7531. Sob intervenções pontual e
+coletiva, a revocação de ambos os métodos cresce com a taxa de
+contaminação, sem atingir 1,0000 nas condições testadas; o K-Means mantém
+precisão superior à do DBSCAN em toda condição comparável, à custa de
+recuperar uma fração menor dos pontos intervencionados nas taxas mais
+baixas.
+
+\input{../results/defense-evidence/v1/tables/benchmark.tex}
+
+A grade congelada de sensibilidade de parâmetros -- número de grupos e
+sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --
+foi replicada sobre o mesmo grupo de referência do conjunto de dados-alvo,
+com estabilidade medida pelo índice de Jaccard identidade-a-identidade e
+limiar de qualificação de 0,80 (fonte:
+\texttt{results/defense-evidence/v1/sources/sensitivity.csv}). Das vinte
+réplicas de parâmetro avaliadas (dez por método, cinco por cenário), todas
+foram aplicáveis e todas produziram índice de Jaccard igual a 1,0000 em
+relação à configuração de referência declarada, superando o limiar de
+0,80 e qualificando o conjunto de candidatos de ambos os métodos como
+estável, nesse grupo, à variação de parâmetro testada. Essa estabilidade é
+reportada como evidência de reprodutibilidade do conjunto de candidatos,
+não como evidência de acurácia de detecção.
+
+A revisão técnica selecionou cinco casos representativos, cobrindo
+concordância entre métodos, discordância, escore elevado e controle sem
+sinalização, conforme a regra de amostragem declarada na metodologia. A
+Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
+
+\input{../results/defense-evidence/v1/tables/technical_review.tex}
+
+Todos os cinco casos permanecem com conclusão ``não resolvido'', pois não há
+forma de onda, repetição de simulação com passo reduzido nem revisor
+elétrico independente qualificado disponível para este trabalho. Essa
+ausência é declarada como limitação explícita, e nenhum caso recebe rótulo
+de defeito de dados, artefato numérico ou extremo fisicamente plausível
+sem essa evidência complementar.
+
+\section{Discussão}
+\label{sec:discussao-resultados}
+
+Os resultados sustentam, com evidência rastreável, os objetivos específicos
+relativos à extração, à organização, ao tratamento estatístico e à análise
+probabilística dos dados do ATP (Seção~\ref{sec:resultados-estatisticos}), e
+à aplicação de K-Means e DBSCAN para identificação de agrupamentos e de
+candidatos a observações atípicas (Seção~\ref{sec:evidencias-anomalia}). O
+objetivo de comparar a coerência entre os métodos estatísticos e os
+algoritmos de clusterização também é atendido: a discordância entre o
+critério clássico $3\sigma$ e o escore robusto MAD no grupo de referência é
+relatada explicitamente, em vez de ser resumida em um único rótulo, e o
+DBSCAN mostrou-se não aplicável na prática (zero candidatos) para a
+combinação de parâmetros congelada nesse grupo, o que ilustra a
+sensibilidade desse método à calibração e à escala local dos dados --
+achado consistente com a limitação do DBSCAN discutida na revisão de
+literatura.
+
+O objetivo de desenvolver uma rotina computacional reprodutível que integre
+extração, tratamento, análise estatística, análise probabilística, detecção
+de anomalias e apresentação dos resultados é parcialmente atendido: o
+pipeline integrado, o manifesto de reprodutibilidade e as tabelas e figuras
+deste capítulo foram gerados de forma automática e rastreável a partir dos
+dez arquivos declarados (\texttt{results/defense-evidence/v1/}
+\texttt{reproducibility\_manifest.json}), incluindo o ensaio controlado com
+perturbações sintéticas e a repetição da grade de sensibilidade de
+parâmetros, ambos concluídos sobre o grupo de referência do conjunto-alvo
+(Seção~\ref{sec:avaliacao-controlada}). O próprio pacote ainda se declara
+``incompleto'' (\texttt{package\_status.json}), pois a revisão técnica
+plena com evidência elétrica independente não foi concluída. O desempenho
+de detecção medido no ensaio controlado é restrito às condições sintéticas
+testadas e ao grupo de referência avaliado; não é generalizado como
+acurácia de detecção de erros numéricos reais do ATP nos demais grupos, e a
+estabilidade de parâmetro observada não é equiparada a acurácia do
+detector. Nenhum candidato analítico sem evidência elétrica complementar é
+descrito como físico ou numérico neste trabalho; a conclusão causal
+permanece ``não resolvida'' para os cinco casos revisados e, por extensão,
+para os demais candidatos do pacote.
+
 \section{Alcance e limitações dos resultados}
 
 A base tabular de máximos sustenta conclusões sobre a distribuição dos máximos de
@@ -1438,8 +1705,139 @@ pré-processamento dos dados no escopo declarado. A análise estatística, a
 análise probabilística e a clusterização constituem as etapas seguintes da
 investigação e precisam ser avaliadas segundo seus próprios critérios.
 
-% TODO: Write the conclusion after completing the methodology and results.
-% \chapter{Conclusão}
+\subsection{Lacunas declaradas do pacote de evidências}
+\label{sec:lacunas-pacote}
+
+O manifesto \texttt{results/defense-evidence/v1/package\_status.json}
+declara explicitamente o estado ``incompleto'' do pacote final e restringe
+as camadas aceitas à validade dos dados, ao cálculo estatístico e à geração
+de candidatos analíticos; a validade elétrica dos candidatos não integra as
+camadas aceitas nesta versão, ainda que o ensaio controlado e a grade de
+sensibilidade de parâmetros já tenham sido executados e reportados
+(Seção~\ref{sec:avaliacao-controlada}). Uma lacuna concreta permanece
+registrada no manifesto e reafirmada neste capítulo:
+
+\begin{itemize}
+\item a revisão técnica carece de formas de onda, de repetição de simulação
+e de um revisor elétrico independente qualificado
+(Seção~\ref{sec:avaliacao-controlada}).
+\end{itemize}
+
+Em consequência, o manifesto registra a conclusão causal do pacote como
+``não resolvida'' (\texttt{causal\_conclusion: "unresolved"}). Nenhuma
+observação sinalizada por qualquer método -- $3\sigma$, MAD, K-Means ou
+DBSCAN -- é apresentada, neste trabalho, como erro numérico do ATP
+confirmado ou como evento físico confirmado, mesmo nas condições em que o
+ensaio controlado e a sensibilidade de parâmetros indicam desempenho ou
+estabilidade favoráveis no grupo de referência sintético e testado. Essa
+lacuna permanece como validação obrigatória pendente, distinta de
+extensões legítimas de pesquisa, conforme retomado na conclusão.
+
+\chapter{Conclusão}
+\label{chap:conclusao}
+
+Este trabalho desenvolveu e avaliou um modelo computacional para automatizar
+a extração, o tratamento estatístico, a análise probabilística e a
+classificação de dados provenientes de simulações estatísticas do ATP, com
+foco na identificação de anomalias e valores extremos em manobras de
+energização de linhas de transmissão. O objetivo geral é atendido no nível
+de evidência estabelecido neste capítulo: o modelo extrai, organiza,
+descreve estatisticamente e classifica analiticamente as sobretensões
+máximas dos dez arquivos declarados, com rastreabilidade completa entre
+código, dados de origem e resultados publicados. A identificação de
+anomalias permanece, contudo, no nível de candidato analítico, e não de
+diagnóstico causal confirmado -- distinção que este trabalho definiu como
+requisito desde a proposta e que o pacote final de evidências preserva.
+
+Quanto aos objetivos específicos, os resultados apresentados sustentam as
+seguintes conclusões:
+
+\begin{itemize}
+\item O \textit{parser} para extração dos dados brutos do ATP foi
+implementado e validado para o escopo declarado dos dez arquivos SRPI e
+CRPI, com concordância exata nos pontos de verificação auditados
+(Seções~\ref{chap:results}, itens de fidelidade da extração). Esse objetivo
+é considerado atendido.
+
+\item Os dados extraídos foram organizados em 204.300 observações
+escalares, com identidade completa de simulação, terminal, fase e cenário,
+e sem exclusões na base aceita. Esse objetivo é considerado atendido.
+
+\item O pré-processamento e o tratamento estatístico, incluindo média,
+desvio padrão, medidas de dispersão e o critério empírico de $3\sigma$,
+foram implementados e aplicados às noventa combinações de cenário, tamanho
+amostral, terminal e fase. No grupo de referência analisado em detalhe, o
+critério $3\sigma$ não sinalizou nenhuma observação, o que motivou o uso
+complementar do escore robusto MAD como segunda referência estatística,
+já previsto na metodologia. Esse objetivo é considerado atendido, com a
+ressalva de que o $3\sigma$ isolado mostrou-se pouco sensível nos grupos
+com assimetria acentuada.
+
+\item A análise probabilística das sobretensões máximas foi realizada com
+estimativa empírica de excedência, intervalo de confiança de Wilson e
+reconciliação com as tabelas de frequência do ATP. Nenhuma das 204.300
+observações aceitas excedeu 2,3~P.U.; a probabilidade empírica é zero nos
+noventa grupos, com incerteza explícita, e os 1.151 intervalos reconciliados
+com o ATP foram todos válidos. Esse objetivo é considerado atendido.
+
+\item Os algoritmos K-Means e DBSCAN foram aplicados para identificar
+agrupamentos de comportamento e observações atípicas, com escore, limiar e
+aplicabilidade explícitos por grupo comparável. Esse objetivo é considerado
+atendido: além do nível descritivo e de geração de candidatos, a validação
+desses candidatos sob perturbações controladas e sob variação sistemática
+de parâmetros, prevista na metodologia, foi concluída sobre o grupo de
+referência do conjunto de dados-alvo, com desempenho e estabilidade de
+identidade reportados na Seção~\ref{sec:avaliacao-controlada}. Essa
+validação permanece restrita ao grupo de referência sintético testado e não
+constitui, por si só, evidência elétrica de causa (Seção~\ref{sec:lacunas-pacote}).
+
+\item A comparação entre os resultados das técnicas estatísticas e dos
+algoritmos de clusterização foi realizada de forma explícita, preservando
+concordâncias e discordâncias -- incluindo a divergência observada entre o
+critério $3\sigma$ e o escore MAD, e a não aplicabilidade prática do DBSCAN
+no grupo de referência. Esse objetivo é considerado atendido.
+
+\item A rotina computacional reprodutível que integra extração, tratamento,
+análise estatística, análise probabilística, detecção de anomalias e
+apresentação dos resultados foi implementada e executada de ponta a ponta
+para os dez arquivos declarados, com manifesto de reprodutibilidade,
+tabelas e figuras geradas automaticamente, incluindo o ensaio controlado e
+a sensibilidade de parâmetros sobre o grupo de referência do conjunto de
+dados-alvo. Esse objetivo é considerado parcialmente atendido: a
+integração técnica está completa, mas o próprio pacote final se declara
+incompleto, pois a revisão técnica plena com evidência elétrica
+independente permanece pendente.
+
+\end{itemize}
+
+A conclusão causal deste trabalho permanece não resolvida. Nenhum candidato
+analítico identificado pelos critérios estatísticos ou pelos algoritmos de
+clusterização é aqui classificado como erro numérico confirmado do ATP ou
+como evento físico confirmado; essa classificação exigiria evidência
+elétrica complementar -- forma de onda, repetição de simulação com passo de
+integração reduzido e revisão por profissional qualificado independente --
+que não estava disponível para este trabalho. Da mesma forma, este trabalho
+não formula, direta ou indiretamente, nenhuma recomendação automática de
+nível de isolamento; essa decisão foi deliberadamente mantida fora do
+escopo acadêmico, por proteger propriedade intelectual da empresa parceira
+e por exigir avaliação técnica especializada que extrapola os métodos aqui
+validados.
+
+Como trabalhos futuros, distinguem-se duas categorias. A primeira reúne
+validações necessárias e ainda não concluídas neste pacote: a obtenção de
+formas de onda, de repetições de simulação com passo reduzido e de um
+revisor elétrico independente qualificado para fechar a revisão técnica
+iniciada neste trabalho, além da extensão do ensaio controlado e da grade
+de sensibilidade de parâmetros, já concluídos no grupo de referência, aos
+demais grupos comparáveis do conjunto de dados-alvo. A
+segunda reúne extensões legítimas para além do escopo desta proposta: o
+refinamento de referências estatísticas robustas adicionais, a
+investigação sistemática de sensibilidade numérica por repetição de
+simulação com passos sucessivamente menores, e -- explicitamente fora do
+escopo de qualquer etapa futura decorrente diretamente deste trabalho -- a
+automação de recomendações de nível de isolamento e a lógica de sistema
+especialista da empresa parceira, que permanecem sob a responsabilidade
+técnica e comercial da organização.
 
 % ----------------------------------------------------------
 % ELEMENTOS PÓS-TEXTUAIS
