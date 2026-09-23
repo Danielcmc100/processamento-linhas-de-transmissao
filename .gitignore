@@ -30,3 +30,4 @@ doc/**/*.toc
 
 # Generated analysis packages
 results/
+*.epub

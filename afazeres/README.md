@@ -194,3 +194,23 @@ Additional cross-dependencies from Plane:
 
 See the [evidence review](../doc/scientific_validation_status_review.md) for
 repository findings and the rationale for this reclassification.
+
+## Comandos úteis
+
+Convert the thesis (`../doc/main.tex`) to EPUB for e-readers (e.g. Kindle
+via "Send to Kindle", which converts EPUB automatically):
+
+```bash
+cd doc
+pandoc main.tex -o main.epub \
+  --resource-path=.:imagens:modelo-ufpa \
+  -f latex -t epub3 \
+  --webtex \
+  --metadata title="Processamento de Dados em LT" \
+  --metadata author="Daniel"
+```
+
+`--webtex` renders formulas as images (needs internet at conversion time,
+best e-reader compatibility). Without `--mathml`/`--webtex`, this pandoc
+build (3.1.3) fails to convert even plain `\frac{}{}` math and silently
+falls back to raw TeX text in the output.

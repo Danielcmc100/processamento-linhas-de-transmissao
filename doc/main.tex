@@ -396,7 +396,9 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 \begin{resumo}
 
-Este trabalho apresenta uma proposta computacional para automatizar a extração, o tratamento estatístico, a análise probabilística e a classificação de dados provenientes de simulações de transitórios eletromagnéticos em manobras de energização de linhas de transmissão. O estudo parte do problema de que a inspeção manual dos arquivos gerados pelo \textit{Alternative Transients Program} (ATP) pode ser lenta, repetitiva e suscetível a interpretações inconsistentes, especialmente quando há múltiplas simulações e grande volume de resultados. A proposta considera a identificação de sobretensões máximas, a caracterização estatística dos dados, o uso de critérios preliminares para detecção de valores extremos e a aplicação de técnicas de aprendizagem de máquina não supervisionada, como K-Means e DBSCAN, para auxiliar na identificação de padrões de comportamento e possíveis anomalias. A aplicação constitui uma ferramenta de apoio à decisão técnica: seus resultados sinalizam candidatos para investigação, mas não determinam automaticamente sua causa física ou numérica, seu descarte ou o nível de isolamento a ser adotado. Espera-se que a integração entre análise estatística, visualização de dados e algoritmos de clusterização contribua para reduzir a subjetividade da avaliação técnica e oferecer suporte mais consistente à interpretação dos resultados de simulações de energização.
+Este trabalho apresenta uma proposta computacional para automatizar a extração, o tratamento estatístico, a análise probabilística e a classificação de dados provenientes de simulações de transitórios eletromagnéticos em manobras de energização de linhas de transmissão. O estudo parte do problema de que a inspeção manual dos arquivos gerados pelo \textit{Alternative Transients Program} (ATP) pode ser lenta, repetitiva e suscetível a interpretações inconsistentes, especialmente quando há múltiplas simulações e grande volume de resultados. A proposta considera a identificação de sobretensões máximas, a caracterização estatística dos dados, o uso de critérios preliminares para detecção de valores extremos e a aplicação de técnicas de aprendizagem de máquina não supervisionada, como K-Means e DBSCAN, para auxiliar na identificação de padrões de comportamento e possíveis anomalias. A aplicação constitui uma ferramenta de apoio à decisão técnica: seus resultados sinalizam candidatos para investigação, mas não determinam automaticamente sua causa física ou numérica, seu descarte ou o nível de isolamento a ser adotado. Espera-se que a integração entre análise estatística, visualização de dados e algoritmos de clusterização contribua para \textcolor{red}{oferecer critérios quantitativos para comparar os resultados das simulações de energização e direcionar a avaliação técnica.}
+
+%reduzir a subjetividade da avaliação técnica e oferecer suporte mais consistente à interpretação dos resultados de simulações de energização.
 
  \textbf{Palavras-chave}: \imprimirpalavraschave
 \end{resumo}
@@ -468,7 +470,7 @@ A proposta deste trabalho consiste, portanto, em desenvolver uma rotina computac
 \subsection{Objetivo geral}
 
 
-Desenvolver um modelo computacional para automatizar a extração, o tratamento estatístico, a análise probabilística e a classificação de dados provenientes de simulações computacionais e estatísticas realizadas no \textit{Alternative Transients Program} (ATP), com foco na identificação de anomalias e valores extremos em manobras de energização de linhas de transmissão.
+Desenvolver um modelo computacional para automatizar a extração, o tratamento estatístico, a análise probabilística e a classificação de dados provenientes de simulações computacionais e estatísticas realizadas no ATP, com foco na identificação de anomalias e valores extremos em manobras de energização de linhas de transmissão.
 
 
 \subsection{Objetivos específicos}
@@ -498,43 +500,50 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 
 \section{Escopo e limites da proposta}
 
-O modelo computacional proposto constitui uma ferramenta de apoio à decisão
-técnica. Sua função é organizar os dados produzidos pelo ATP, calcular
-indicadores estatísticos e probabilísticos, identificar padrões e sinalizar
-observações que mereçam investigação. Assim, os resultados apresentados pela
-aplicação representam evidências analíticas e candidatos a anomalias, e não
-decisões conclusivas sobre a natureza dos eventos observados.
+%O modelo computacional proposto constitui uma ferramenta de apoio à decisão técnica. Sua função é organizar os dados produzidos pelo ATP, calcular indicadores estatísticos e probabilísticos, identificar padrões e sinalizar observações que mereçam investigação. Assim, os resultados apresentados pela aplicação representam evidências analíticas e candidatos a anomalias, e não decisões conclusivas sobre a natureza dos eventos observados.
 
-O escopo do trabalho compreende a extração dos arquivos estatísticos, a
-estruturação e a normalização dos valores máximos de tensão, a análise
-estatística e probabilística, a aplicação de métodos não supervisionados e a
-apresentação reprodutível dos resultados. A interpretação deve preservar a
-rastreabilidade de cada observação até sua simulação, fase e ponto de
-monitoramento, permitindo posterior avaliação técnica.
+% O escopo do trabalho compreende a extração dos arquivos estatísticos, a
+% estruturação e a normalização dos valores máximos de tensão, a análise
+% estatística e probabilística, a aplicação de métodos não supervisionados e a
+% apresentação reprodutível dos resultados. A interpretação deve preservar a
+% rastreabilidade de cada observação até sua simulação, fase e ponto de
+% monitoramento, permitindo posterior avaliação técnica.
 
-Permanecem fora do escopo a classificação automática e definitiva de uma
-observação como fenômeno físico ou erro numérico do ATP, a exclusão automática
-de valores sinalizados, o desenvolvimento de um sistema especialista e a
-recomendação do nível de isolamento. Essas decisões exigem conhecimento de
-engenharia, análise do caso de origem, conferência dos parâmetros de
-chaveamento e, quando necessário, inspeção das formas de onda. A ferramenta,
-portanto, não substitui o especialista nem a validação elétrica independente.
+% Permanecem fora do escopo a classificação automática e definitiva de uma
+% observação como fenômeno físico ou erro numérico do ATP, a exclusão automática
+% de valores sinalizados, o desenvolvimento de um sistema especialista e a
+% recomendação do nível de isolamento. Essas decisões exigem conhecimento de
+% engenharia, análise do caso de origem, conferência dos parâmetros de
+% chaveamento e, quando necessário, inspeção das formas de onda. A ferramenta,
+% portanto, não substitui o especialista nem a validação elétrica independente.
+
+A proposta deste trabalho é desenvolver um modelo computacional para auxiliar a análise dos resultados de simulações de energização realizadas no ATP. O modelo organiza os dados, calcula indicadores estatísticos e probabilísticos, identifica padrões de comportamento e aponta resultados que precisam ser examinados com maior atenção. A identificação desses resultados não determina sua causa, mas orienta as etapas posteriores da análise técnica.
+
+O escopo do trabalho compreende a extração dos arquivos estatísticos gerados pelo ATP, a estruturação e a normalização dos valores máximos de tensão, a realização de análises estatísticas e probabilísticas, a aplicação de métodos não supervisionados e a apresentação reprodutível dos resultados. Durante esse processo, cada valor analisado permanece associado à simulação, à fase e ao ponto de monitoramento que o originaram. Essa rastreabilidade permite localizar o caso correspondente e realizar verificações complementares.
+
+Não fazem parte do escopo deste trabalho a classificação definitiva de um resultado como fenômeno físico ou erro numérico do ATP, a exclusão automática dos valores sinalizados, o desenvolvimento de um sistema especialista e a recomendação do nível de isolamento. Essas decisões dependem da análise do sistema elétrico, da verificação dos parâmetros de chaveamento e, quando necessário, da inspeção das formas de onda. A ferramenta, portanto, não substitui o especialista nem a validação elétrica independente.
+
 
 \section{Organização do trabalho}
 
-Após a introdução, o Capítulo 2 apresenta a fundamentação teórica sobre
-transitórios eletromagnéticos, simulação, estatística e aprendizagem de
-máquina. O Capítulo 3 descreve a modelagem do sistema elétrico e a geração
-dos dados. O Capítulo 4 apresenta a metodologia de extração, organização e
-pré-processamento, seus critérios de validação e as etapas de análise
-previstas. O Capítulo 5 reúne os resultados das validações e discute seus
-limites. O capítulo de conclusão, ainda a ser desenvolvido, retomará os objetivos
-e sintetizará os resultados ao término das análises. O apêndice reúne os
-registros técnicos de apoio à reprodução das verificações.
+% Após a introdução, o Capítulo 2 apresenta a fundamentação teórica sobre
+% transitórios eletromagnéticos, simulação, estatística e aprendizagem de
+% máquina. O Capítulo 3 descreve a modelagem do sistema elétrico e a geração
+% dos dados. O Capítulo 4 apresenta a metodologia de extração, organização e
+% pré-processamento, seus critérios de validação e as etapas de análise
+% previstas. O Capítulo 5 reúne os resultados das validações e discute seus
+% limites. O capítulo de conclusão, ainda a ser desenvolvido, retomará os objetivos
+% e sintetizará os resultados ao término das análises. O apêndice reúne os
+% registros técnicos de apoio à reprodução das verificações.
+
+Além desta introdução, o trabalho está organizado em cinco capítulos. O Capítulo 2 apresenta a fundamentação teórica sobre transitórios eletromagnéticos, simulação computacional, breve resumo sobre estatística e aprendizagem de máquina. O Capítulo 3 descreve a modelagem do sistema elétrico e o processo de geração dos dados. O Capítulo 4 detalha as etapas de extração, organização e pré-processamento dos dados, bem como os critérios de validação e os métodos de análise empregados. O Capítulo 5 apresenta os resultados das validações e discute as limitações identificadas. Por fim, o capítulo de conclusão sintetiza os principais resultados obtidos.
+%O apêndice reunirá os registros técnicos necessários à reprodução das verificações realizadas.
 
 \chapter{Fundamentação teórica}
 
-Este capítulo apresenta os principais conceitos necessários para a compreensão da proposta deste trabalho, relacionando o fenômeno físico investigado, os procedimentos computacionais utilizados para sua simulação e os métodos estatísticos e de aprendizagem de máquina empregados na análise dos resultados. A fundamentação teórica parte da operação de sistemas elétricos de potência e da ocorrência de sobretensões transitórias em linhas de transmissão, avançando para a simulação computacional com o \textit{Alternative Transients Program} (ATP), o tratamento estatístico dos dados, a visualização dos resultados, a detecção de anomalias e o uso de técnicas de aprendizagem de máquina não supervisionada. Essa organização permite compreender como os dados gerados por múltiplas simulações de energização podem ser analisados de forma automatizada, com o objetivo de apoiar a identificação de valores extremos, padrões de comportamento e possíveis anomalias.
+% Este capítulo apresenta os principais conceitos necessários para a compreensão da proposta deste trabalho, relacionando o fenômeno físico investigado, os procedimentos computacionais utilizados para sua simulação e os métodos estatísticos e de aprendizagem de máquina empregados na análise dos resultados. A fundamentação teórica parte da operação de sistemas elétricos de potência e da ocorrência de sobretensões transitórias em linhas de transmissão, avançando para a simulação computacional com o \textit{Alternative Transients Program} (ATP), o tratamento estatístico dos dados, a visualização dos resultados, a detecção de anomalias e o uso de técnicas de aprendizagem de máquina não supervisionada. Essa organização permite compreender como os dados gerados por múltiplas simulações de energização podem ser analisados de forma automatizada, com o objetivo de apoiar a identificação de valores extremos, padrões de comportamento e possíveis anomalias.
+
+Este capítulo reúne os conceitos que fundamentam o trabalho. Primeiro, são discutidos os sistemas elétricos de potência e as sobretensões transitórias em linhas de transmissão. Em seguida, são abordadas as simulações realizadas no ATP e as técnicas utilizadas para organizar, representar e analisar os dados obtidos. Também são apresentados os métodos estatísticos, a detecção de anomalias e as técnicas de aprendizagem de máquina não supervisionada empregadas na identificação de valores extremos e de padrões entre as simulações de energização.
 
 % \section{Sistemas elétricos de potência e linhas de transmissão}
 
