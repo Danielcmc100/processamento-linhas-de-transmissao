@@ -1,18 +1,35 @@
 {
-  "base_voltage": 100000.0,
+  "adequacy_significance_level": 0.05,
+  "base_voltage": 112677.0,
+  "confidence_level": 0.95,
   "dbscan": {
     "eps": 3.0,
     "min_samples": 2
   },
+  "dbscan_threshold_percentile": 95.0,
   "encoding": "iso-8859-1",
+  "event_definition": "absolute_phase_to_ground_maximum",
+  "generator_version": "1.0.0",
+  "grouping_policy": [
+    "scenario",
+    "source_lineage",
+    "terminal",
+    "phase"
+  ],
   "input_path": "input_files/casos/200-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF",
   "kmeans": {
     "n_clusters": 2,
     "random_state": 42
   },
+  "kmeans_threshold_percentile": 99.0,
+  "mad_threshold": 3.5,
   "output_dir": "input_files/casos/200-simulacoes/resultados",
-  "overwrite": false,
+  "overwrite": true,
   "phase_policy": "A",
+  "sample_size": 200,
+  "scenario": "SRPI",
+  "schema_version": "1.0.0",
+  "source_lineage": "srpi-200",
   "terminals": [
     "T_MAN",
     "1_2LT",

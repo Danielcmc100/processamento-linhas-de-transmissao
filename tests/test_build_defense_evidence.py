@@ -38,6 +38,7 @@ def test_dataset_manifest_frame_preserves_provenance() -> None:
         terminals=("T_MAN", "T_OPO"),
         phases=("A", "B", "C"),
         base_voltage=112_677.0,
+        phase_to_phase_base_voltage=195_161.0,
         time_window=(0.0, 0.3),
         event_definition="maximum",
         experiment_assumptions=("separate scenarios",),

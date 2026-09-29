@@ -13,6 +13,10 @@ from pydantic import (
     model_validator,
 )
 
+from src.services.dataset_manifest import (
+    ACCEPTED_PHASE_TO_GROUND_BASE_VOLTAGE,
+)
+
 
 class DbscanConfig(BaseModel):
     """Validated DBSCAN parameters."""
@@ -89,9 +93,11 @@ class AnalysisConfig(BaseModel):
     @field_validator("base_voltage")
     @classmethod
     def validate_base_voltage(cls, value: float) -> float:
-        """Require accepted ATP P.U. base for comparable evidence."""
-        if value != 112_677.0:
-            raise ValueError("base_voltage must equal accepted 112677 V.")
+        """Require phase-to-ground base used by this extraction pipeline."""
+        if value != ACCEPTED_PHASE_TO_GROUND_BASE_VOLTAGE:
+            raise ValueError(
+                "base_voltage must equal phase-to-ground base 112677 V."
+            )
         return value
 
     @field_validator("grouping_policy")

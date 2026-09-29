@@ -990,35 +990,45 @@ nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 \section{Normalização em unidade por unidade}
 \label{sec:per-unit-validation}
 
-Para a referência nominal de 138~kV de tensão eficaz entre fases, a base de
-pico senoidal fase-terra decorre da referência trifásica equilibrada:
+Para a referência nominal de 138~kV de tensão eficaz entre fases, as bases
+de pico senoidal fase-terra e fase-fase decorrem da referência trifásica
+equilibrada:
 \begin{equation}
-V_{\mathrm{phase,RMS}} = \frac{138000}{\sqrt{3}}\ \mathrm{V},
-\qquad
-V_{\mathrm{phase,peak}} = \sqrt{2}V_{\mathrm{phase,RMS}}.
+\begin{aligned}
+V_{\mathrm{phase,RMS}} &= \frac{138000}{\sqrt{3}}\ \mathrm{V}, \\
+V_{\mathrm{phase-ground,peak}} &= \sqrt{2}V_{\mathrm{phase,RMS}}, \\
+V_{\mathrm{phase-phase,peak}} &= \sqrt{2}\,138000.
+\end{aligned}
 \end{equation}
 Portanto,
 \begin{equation}
-V_{\mathrm{base,peak}} = 138000\sqrt{\frac{2}{3}}
-= 112676.528168\ \mathrm{V}.
+V_{\mathrm{base,phase-ground}} = 138000\sqrt{\frac{2}{3}}
+= 112676.528168\ \mathrm{V},
+\qquad
+V_{\mathrm{base,phase-phase}} = 195161.522\ \mathrm{V}.
 \end{equation}
 Uma fonte do ATP associada ao barramento 9049 utiliza 112676,528~V a 60~Hz.
-Os cartões estatísticos arredondam a base fase-terra para 112677~V, e o LIS
-imprime explicitamente essa base para as distribuições dos picos monitorados.
+Os cartões estatísticos arredondam as bases para 112677~V, para nós
+fase-terra, e 195161~V, para ramos fase-fase. O LIS imprime explicitamente as
+duas bases nas distribuições dos picos monitorados.
 O arquivo de rede equivalente
 \path{input_files/CEPEL_DATA/BR2612PJ-CC-MIN-EQUIV.ana}, nas linhas 34 e 38,
 identifica os barramentos 9049 e 48461 como 138~kV. No caso SRPI de 100
 execuções, as linhas 392--395 de \texttt{case.atp} especificam a amplitude da
 fonte, enquanto as linhas 330--333 especificam a base estatística. O arquivo
 \texttt{case.lis}, linha 3095, declara explicitamente
-\texttt{V-base = 1.12677000E+05} para \texttt{T\_MANA}.
-Esses registros conciliam a tensão nominal do sistema com a normalização
-efetivamente utilizada pelo ATP. A base arredondada difere do pico nominal
-calculado em apenas 0,471832~V, ou aproximadamente 4,1875 partes por milhão.
-Assim, a conversão que reproduz essas tabelas do ATP é
+\texttt{V-base = 1.12677000E+05} para \texttt{T\_MANA}; as linhas 3262,
+3323 e 3383 declaram \texttt{195161} para os ramos entre fases. Esses
+registros conciliam a tensão nominal do sistema com as duas normalizações
+efetivamente utilizadas pelo ATP. A base fase-terra arredondada difere do pico
+nominal calculado em apenas 0,471832~V, ou aproximadamente 4,1875 partes por
+milhão. O algoritmo deste trabalho extrai exclusivamente máximos de nós
+fase-terra; portanto, sua conversão é
 \begin{equation}
 V_{\mathrm{pu}} = \frac{|V_{\mathrm{peak,signed}}|}{112677}.
 \end{equation}
+Para uma futura extração de máximos fase-fase, a base correspondente é
+195161~V; as duas grandezas não devem ser misturadas na mesma análise em P.U.
  A relação nominal senoidal entre tensão eficaz e pico define a referência, e
 não a tensão eficaz de um transitório distorcido. O valor com sinal é o pico da
 simulação informado pelo ATP, juntamente com seu instante de ocorrência. O uso
@@ -1376,7 +1386,7 @@ $T_{OPO}$ & $-204404.45$ & 1.814074300877730149 & 1.8140743008777303 \\
 \end{tabular}
 \end{table}
 
-A configuração anterior de 100000~V superestima os valores em P.U. em
+A configuração anterior de 100000~V superestima os valores fase-terra em P.U. em
 12,677\% em relação à referência do ATP. Ela é rejeitada para a reprodução
 desses casos. Um limiar de 2,3~P.U. corresponde agora a 259157,1~V; resultados
 estatísticos anteriores exigem regeneração e validação separada. Em
@@ -1399,11 +1409,13 @@ independentes apresentadas neste capítulo.
 
 A conversão é, portanto, aceita para os dez casos SRPI/CRPI declarados como
 modelo completo e sem defeitos, em $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, nas fases
-A, B e C, utilizando 112677~V. As auditorias históricas com 100000~V
+A, B e C, utilizando 112677~V para máximos fase-terra. As declarações de
+195161~V para ramos fase-fase também foram verificadas no ATP e no LIS, mas
+esses ramos não integram a extração atual. As auditorias históricas com 100000~V
 permanecem como evidência da aritmética e da estrutura das observações,
 enquanto sua referência elétrica é substituída nesta análise. Artefatos
-posteriores antigos não foram sobrescritos e exigem regeneração e validação
-antes do reúso. Fontes alteradas, outros cenários ou convenções de saída
+anteriores foram substituídos pela regeneração atual, com a base fase-terra
+de 112677~V. Fontes alteradas, outros cenários ou convenções de saída
 diferentes exigem nova validação. Não foi realizada nova simulação no ATP nem
 auditoria das formas de onda. A aceitação não valida a adequação gaussiana, a
 causa física dos valores extremos ou escolhas de isolamento; essas

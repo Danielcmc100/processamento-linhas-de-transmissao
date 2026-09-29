@@ -5,6 +5,7 @@ from pathlib import Path
 
 from src.services.dataset_manifest import (
     ACCEPTED_BASE_VOLTAGE,
+    ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE,
     DEFAULT_EVENT_DEFINITION,
     DatasetManifestEntry,
     build_dataset_manifest,
@@ -37,6 +38,8 @@ def _write_case(
     declared_runs: int | None = None,
     effective_runs: int | None = None,
     include_base: bool = True,
+    phase_to_phase_base_voltage: int = 195_161,
+    include_phase_to_phase_base: bool = True,
 ) -> Path:
     path = _case_path(root, size, scenario)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -51,6 +54,12 @@ def _write_case(
         lines.append(
             "Statistical output of node voltage "
             f"0.1127E+06 |0      {base_voltage}.T_MANAT_MANBT_MANC\n"
+        )
+    if include_phase_to_phase_base:
+        lines.append(
+            "Statistical output of branch voltage "
+            f"0.1952E+06 |-1     {phase_to_phase_base_voltage}."
+            "T_MANAT_MANBT_MANB\n"
         )
     path.write_text("".join(lines), encoding="latin-1")
     return path
@@ -76,6 +85,11 @@ def test_build_manifest_discovers_ten_sources_deterministically(
     assert all(entry.included for entry in manifest)
     assert all(
         entry.base_voltage == ACCEPTED_BASE_VOLTAGE for entry in manifest
+    )
+    assert all(
+        entry.phase_to_phase_base_voltage
+        == ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE
+        for entry in manifest
     )
     assert all(
         entry.terminals == ("T_MAN", "1_2LT", "T_OPO") for entry in manifest
@@ -146,6 +160,32 @@ def test_missing_base_provenance_fails_closed(tmp_path: Path) -> None:
     assert entry.exclusion_reasons == ("base voltage declaration not found",)
 
 
+def test_missing_phase_to_phase_base_provenance_fails_closed(
+    tmp_path: Path,
+) -> None:
+    _write_case(tmp_path, 50, "SRPI", include_phase_to_phase_base=False)
+
+    entry = build_dataset_manifest(tmp_path)[0]
+
+    assert entry.phase_to_phase_base_voltage is None
+    assert not entry.included
+    assert entry.exclusion_reasons == (
+        "phase-to-phase base voltage declaration not found",
+    )
+
+
+def test_wrong_phase_to_phase_base_is_excluded(tmp_path: Path) -> None:
+    _write_case(tmp_path, 50, "SRPI", phase_to_phase_base_voltage=195_000)
+
+    entry = build_dataset_manifest(tmp_path)[0]
+
+    assert not entry.included
+    assert entry.exclusion_reasons == (
+        "phase-to-phase base voltage 195000 V does not equal accepted "
+        "195161 V",
+    )
+
+
 def test_declared_count_mismatch_is_excluded(tmp_path: Path) -> None:
     _write_case(tmp_path, 50, "SRPI", declared_runs=49)
 
@@ -178,6 +218,7 @@ def test_validation_rejects_missing_hash_and_incompatible_event() -> None:
         "terminals": ("T_MAN", "1_2LT", "T_OPO"),
         "phases": ("A", "B", "C"),
         "base_voltage": ACCEPTED_BASE_VOLTAGE,
+        "phase_to_phase_base_voltage": ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE,
         "time_window": (0.0, 0.3),
         "experiment_assumptions": ("same model",),
         "relationship_status": "independence_not_established",

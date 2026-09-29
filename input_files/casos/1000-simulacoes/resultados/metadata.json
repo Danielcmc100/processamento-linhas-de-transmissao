@@ -1,6 +1,9 @@
 {
   "artifacts": [
     "raw_observations.csv",
+    "validated_observations.csv",
+    "statistical_evidence.csv",
+    "distribution_adequacy.csv",
     "annotated_observations.csv",
     "summary.csv",
     "configuration.json",
@@ -14,11 +17,15 @@
   ],
   "counts": {
     "annotated_observations": 3000,
+    "distribution_adequacy_rows": 3,
     "input_files": 1,
     "raw_observations": 9000,
+    "statistical_evidence_rows": 3,
     "summary_rows": 3,
+    "validated_observations": 3000,
     "validation_issues": 0
   },
+  "generator_version": "1.0.0",
   "inputs": [
     {
       "path": "case.lis",
@@ -26,8 +33,9 @@
     }
   ],
   "runtime": {
-    "generated_at_utc": "2026-09-16T17:48:53.387808+00:00"
+    "generated_at_utc": "2026-09-29T20:48:35.187349+00:00"
   },
+  "schema_version": "1.0.0",
   "software": {
     "matplotlib": "3.10.8",
     "numpy": "2.4.2",

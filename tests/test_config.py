@@ -77,7 +77,10 @@ def test_analysis_config_is_json_serializable(tmp_path: Path) -> None:
     assert AnalysisConfig.model_validate_json(config.model_dump_json())
 
 
-@pytest.mark.parametrize("base_voltage", [0.0, -1.0, float("inf")])
+@pytest.mark.parametrize(
+    "base_voltage",
+    [0.0, -1.0, 100_000.0, 195_161.0, float("inf")],
+)
 def test_analysis_config_rejects_invalid_base_voltage(
     tmp_path: Path,
     base_voltage: float,

@@ -6,7 +6,10 @@ from pathlib import Path
 from re import compile as compile_pattern
 from typing import Iterable
 
-ACCEPTED_BASE_VOLTAGE = 112_677.0
+ACCEPTED_PHASE_TO_GROUND_BASE_VOLTAGE = 112_677.0
+ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE = 195_161.0
+# Compatibility name for phase-to-ground analysis artifacts.
+ACCEPTED_BASE_VOLTAGE = ACCEPTED_PHASE_TO_GROUND_BASE_VOLTAGE
 DEFAULT_EVENT_DEFINITION = (
     "maximum absolute phase-to-ground voltage from 0.0 to 0.3 seconds"
 )
@@ -28,6 +31,10 @@ _BASE_PATTERN = compile_pattern(
     rb"Statistical output of\s+node\s+voltage.*?"
     rb"\|0\s+([0-9]+(?:\.[0-9]*)?)\.?(?:T_MAN[ABC])"
 )
+_PHASE_TO_PHASE_BASE_PATTERN = compile_pattern(
+    rb"Statistical output of\s+branch\s+voltage.*?"
+    rb"\|-1\s+([0-9]+(?:\.[0-9]*)?)\."
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,6 +51,7 @@ class DatasetManifestEntry:
     terminals: tuple[str, ...]
     phases: tuple[str, ...]
     base_voltage: float | None
+    phase_to_phase_base_voltage: float | None
     time_window: tuple[float, float]
     event_definition: str
     experiment_assumptions: tuple[str, ...]
@@ -70,7 +78,9 @@ class _SourceDeclarations:
     declared_run_count: int | None
     effective_run_count: int
     base_voltage: float | None
+    phase_to_phase_base_voltage: float | None
     conflicting_base: bool
+    conflicting_phase_to_phase_base: bool
 
 
 def build_dataset_manifest(
@@ -158,7 +168,7 @@ def validate_dataset_manifest(
                 reasons,
                 "event definition differs from canonical definition",
             )
-        if entry.base_voltage != ACCEPTED_BASE_VOLTAGE:
+        if entry.base_voltage != ACCEPTED_PHASE_TO_GROUND_BASE_VOLTAGE:
             if entry.base_voltage is None:
                 _append_unique(
                     reasons,
@@ -168,6 +178,21 @@ def validate_dataset_manifest(
                 _append_unique(
                     reasons,
                     _invalid_base_reason(entry.base_voltage),
+                )
+        if entry.phase_to_phase_base_voltage != (
+            ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE
+        ):
+            if entry.phase_to_phase_base_voltage is None:
+                _append_unique(
+                    reasons,
+                    "phase-to-phase base voltage declaration not found",
+                )
+            else:
+                _append_unique(
+                    reasons,
+                    _invalid_phase_to_phase_base_reason(
+                        entry.phase_to_phase_base_voltage
+                    ),
                 )
         if not entry.experiment_assumptions:
             _append_unique(reasons, "experiment assumptions are missing")
@@ -214,6 +239,7 @@ def _build_entry(
             terminals=TERMINALS,
             phases=PHASES,
             base_voltage=None,
+            phase_to_phase_base_voltage=None,
             time_window=DEFAULT_TIME_WINDOW,
             event_definition=DEFAULT_EVENT_DEFINITION,
             experiment_assumptions=DEFAULT_ASSUMPTIONS,
@@ -236,6 +262,7 @@ def _build_entry(
         terminals=TERMINALS,
         phases=PHASES,
         base_voltage=declarations.base_voltage,
+        phase_to_phase_base_voltage=(declarations.phase_to_phase_base_voltage),
         time_window=DEFAULT_TIME_WINDOW,
         event_definition=DEFAULT_EVENT_DEFINITION,
         experiment_assumptions=DEFAULT_ASSUMPTIONS,
@@ -251,6 +278,7 @@ def _scan_source(path: Path) -> _SourceDeclarations:
     declared_counts: set[int] = set()
     run_ids: set[int] = set()
     base_voltages: set[float] = set()
+    phase_to_phase_base_voltages: set[float] = set()
     with path.open("rb") as source:
         for line in source:
             digest.update(line)
@@ -260,16 +288,27 @@ def _scan_source(path: Path) -> _SourceDeclarations:
                 run_ids.add(int(match.group(1)))
             if match := _BASE_PATTERN.search(line):
                 base_voltages.add(float(match.group(1)))
+            if match := _PHASE_TO_PHASE_BASE_PATTERN.search(line):
+                phase_to_phase_base_voltages.add(float(match.group(1)))
     declared = (
         next(iter(declared_counts)) if len(declared_counts) == 1 else None
     )
     base = next(iter(base_voltages)) if len(base_voltages) == 1 else None
+    phase_to_phase_base = (
+        next(iter(phase_to_phase_base_voltages))
+        if len(phase_to_phase_base_voltages) == 1
+        else None
+    )
     return _SourceDeclarations(
         source_sha256=digest.hexdigest(),
         declared_run_count=declared,
         effective_run_count=len(run_ids),
         base_voltage=base,
+        phase_to_phase_base_voltage=phase_to_phase_base,
         conflicting_base=len(base_voltages) > 1,
+        conflicting_phase_to_phase_base=(
+            len(phase_to_phase_base_voltages) > 1
+        ),
     )
 
 
@@ -301,6 +340,18 @@ def _source_exclusions(
         reasons.append("base voltage declaration not found")
     elif declarations.base_voltage != ACCEPTED_BASE_VOLTAGE:
         reasons.append(_invalid_base_reason(declarations.base_voltage))
+    if declarations.conflicting_phase_to_phase_base:
+        reasons.append("conflicting phase-to-phase base declarations found")
+    elif declarations.phase_to_phase_base_voltage is None:
+        reasons.append("phase-to-phase base voltage declaration not found")
+    elif declarations.phase_to_phase_base_voltage != (
+        ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE
+    ):
+        reasons.append(
+            _invalid_phase_to_phase_base_reason(
+                declarations.phase_to_phase_base_voltage
+            )
+        )
     return tuple(reasons)
 
 
@@ -308,6 +359,13 @@ def _invalid_base_reason(base_voltage: float) -> str:
     return (
         f"base voltage {base_voltage:g} V does not equal accepted "
         f"{ACCEPTED_BASE_VOLTAGE:g} V"
+    )
+
+
+def _invalid_phase_to_phase_base_reason(base_voltage: float) -> str:
+    return (
+        f"phase-to-phase base voltage {base_voltage:g} V does not equal "
+        f"accepted {ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE:g} V"
     )
 
 

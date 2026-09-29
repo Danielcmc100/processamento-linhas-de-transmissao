@@ -1,7 +1,13 @@
 {
     "input_path": "input_files/casos/10000-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF",
+    "schema_version": "1.0.0",
+    "generator_version": "1.0.0",
     "encoding": "iso-8859-1",
     "base_voltage": 112677.0,
+    "scenario": "SRPI",
+    "sample_size": 10000,
+    "source_lineage": "srpi-10000",
+    "event_definition": "absolute_phase_to_ground_maximum",
     "terminals": [
         "T_MAN",
         "1_2LT",
@@ -18,5 +24,5 @@
     },
     "threshold": 2.3,
     "output_dir": "input_files/casos/10000-simulacoes/resultados",
-    "overwrite": false
+    "overwrite": true
 }

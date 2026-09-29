@@ -38,6 +38,7 @@ from src.services.convergence import (
 )
 from src.services.dataset_manifest import (
     ACCEPTED_BASE_VOLTAGE,
+    ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE,
     DatasetManifestEntry,
     build_dataset_manifest,
     validate_dataset_manifest,
@@ -673,6 +674,9 @@ def _write_manifest(
         configuration={
             "schema_version": SCHEMA_VERSION,
             "base_voltage": ACCEPTED_BASE_VOLTAGE,
+            "phase_to_phase_base_voltage": (
+                ACCEPTED_PHASE_TO_PHASE_BASE_VOLTAGE
+            ),
             "threshold_pu": THRESHOLD_PU,
             "scenarios": ["SRPI", "CRPI"],
             "sample_sizes": [50, 100, 200, 1_000, 10_000],
