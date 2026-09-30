@@ -452,7 +452,7 @@ Apesar da importância do ATP em estudos de transitórios eletromagnéticos, a a
 
 \section{Problema de pesquisa}
 
-Diante desse cenário, este trabalho aborda o problema de como identificar, de forma mais confiável e automatizada, quais sobretensões máximas observadas em manobras de energização correspondem a eventos fisicamente relevantes e quais devem ser analisadas como possíveis anomalias ou \textit{outliers}. Assim, a questão central da pesquisa pode ser sintetizada da seguinte forma: de que maneira técnicas de tratamento estatístico, análise probabilística e aprendizagem de máquina não supervisionada podem auxiliar na diferenciação entre sobretensões coerentes com o fenômeno físico simulado e valores discrepantes presentes em bases produzidas por simulações estatísticas no ATP?
+Diante desse cenário, este trabalho aborda o problema de como identificar e organizar, de forma automatizada e rastreável, sobretensões máximas que se afastam dos padrões observados nas simulações de energização. A questão central da pesquisa é: de que maneira técnicas de tratamento estatístico, análise probabilística e aprendizagem de máquina não supervisionada podem auxiliar na identificação de observações discrepantes e na seleção de candidatos para investigação técnica em bases produzidas por simulações estatísticas no ATP? A proposta não pretende determinar, apenas a partir dos valores máximos, se uma observação discrepante corresponde a um fenômeno físico ou a um artefato numérico.
 
 A detecção de anomalias em bases de dados de sistemas elétricos tem sido amplamente investigada com o apoio de técnicas estatísticas e algoritmos de aprendizagem de máquina, especialmente em aplicações relacionadas ao monitoramento de redes, identificação de falhas, análise de medições, detecção de ataques à integridade dos dados e reconhecimento de comportamentos incomuns em sistemas elétricos e \textit{smart grids} \cite{chandola2009,guato2024,ardebili2024,gillioz2026}. Embora esses estudos não estejam necessariamente voltados à análise de sobretensões transitórias geradas por simulações no ATP, eles fornecem base conceitual e metodológica para o uso de técnicas de detecção de anomalias na interpretação automatizada de dados provenientes de sistemas elétricos. Nesse contexto, métodos não supervisionados apresentam potencial de aplicação, pois permitem reconhecer estruturas internas nos dados e identificar observações discrepantes sem a necessidade de rotulação prévia das amostras \cite{guato2024,gillioz2026}.
 
@@ -462,7 +462,7 @@ A justificativa deste trabalho está relacionada à necessidade de tornar a aná
 
 Parte-se da expectativa de que a combinação entre métodos estatísticos clássicos, análise probabilística e técnicas de aprendizagem de máquina não supervisionada contribua para tornar a avaliação mais robusta, reduzindo a subjetividade da inspeção manual e oferecendo suporte mais consistente à tomada de decisão em estudos de coordenação de isolamento. Algoritmos como K-Means e DBSCAN podem auxiliar, respectivamente, na identificação de agrupamentos predominantes e de regiões de baixa densidade associadas a observações atípicas \cite{ardebili2024}. Assim, além de contribuir para a confiabilidade técnica do processo analítico, a proposta pode favorecer a otimização de investimentos, ao evitar superdimensionamentos motivados por eventos sem relevância prática.
 
-A proposta deste trabalho consiste, portanto, em desenvolver uma rotina computacional em Python capaz de integrar a extração, a organização, o tratamento estatístico, a análise probabilística e a classificação dos dados obtidos no ATP, oferecendo apoio à interpretação técnica das sobretensões máximas observadas em manobras de energização de linhas de transmissão.
+A contribuição deste trabalho consiste em desenvolver uma rotina computacional em Python capaz de integrar a extração, a organização, o tratamento estatístico, a análise probabilística e a geração de evidências analíticas sobre os dados obtidos no ATP. A rotina identifica e organiza observações discrepantes como candidatos para investigação posterior, preservando sua rastreabilidade até a simulação de origem. Ela não diagnostica a causa física ou numérica desses casos nem substitui a avaliação de um especialista.
 
 
 \section{Objetivos}
@@ -517,7 +517,7 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 % chaveamento e, quando necessário, inspeção das formas de onda. A ferramenta,
 % portanto, não substitui o especialista nem a validação elétrica independente.
 
-A proposta deste trabalho é desenvolver um modelo computacional para auxiliar a análise dos resultados de simulações de energização realizadas no ATP. O modelo organiza os dados, calcula indicadores estatísticos e probabilísticos, identifica padrões de comportamento e aponta resultados que precisam ser examinados com maior atenção. A identificação desses resultados não determina sua causa, mas orienta as etapas posteriores da análise técnica.
+A proposta deste trabalho é desenvolver um modelo computacional para auxiliar a análise dos resultados de simulações de energização realizadas no ATP. O modelo organiza os dados, calcula indicadores estatísticos e probabilísticos, identifica padrões de comportamento e aponta, de forma rastreável, resultados que precisam ser examinados com maior atenção. Essa é a contribuição central do trabalho: detectar e organizar candidatos para investigação técnica posterior. A identificação não determina se um caso é fenômeno físico, erro de dados ou artefato numérico; essa conclusão depende de evidência elétrica complementar e de avaliação especializada.
 
 O escopo do trabalho compreende a extração dos arquivos estatísticos gerados pelo ATP, a estruturação e a normalização dos valores máximos de tensão, a realização de análises estatísticas e probabilísticas, a aplicação de métodos não supervisionados e a apresentação reprodutível dos resultados. Durante esse processo, cada valor analisado permanece associado à simulação, à fase e ao ponto de monitoramento que o originaram. Essa rastreabilidade permite localizar o caso correspondente e realizar verificações complementares.
 
@@ -1716,15 +1716,17 @@ permite, isoladamente, concluir sobre duração, frequência, taxa de variação
 conteúdo oscilatório do transitório. Tais conclusões exigiriam armazenar e
 analisar as formas de onda ou atributos temporais adicionais.
 
-Como consequência, as anomalias identificadas posteriormente descrevem
-comportamentos discrepantes dentro desse ambiente de simulação. A classificação
-estatística, isoladamente, não comprova que um ponto seja um erro numérico nem
-que corresponda a um evento físico real. Essa distinção requer a conferência do
-caso de origem, dos parâmetros de chaveamento e da coerência do resultado com
-os demais pontos e fases. As validações apresentadas sustentam a extração, a organização e o
-pré-processamento dos dados no escopo declarado. A análise estatística, a
-análise probabilística e a clusterização constituem as etapas seguintes da
-investigação e precisam ser avaliadas segundo seus próprios critérios.
+As observações sinalizadas descrevem comportamentos discrepantes dentro do
+ambiente de simulação e são organizadas como candidatos para investigação
+técnica posterior. A classificação estatística, isoladamente, não comprova que
+um ponto seja um erro numérico nem que corresponda a um evento físico real.
+Essa distinção requer a conferência do caso de origem, dos parâmetros de
+chaveamento e da coerência do resultado com os demais pontos e fases. Neste
+trabalho, a extração, a organização, o pré-processamento, a análise estatística,
+a análise probabilística e a clusterização foram realizados e avaliados segundo
+os critérios declarados. Seus resultados sustentam conclusões sobre o conjunto
+e as condições examinados, mas não substituem a validação elétrica independente
+necessária para atribuir causa aos candidatos sinalizados.
 
 \subsection{Lacunas declaradas do pacote de evidências}
 \label{sec:lacunas-pacote}
@@ -1758,17 +1760,18 @@ extensões legítimas de pesquisa, conforme retomado na conclusão.
 \label{chap:conclusao}
 
 Este trabalho desenvolveu e avaliou um modelo computacional para automatizar
-a extração, o tratamento estatístico, a análise probabilística e a
-classificação de dados provenientes de simulações estatísticas do ATP, com
-foco na identificação de anomalias e valores extremos em manobras de
-energização de linhas de transmissão. O objetivo geral é atendido no nível
-de evidência estabelecido neste capítulo: o modelo extrai, organiza,
-descreve estatisticamente e classifica analiticamente as sobretensões
-máximas dos dez arquivos declarados, com rastreabilidade completa entre
-código, dados de origem e resultados publicados. A identificação de
-anomalias permanece, contudo, no nível de candidato analítico, e não de
-diagnóstico causal confirmado -- distinção que este trabalho definiu como
-requisito desde a proposta e que o pacote final de evidências preserva.
+a extração, o tratamento estatístico, a análise probabilística e a geração de
+evidências analíticas a partir de dados de simulações estatísticas do ATP,
+com foco nas sobretensões máximas de manobras de energização de linhas de
+transmissão. Sua contribuição é identificar e organizar, com rastreabilidade,
+candidatos a observações discrepantes para investigação técnica posterior.
+Nos dez arquivos declarados, o modelo extrai, organiza, descreve
+estatisticamente e sinaliza observações segundo critérios explícitos, mantendo
+a ligação entre código, dados de origem e resultados apresentados. Esses
+sinais não constituem diagnóstico causal: o modelo não determina se um
+candidato é artefato numérico ou evento físico, nem substitui a avaliação de
+um especialista. Essa distinção delimita o alcance das conclusões sustentadas
+pelo pacote de evidências.
 
 Quanto aos objetivos específicos, os resultados apresentados sustentam as
 seguintes conclusões:
