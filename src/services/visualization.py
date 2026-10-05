@@ -429,9 +429,11 @@ def plot_kmeans_clusters(
 
     ax.set_xlabel("Fractional line distance (p.u. of total length)")
     ax.set_ylabel("Overvoltage (P.U.)")
-    ax.set_title("K-Means Clusters — Overvoltage vs. Line Position")
+    hierarchical = cluster_col == "hierarchical_cluster"
+    method = "Hierarchical" if hierarchical else "K-Means"
+    ax.set_title(f"{method} Clusters — Overvoltage vs. Line Position")
     if handles:
-        ax.legend(handles=handles, title="K-Means cluster", fontsize=8)
+        ax.legend(handles=handles, title=f"{method} cluster", fontsize=8)
     ax.grid(visible=True, linestyle="--", alpha=0.4, zorder=1)
     ax.set_xlim(-0.08, 1.08)
     fig.tight_layout()
@@ -788,5 +790,31 @@ def plot_switching_time_curve(
     )
     ax.legend(fontsize=7, ncols=2, loc="upper right")
     ax.grid(visible=True, linestyle="--", alpha=0.35)
+    fig.tight_layout()
+    return fig, ax
+
+
+def plot_hierarchical_tree(
+    df: pl.DataFrame,
+    value_col: str = "value_pu",
+    figsize: tuple[float, float] = (10, 6),
+) -> tuple[Figure, Axes]:
+    """Plot hierarchical clustering dendrogram for overvoltage values."""
+    from scipy.cluster import hierarchy
+
+    values = df[value_col].cast(pl.Float64).to_numpy().reshape(-1, 1)
+    if values.size == 0:
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.set_title("Hierarchical Tree (empty data)")
+        return fig, ax
+
+    linkage_matrix = hierarchy.linkage(values, method="ward")  # type: ignore[reportUnknownArgumentType]
+    fig, ax = plt.subplots(figsize=figsize)
+    hierarchy.dendrogram(
+        linkage_matrix, ax=ax, color_threshold=0.7 * max(linkage_matrix[:, 2])
+    )
+    ax.set_title("Hierarchical Clustering Dendrogram")
+    ax.set_ylabel("Ward distance")
+    ax.set_xlabel("Sample index")
     fig.tight_layout()
     return fig, ax

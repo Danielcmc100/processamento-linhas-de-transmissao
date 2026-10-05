@@ -105,6 +105,8 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     assert isinstance(result.figures.switching_time, Figure)
     assert isinstance(result.figures.kmeans_clusters, Figure)
     assert isinstance(result.figures.dbscan_clusters, Figure)
+    assert isinstance(result.figures.hierarchical_clusters, Figure)
+    assert isinstance(result.figures.hierarchical_tree, Figure)
     assert list(config.output_dir.iterdir()) == []
 
     plt.close(result.figures.combined)
@@ -113,6 +115,8 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     plt.close(result.figures.switching_time)
     plt.close(result.figures.kmeans_clusters)
     plt.close(result.figures.dbscan_clusters)
+    plt.close(result.figures.hierarchical_clusters)
+    plt.close(result.figures.hierarchical_tree)
 
 
 def test_pipeline_rejects_unanalyzable_selection(tmp_path: Path) -> None:
@@ -159,5 +163,7 @@ def test_main_loads_json_config_and_reports_counts(
         "switching_time.png",
         "kmeans_clusters.png",
         "dbscan_clusters.png",
+        "hierarchical_clusters.png",
+        "hierarchical_tree.png",
     }
     assert plt.get_fignums() == []

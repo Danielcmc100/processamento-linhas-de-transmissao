@@ -1,9 +1,20 @@
 """Clustering labels for candidate anomaly analysis."""
 
-from math import isfinite
-
-import numpy as np
-import polars as pl
+from numpy import (
+    arange,
+    argsort,
+    asarray,
+    diff,
+    dtype,
+    empty,
+    float64,
+    int32,
+    isfinite,
+    median,
+    ndarray,
+    zeros,
+)
+from polars import DataFrame, Float64, Int32, Series, col, concat
 from sklearn.cluster import (  # type: ignore[reportMissingTypeStubs]
     DBSCAN,
     KMeans,
@@ -12,14 +23,19 @@ from sklearn.preprocessing import (  # type: ignore[reportMissingTypeStubs]
     StandardScaler,
 )
 
+from src.services.schemas import (
+    HierarchicalClusterObservation,
+    HierarchicalObservation,
+)
+
 
 def detect_outliers_dbscan(
-    df: pl.DataFrame,
+    df: DataFrame,
     value_col: str = "value_pu",
     eps: float = 0.5,
     min_samples: int = 5,
     label_col: str = "dbscan_cluster",
-) -> pl.DataFrame:
+) -> DataFrame:
     """Add DBSCAN cluster labels without changing the input row order.
 
     DBSCAN marks candidate noise points with cluster label ``-1``.
@@ -32,21 +48,21 @@ def detect_outliers_dbscan(
     if df.is_empty():
         return _with_empty_label(df, label_col)
 
-    labels: np.ndarray[tuple[int], np.dtype[np.int32]] = DBSCAN(
+    labels: ndarray[tuple[int], dtype[int32]] = DBSCAN(
         eps=eps, min_samples=min_samples
     ).fit_predict(values)  # type: ignore[reportUnknownMemberType]
 
-    return df.with_columns(pl.Series(label_col, labels.astype(np.int32)))
+    return df.with_columns(Series(label_col, labels.astype(int32)))
 
 
 def detect_outliers_dbscan_per_terminal(
-    df: pl.DataFrame,
+    df: DataFrame,
     terminal_col: str = "terminal",
     value_col: str = "value_pu",
     eps: float = 0.5,
     min_samples: int = 5,
     label_col: str = "dbscan_cluster",
-) -> pl.DataFrame:
+) -> DataFrame:
     """Apply DBSCAN independently to each terminal group.
 
     Running DBSCAN on the full dataset at once can be misleading when
@@ -68,7 +84,7 @@ def detect_outliers_dbscan_per_terminal(
 
     row_index_col = _available_internal_column(df, "_clustering_row_index")
     indexed = df.with_row_index(row_index_col)
-    groups: list[pl.DataFrame] = []
+    groups: list[DataFrame] = []
     for subset in indexed.partition_by(terminal_col, maintain_order=True):
         labelled = detect_outliers_dbscan(
             subset,
@@ -79,16 +95,16 @@ def detect_outliers_dbscan_per_terminal(
         )
         groups.append(labelled)
 
-    return pl.concat(groups).sort(row_index_col).drop(row_index_col)
+    return concat(groups).sort(row_index_col).drop(row_index_col)
 
 
 def cluster_kmeans(
-    df: pl.DataFrame,
+    df: DataFrame,
     value_col: str = "value_pu",
     n_clusters: int = 3,
     random_state: int = 42,
     label_col: str = "kmeans_cluster",
-) -> pl.DataFrame:
+) -> DataFrame:
     """Add deterministic, centroid-ordered K-Means cluster labels.
 
     Returns:
@@ -103,39 +119,137 @@ def cluster_kmeans(
         raise ValueError("n_clusters must not exceed the row count.")
 
     scaler = StandardScaler()  # type: ignore[reportUnknownVariableType]
-    scaled: np.ndarray[tuple[int, int], np.dtype[np.float64]] = (
-        scaler.fit_transform(values)  # type: ignore[reportUnknownMemberType]
-    )
+    scaled: ndarray[tuple[int, int], dtype[float64]] = scaler.fit_transform(
+        values
+    )  # type: ignore[reportUnknownMemberType]
 
     model = KMeans(
         n_clusters=n_clusters,
         random_state=random_state,
         n_init=10,  # type: ignore[reportArgumentType]
     )
-    labels: np.ndarray[tuple[int], np.dtype[np.int32]] = model.fit_predict(
-        scaled
-    )  # type: ignore[reportUnknownMemberType]
-    centroids = np.asarray(model.cluster_centers_).reshape(-1)
-    centroid_order = np.argsort(centroids)
-    normalized_labels = np.empty(n_clusters, dtype=np.int32)
-    normalized_labels[centroid_order] = np.arange(
+    labels: ndarray[tuple[int], dtype[int32]] = model.fit_predict(scaled)  # type: ignore[reportUnknownMemberType]
+    centroids = asarray(model.cluster_centers_).reshape(-1)
+    centroid_order = argsort(centroids)
+    normalized_labels = empty(n_clusters, dtype=int32)
+    normalized_labels[centroid_order] = arange(
         n_clusters,
-        dtype=np.int32,
+        dtype=int32,
     )
 
-    return df.with_columns(pl.Series(label_col, normalized_labels[labels]))
+    return df.with_columns(Series(label_col, normalized_labels[labels]))
+
+
+def cluster_hierarchical(
+    df: DataFrame,
+    terminal_col: str = "terminal",
+    value_col: str = "value_pu",
+    min_gap_pu: float = 0.03,
+    gap_factor: float = 1.0,
+    max_tail_fraction: float = 0.1,
+    label_col: str = "hierarchical_cluster",
+) -> DataFrame:
+    """Label separated upper tails using terminal-local single linkage.
+
+    Sorted adjacent gaps are single-linkage merge distances in one dimension.
+    Select the largest gap separating at most ``max_tail_fraction`` of the
+    highest observations, with at least three reference observations. The
+    gap must exceed both ``min_gap_pu`` and ``gap_factor`` times the median
+    adjacent spacing. These exploratory parameters are not physical limits.
+
+    Returns:
+        Input rows with Int32 labels: zero for reference observations and
+        one for a separated upper tail. No qualifying gap yields all zeros.
+
+    Raises:
+        ValueError: If parameters or required numeric values are invalid.
+    """
+    if not isfinite(min_gap_pu) or min_gap_pu <= 0:
+        raise ValueError("min_gap_pu must be finite and greater than zero.")
+    if not isfinite(gap_factor) or gap_factor < 1:
+        raise ValueError("gap_factor must be finite and at least one.")
+    if not isfinite(max_tail_fraction) or not 0 < max_tail_fraction < 0.5:
+        raise ValueError("max_tail_fraction must be between zero and 0.5.")
+    _validated_values(df, value_col)
+    if terminal_col not in df.columns:
+        raise ValueError(
+            f"Required clustering column is missing: {terminal_col}."
+        )
+    HierarchicalObservation.validate(
+        df.select(
+            col(terminal_col).alias("terminal"),
+            col(value_col).cast(Float64).alias("value_pu"),
+        )
+    )
+    if df.is_empty():
+        return _with_empty_label(df, label_col)
+
+    row_index_col = _available_internal_column(df, "_clustering_row_index")
+    indexed = df.with_row_index(row_index_col)
+    groups: list[DataFrame] = []
+    for subset in indexed.partition_by(terminal_col, maintain_order=True):
+        labels = _hierarchical_labels(
+            _validated_values(subset, value_col),
+            min_gap_pu,
+            gap_factor,
+            max_tail_fraction,
+        )
+        labelled = subset.with_columns(Series(label_col, labels))
+        HierarchicalClusterObservation.validate(
+            labelled.select(
+                col(terminal_col).alias("terminal"),
+                col(value_col).cast(Float64).alias("value_pu"),
+                col(label_col).alias("hierarchical_cluster"),
+            )
+        )
+        groups.append(labelled)
+
+    return concat(groups).sort(row_index_col).drop(row_index_col)
+
+
+def _hierarchical_labels(
+    values: ndarray[tuple[int, int], dtype[float64]],
+    min_gap_pu: float,
+    gap_factor: float,
+    max_tail_fraction: float,
+) -> ndarray[tuple[int], dtype[int32]]:
+    """Return reference/upper-tail labels from single-linkage gaps.
+
+    Returns:
+        Binary labels in the original observation order.
+    """
+    flattened = values.reshape(-1)
+    labels = zeros(flattened.size, dtype=int32)
+    if flattened.size < 4:
+        return labels
+    order = argsort(flattened)
+    gaps = diff(flattened[order])
+    if not (gaps > 0).any():
+        return labels
+    threshold = max(min_gap_pu, gap_factor * float(median(gaps)))
+    candidates = [
+        index
+        for index, gap in enumerate(gaps)
+        if index + 1 >= 3
+        and (flattened.size - index - 1) / flattened.size <= max_tail_fraction
+        and gap > threshold
+    ]
+    if candidates:
+        boundary = max(candidates, key=lambda index: float(gaps[index]))
+        labels[order[boundary + 1 :]] = 1
+    return labels
 
 
 def filter_valid_events(
-    df: pl.DataFrame,
+    df: DataFrame,
     cluster_col: str = "dbscan_cluster",
-) -> pl.DataFrame:
+) -> DataFrame:
     """Remove rows labelled as candidate noise by DBSCAN.
 
     Returns:
         DataFrame containing rows whose cluster label is not ``-1``.
     """
-    return df.filter(pl.col(cluster_col) != -1)
+    return df.filter(col(cluster_col) != -1)
 
 
 def _validate_dbscan_parameters(eps: float, min_samples: int) -> None:
@@ -151,31 +265,31 @@ def _validate_cluster_count(n_clusters: int) -> None:
 
 
 def _validated_values(
-    df: pl.DataFrame,
+    df: DataFrame,
     value_col: str,
-) -> np.ndarray[tuple[int, int], np.dtype[np.float64]]:
+) -> ndarray[tuple[int, int], dtype[float64]]:
     if value_col not in df.columns:
         raise ValueError(
             f"Required clustering column is missing: {value_col}."
         )
     if df.is_empty():
-        return np.empty((0, 1), dtype=np.float64)
+        return empty((0, 1), dtype=float64)
     if not df.schema[value_col].is_numeric():
         raise ValueError(f"{value_col} must contain numeric values.")
 
-    values = df[value_col].cast(pl.Float64).to_numpy().reshape(-1, 1)
-    if not np.isfinite(values).all():
+    values = df[value_col].cast(Float64).to_numpy().reshape(-1, 1)
+    if not isfinite(values).all():
         raise ValueError(f"{value_col} must contain only finite values.")
     return values
 
 
-def _with_empty_label(df: pl.DataFrame, label_col: str) -> pl.DataFrame:
+def _with_empty_label(df: DataFrame, label_col: str) -> DataFrame:
     return df.with_columns(
-        pl.Series(label_col, [], dtype=pl.Int32),
+        Series(label_col, [], dtype=Int32),
     )
 
 
-def _available_internal_column(df: pl.DataFrame, base_name: str) -> str:
+def _available_internal_column(df: DataFrame, base_name: str) -> str:
     name = base_name
     while name in df.columns:
         name = f"_{name}"

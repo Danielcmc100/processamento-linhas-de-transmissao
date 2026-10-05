@@ -13,7 +13,9 @@
     "overvoltage_histogram.png",
     "switching_time.png",
     "kmeans_clusters.png",
-    "dbscan_clusters.png"
+    "dbscan_clusters.png",
+    "hierarchical_clusters.png",
+    "hierarchical_tree.png"
   ],
   "counts": {
     "annotated_observations": 3000,
@@ -33,7 +35,7 @@
     }
   ],
   "runtime": {
-    "generated_at_utc": "2026-09-29T20:48:35.187349+00:00"
+    "generated_at_utc": "2026-10-05T21:43:49.858405+00:00"
   },
   "schema_version": "1.0.0",
   "software": {

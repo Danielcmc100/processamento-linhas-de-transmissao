@@ -53,3 +53,16 @@ class StatisticalSummaryRow(Model):
     empirical_exceedance: float | None
     gaussian_exceedance: float | None
     validation_status: str
+
+
+class HierarchicalObservation(Model):
+    """Minimal terminal-local voltage input for hierarchical clustering."""
+
+    terminal: str
+    value_pu: float
+
+
+class HierarchicalClusterObservation(HierarchicalObservation):
+    """Validated binary upper-tail membership, without anomaly inference."""
+
+    hierarchical_cluster: int = Field(dtype=Int32, ge=0, le=1)

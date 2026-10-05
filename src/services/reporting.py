@@ -27,6 +27,8 @@ ARTIFACT_NAMES = (
     "switching_time.png",
     "kmeans_clusters.png",
     "dbscan_clusters.png",
+    "hierarchical_clusters.png",
+    "hierarchical_tree.png",
 )
 
 
@@ -89,6 +91,12 @@ def write_result_artifacts(
     )
     result.figures.dbscan_clusters.savefig(
         config.output_dir / "dbscan_clusters.png"
+    )
+    result.figures.hierarchical_clusters.savefig(
+        config.output_dir / "hierarchical_clusters.png"
+    )
+    result.figures.hierarchical_tree.savefig(
+        config.output_dir / "hierarchical_tree.png"
     )
     _write_json(
         config.output_dir / "metadata.json",

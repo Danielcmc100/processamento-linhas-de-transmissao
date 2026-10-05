@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from matplotlib.figure import Figure
 from polars import Boolean, DataFrame, col, concat_str, lit, when
 
+from src.services.clustering import cluster_hierarchical
 from src.services.comparison import compare_anomaly_methods
 from src.services.config import AnalysisConfig
 from src.services.dbscan_evidence import evaluate_dbscan_evidence
@@ -32,6 +33,7 @@ from src.services.visualization import (
     plot_combined,
     plot_dbscan_clusters,
     plot_exceedance_curve,
+    plot_hierarchical_tree,
     plot_kmeans_clusters,
     plot_overvoltage_histogram,
     plot_switching_time_curve,
@@ -48,6 +50,8 @@ class PipelineFigures:
     switching_time: Figure
     kmeans_clusters: Figure
     dbscan_clusters: Figure
+    hierarchical_clusters: Figure
+    hierarchical_tree: Figure
 
 
 @dataclass(frozen=True, slots=True)
@@ -135,7 +139,12 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         effective_eps=config.dbscan.eps,
         group_columns=config.grouping_policy,
     )
-    compared = compare_anomaly_methods(with_dbscan)
+    with_hierarchical = cluster_hierarchical(
+        with_dbscan,
+        value_col="value_pu",
+        label_col="hierarchical_cluster",
+    )
+    compared = compare_anomaly_methods(with_hierarchical)
     fits = _build_plot_fits(analyzed, summary)
 
     combined, _ = plot_combined(
@@ -155,6 +164,14 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
     dbscan_clusters, _ = plot_dbscan_clusters(
         compared.filter(col("dbscan_cluster").is_not_null())
     )
+    hierarchical_clusters, _ = plot_kmeans_clusters(
+        compared.filter(col("hierarchical_cluster").is_not_null()),
+        cluster_col="hierarchical_cluster",
+    )
+    hierarchical_tree, _ = plot_hierarchical_tree(
+        compared.filter(col("value_pu").is_not_null()),
+        value_col="value_pu",
+    )
 
     return PipelineResult(
         raw_observations=raw_observations,
@@ -171,6 +188,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
             switching_time=switching_time,
             kmeans_clusters=kmeans_clusters,
             dbscan_clusters=dbscan_clusters,
+            hierarchical_clusters=hierarchical_clusters,
+            hierarchical_tree=hierarchical_tree,
         ),
     )
 
