@@ -1,8 +1,9 @@
 # Clustering Anomaly Flow
 > Global K-Means labels currently act as anomaly evidence
 
-Entry: `src/services/pipeline.py:run_analysis()`
-Flow: per-terminal DBSCAN → global K-Means → sigma flags → method comparison
+Entry: `src/services/pipeline.py:run_pipeline()`
+Flow: sigma and MAD evidence → grouped K-Means → grouped DBSCAN →
+terminal-local hierarchical labels → method comparison
 
 K-Means: `src/services/clustering.py:cluster_kmeans()`
 - Fits only `value_pu` globally after standardization
@@ -22,6 +23,8 @@ Hierarchical clustering: `src/services/clustering.py:cluster_hierarchical()`
   and five times median adjacent spacing; requires three reference rows
 - Returns zero throughout when no gap qualifies; label one is descriptive
 - Patito input/output projections validate required values and binary labels
+- `src/services/config.py:AnalysisConfig` accepts all three hierarchical
+  separation parameters alongside K-Means parameters in the input JSON
 - Fifty-simulation regression selects one T_MAN and three 1_2LT rows,
   with no T_OPO selection
 - Parameters are exploratory; larger samples may fill gaps

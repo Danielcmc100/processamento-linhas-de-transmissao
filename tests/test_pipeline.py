@@ -3,6 +3,7 @@
 import json
 import shutil
 from pathlib import Path
+from unittest.mock import patch
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -13,7 +14,15 @@ matplotlib.use("Agg")
 from matplotlib.figure import Figure  # noqa: E402
 
 from main import main  # noqa: E402
-from src.services.config import AnalysisConfig  # noqa: E402
+from src.services.clustering import cluster_hierarchical  # noqa: E402
+from src.services.config import (  # noqa: E402
+    AnalysisConfig,
+    HierarchicalConfig,
+    KMeansConfig,
+)
+from src.services.kmeans_evidence import (  # noqa: E402
+    evaluate_kmeans_evidence,
+)
 from src.services.pipeline import run_pipeline  # noqa: E402
 from src.services.validation import ValidationStatus  # noqa: E402
 
@@ -128,6 +137,43 @@ def test_pipeline_rejects_unanalyzable_selection(tmp_path: Path) -> None:
         run_pipeline(config)
 
     assert plt.get_fignums() == []
+
+
+def test_pipeline_passes_both_clustering_input_parameters(
+    tmp_path: Path,
+) -> None:
+    hierarchical = HierarchicalConfig(
+        min_gap_pu=0.08,
+        gap_factor=2.0,
+        max_tail_fraction=0.2,
+    )
+    config = _config(tmp_path).model_copy(
+        update={
+            "hierarchical": hierarchical,
+            "kmeans": KMeansConfig(n_clusters=1, random_state=7),
+        }
+    )
+
+    with (
+        patch(
+            "src.services.pipeline.cluster_hierarchical",
+            wraps=cluster_hierarchical,
+        ) as hierarchical_fit,
+        patch(
+            "src.services.pipeline.evaluate_kmeans_evidence",
+            wraps=evaluate_kmeans_evidence,
+        ) as kmeans_fit,
+    ):
+        try:
+            run_pipeline(config)
+        finally:
+            plt.close("all")
+
+    assert hierarchical_fit.call_args.kwargs["min_gap_pu"] == 0.08
+    assert hierarchical_fit.call_args.kwargs["gap_factor"] == 2.0
+    assert hierarchical_fit.call_args.kwargs["max_tail_fraction"] == 0.2
+    assert kmeans_fit.call_args.kwargs["n_clusters"] == 1
+    assert kmeans_fit.call_args.kwargs["random_state"] == 7
 
 
 def test_main_loads_json_config_and_reports_counts(

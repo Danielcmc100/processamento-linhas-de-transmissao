@@ -20,8 +20,14 @@ the output directory is created automatically when necessary.
 ```json
 {
   "input_path": "tests/fixtures",
+  "schema_version": "1.0.0",
+  "generator_version": "1.0.0",
   "encoding": "iso-8859-1",
-  "base_voltage": 100000.0,
+  "base_voltage": 112677.0,
+  "scenario": "SRPI",
+  "sample_size": 2,
+  "source_lineage": "representative-srpi-2",
+  "event_definition": "absolute_phase_to_ground_maximum",
   "terminals": ["T_MAN", "T_OPO"],
   "phase_policy": "A",
   "dbscan": {
@@ -31,6 +37,11 @@ the output directory is created automatically when necessary.
   "kmeans": {
     "n_clusters": 2,
     "random_state": 42
+  },
+  "hierarchical": {
+    "min_gap_pu": 0.05,
+    "gap_factor": 5.0,
+    "max_tail_fraction": 0.1
   },
   "threshold": 2.3,
   "output_dir": "results/representative-a",
@@ -43,13 +54,17 @@ The main parameters are:
 - `input_path`: directory searched recursively for ATP `.lis` files.
 - `base_voltage`: voltage base in volts used for P.U. normalization.
   For the validated 138 kV SRPI/CRPI cases, use **112677.0 V**, matching
-  the ATP phase-to-ground peak reference. The fixture example above uses an
-  arbitrary test base. See [the thesis justification](doc/main.tex).
+  the ATP phase-to-ground peak reference. See
+  [the thesis justification](doc/main.tex).
 - `terminals`: terminal names without the phase suffix (`A`, `B`, or `C`).
 - `phase_policy`: the single phase analyzed in this run.
 - `dbscan`: DBSCAN neighborhood and minimum-sample parameters.
 - `kmeans`: number of clusters and deterministic random seed. The number of
-  clusters cannot exceed the selected observation count.
+  clusters is checked against each comparable calibration group; groups
+  with insufficient observations yield non-applicable K-Means evidence.
+- `hierarchical`: minimum adjacent voltage gap in P.U., multiplier of the
+  median adjacent gap, and maximum fraction in the separated upper tail.
+  Omission preserves the shown defaults for older input files.
 - `threshold`: P.U. value used for empirical and Gaussian exceedance results.
 - `output_dir`: directory that receives the result package.
 - `overwrite`: when `false`, the run stops before replacing an existing result

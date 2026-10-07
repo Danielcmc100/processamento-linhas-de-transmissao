@@ -22,6 +22,11 @@
         "n_clusters": 2,
         "random_state": 42
     },
+    "hierarchical": {
+        "min_gap_pu": 0.05,
+        "gap_factor": 5.0,
+        "max_tail_fraction": 0.1
+    },
     "threshold": 2.3,
     "output_dir": "input_files/casos/100-simulacoes/resultados",
     "overwrite": true

@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from src.services.config import (
     AnalysisConfig,
     DbscanConfig,
+    HierarchicalConfig,
     KMeansConfig,
 )
 
@@ -45,6 +46,7 @@ def test_analysis_config_is_json_serializable(tmp_path: Path) -> None:
         n_clusters=3,
         random_state=42,
     )
+    assert config.hierarchical == HierarchicalConfig()
     assert config.model_dump(mode="json") == {
         "input_path": str(tmp_path),
         "schema_version": "1.0.0",
@@ -59,6 +61,11 @@ def test_analysis_config_is_json_serializable(tmp_path: Path) -> None:
         "phase_policy": "A",
         "dbscan": {"eps": 0.5, "min_samples": 5},
         "kmeans": {"n_clusters": 3, "random_state": 42},
+        "hierarchical": {
+            "min_gap_pu": 0.05,
+            "gap_factor": 5.0,
+            "max_tail_fraction": 0.1,
+        },
         "threshold": 2.3,
         "output_dir": str(output_dir),
         "overwrite": False,
@@ -145,6 +152,28 @@ def test_dbscan_config_rejects_invalid_parameters(
 def test_kmeans_config_rejects_invalid_cluster_count() -> None:
     with pytest.raises(ValidationError):
         KMeansConfig(n_clusters=0, random_state=42)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("min_gap_pu", 0.0),
+        ("min_gap_pu", float("inf")),
+        ("gap_factor", 0.9),
+        ("gap_factor", float("nan")),
+        ("max_tail_fraction", 0.0),
+        ("max_tail_fraction", 0.5),
+    ],
+)
+def test_hierarchical_config_rejects_invalid_parameters(
+    field: str,
+    value: float,
+) -> None:
+    values = HierarchicalConfig().model_dump()
+    values[field] = value
+
+    with pytest.raises(ValidationError):
+        HierarchicalConfig.model_validate(values)
 
 
 @pytest.mark.parametrize("threshold", [float("inf"), float("nan")])

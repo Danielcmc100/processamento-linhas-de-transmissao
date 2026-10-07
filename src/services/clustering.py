@@ -144,8 +144,8 @@ def cluster_hierarchical(
     df: DataFrame,
     terminal_col: str = "terminal",
     value_col: str = "value_pu",
-    min_gap_pu: float = 0.03,
-    gap_factor: float = 1.0,
+    min_gap_pu: float = 0.05,
+    gap_factor: float = 5.0,
     max_tail_fraction: float = 0.1,
     label_col: str = "hierarchical_cluster",
 ) -> DataFrame:

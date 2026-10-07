@@ -36,6 +36,21 @@ class KMeansConfig(BaseModel):
     random_state: int
 
 
+class HierarchicalConfig(BaseModel):
+    """Validated upper-tail separation parameters."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    min_gap_pu: float = Field(default=0.05, gt=0, allow_inf_nan=False)
+    gap_factor: float = Field(default=5.0, ge=1, allow_inf_nan=False)
+    max_tail_fraction: float = Field(
+        default=0.1,
+        gt=0,
+        lt=0.5,
+        allow_inf_nan=False,
+    )
+
+
 class AnalysisConfig(BaseModel):
     """Validated inputs and parameters for one ATP analysis run."""
 
@@ -54,6 +69,9 @@ class AnalysisConfig(BaseModel):
     phase_policy: Literal["A", "B", "C"]
     dbscan: DbscanConfig
     kmeans: KMeansConfig
+    hierarchical: HierarchicalConfig = Field(
+        default_factory=HierarchicalConfig
+    )
     threshold: float = Field(allow_inf_nan=False)
     output_dir: Path
     overwrite: bool

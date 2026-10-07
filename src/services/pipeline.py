@@ -142,6 +142,9 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
     with_hierarchical = cluster_hierarchical(
         with_dbscan,
         value_col="value_pu",
+        min_gap_pu=config.hierarchical.min_gap_pu,
+        gap_factor=config.hierarchical.gap_factor,
+        max_tail_fraction=config.hierarchical.max_tail_fraction,
         label_col="hierarchical_cluster",
     )
     compared = compare_anomaly_methods(with_hierarchical)
