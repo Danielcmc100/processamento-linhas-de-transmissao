@@ -16,6 +16,11 @@
     "terminal",
     "phase"
   ],
+  "hierarchical": {
+    "gap_factor": 5.0,
+    "max_tail_fraction": 0.1,
+    "min_gap_pu": 0.05
+  },
   "input_path": "input_files/casos/100-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF",
   "kmeans": {
     "n_clusters": 2,

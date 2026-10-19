@@ -1,5 +1,7 @@
 {
   "artifacts": [
+    "histogram_observations.csv",
+    "distribution_comparison.csv",
     "raw_observations.csv",
     "validated_observations.csv",
     "statistical_evidence.csv",
@@ -20,6 +22,8 @@
   "counts": {
     "annotated_observations": 300,
     "distribution_adequacy_rows": 3,
+    "distribution_comparison_rows": 27,
+    "histogram_observations": 900,
     "input_files": 2,
     "raw_observations": 900,
     "statistical_evidence_rows": 3,
@@ -28,6 +32,18 @@
     "validation_issues": 0
   },
   "generator_version": "1.0.0",
+  "histogram_policy": {
+    "bins_per_panel": 20,
+    "location_policy": "estimated",
+    "normalization": "density",
+    "observations": "all validated peaks before clustering",
+    "phases": [
+      "A",
+      "B",
+      "C"
+    ],
+    "selection": "minimum AIC; not an adequacy test"
+  },
   "inputs": [
     {
       "path": "case.lis",
@@ -39,7 +55,7 @@
     }
   ],
   "runtime": {
-    "generated_at_utc": "2026-10-05T21:43:24.528021+00:00"
+    "generated_at_utc": "2026-10-19T15:32:33.118011+00:00"
   },
   "schema_version": "1.0.0",
   "software": {
