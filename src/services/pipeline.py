@@ -6,6 +6,7 @@ from matplotlib.figure import Figure
 from polars import Boolean, DataFrame, col, concat_str, lit, when
 
 from src.services.clustering import cluster_hierarchical
+from src.services.clustering_comparison import evaluate_cluster_comparison
 from src.services.comparison import compare_anomaly_methods
 from src.services.config import AnalysisConfig
 from src.services.dbscan_evidence import evaluate_dbscan_evidence
@@ -70,6 +71,7 @@ class PipelineResult:
     distribution_adequacy: DataFrame
     histogram_observations: DataFrame
     distribution_comparison: DataFrame
+    clustering_comparison: DataFrame
     figures: PipelineFigures
 
 
@@ -167,6 +169,10 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         label_col="hierarchical_cluster",
     )
     compared = compare_anomaly_methods(with_hierarchical)
+    clustering_comparison = evaluate_cluster_comparison(
+        compared,
+        grouping_policy=config.grouping_policy,
+    )
     fits = _build_plot_fits(analyzed, summary)
 
     combined, _ = plot_combined(
@@ -207,6 +213,7 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         distribution_adequacy=distribution_adequacy,
         histogram_observations=histogram_observations,
         distribution_comparison=distribution_comparison,
+        clustering_comparison=clustering_comparison,
         figures=PipelineFigures(
             combined=combined,
             exceedance=exceedance,

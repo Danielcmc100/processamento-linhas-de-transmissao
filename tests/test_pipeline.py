@@ -106,6 +106,12 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     assert result.distribution_adequacy.height == 2
     assert result.histogram_observations.height == 12
     assert result.distribution_comparison.height == 18
+    assert result.clustering_comparison.height == 6
+    assert set(result.clustering_comparison["method"]) == {
+        "kmeans",
+        "dbscan",
+        "hierarchical",
+    }
     assert set(result.distribution_adequacy["decision"]) == {"undersized"}
     assert result.annotated_observations.height == (
         result.statistical_evidence["denominator"].sum()
@@ -205,6 +211,7 @@ def test_main_loads_json_config_and_reports_counts(
         "summary.csv",
         "statistical_evidence.csv",
         "distribution_adequacy.csv",
+        "clustering_comparison.csv",
         "configuration.json",
         "metadata.json",
         "combined.png",

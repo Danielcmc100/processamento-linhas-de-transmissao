@@ -19,6 +19,7 @@ ARTIFACT_NAMES = (
     "validated_observations.csv",
     "statistical_evidence.csv",
     "distribution_adequacy.csv",
+    "clustering_comparison.csv",
     "annotated_observations.csv",
     "summary.csv",
     "configuration.json",
@@ -78,6 +79,9 @@ def write_result_artifacts(
     result.distribution_adequacy.write_csv(
         config.output_dir / "distribution_adequacy.csv"
     )
+    result.clustering_comparison.write_csv(
+        config.output_dir / "clustering_comparison.csv"
+    )
     result.annotated_observations.write_csv(
         config.output_dir / "annotated_observations.csv"
     )
@@ -131,6 +135,7 @@ def _build_metadata(
             "distribution_adequacy_rows": (
                 result.distribution_adequacy.height
             ),
+            "clustering_comparison_rows": result.clustering_comparison.height,
             "input_files": len(input_files),
             "raw_observations": result.raw_observations.height,
             "statistical_evidence_rows": result.statistical_evidence.height,

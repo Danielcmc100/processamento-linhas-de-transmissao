@@ -90,6 +90,10 @@ def test_writer_saves_complete_rerunnable_artifact_package(
         pl.read_csv(config.output_dir / "distribution_adequacy.csv").columns
         == result.distribution_adequacy.columns
     )
+    assert (
+        pl.read_csv(config.output_dir / "clustering_comparison.csv").columns
+        == result.clustering_comparison.columns
+    )
 
     saved_config_text = (config.output_dir / "configuration.json").read_text(
         encoding="utf-8"
@@ -110,6 +114,7 @@ def test_writer_saves_complete_rerunnable_artifact_package(
         "validated_observations": 4,
         "statistical_evidence_rows": 2,
         "distribution_adequacy_rows": 2,
+        "clustering_comparison_rows": 6,
         "input_files": 1,
         "raw_observations": 12,
         "summary_rows": 2,
@@ -179,6 +184,7 @@ def test_writer_produces_deterministic_tables_and_configuration(
         "summary.csv",
         "statistical_evidence.csv",
         "distribution_adequacy.csv",
+        "clustering_comparison.csv",
     ):
         assert (first_config.output_dir / name).read_bytes() == (
             second_config.output_dir / name

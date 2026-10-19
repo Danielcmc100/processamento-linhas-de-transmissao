@@ -1218,6 +1218,19 @@ aplicabilidade e motivo; concordâncias e discordâncias permanecem visíveis.
 Os termos adotados para as saídas são ``candidato'' e ``evidência
 analítica'', nunca ``erro numérico confirmado do ATP''.
 
+Para comparar geometricamente os agrupamentos ajustados, o fluxo
+calcula, para cada grupo comparável, o coeficiente de Silhouette e o índice
+de Davies--Bouldin. O primeiro cresce quando as observações estão mais
+coesas dentro de seus grupos e mais separadas dos demais; no segundo, valores
+menores indicam grupos mais compactos e afastados. No DBSCAN, os pontos
+rotulados como ruído são excluídos antes do cálculo, pois não pertencem a um
+cluster. As métricas são declaradas não aplicáveis quando há menos de dois
+clusters retidos ou quando algum cluster possui apenas uma observação. O
+artefato \texttt{clustering\_comparison.csv} registra contagens, exclusões,
+escores, aplicabilidade e motivo. Esses índices descrevem somente a
+geometria da partição no atributo $V_{pu}$; não estabelecem, por si sós, a causa
+física ou numérica de uma observação e não substituem revisão técnica.
+
 \subsection{Ensaios controlados dos detectores}
 
 A avaliação controlada utiliza cópias dos dados e mantém as fontes originais

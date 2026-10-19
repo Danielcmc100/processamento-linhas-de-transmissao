@@ -31,7 +31,17 @@ Hierarchical clustering: `src/services/clustering.py:cluster_hierarchical()`
 - Global Ward dendrogram remains separate from this terminal-local rule
 - Details: `doc/hierarchical-clusters-analysis.md`
 
+Internal comparison: `src/services/clustering_comparison.py:evaluate_cluster_comparison()`
+- `run_pipeline()` writes one record per fitted method and comparable group
+  into `clustering_comparison.csv`
+- K-Means and DBSCAN follow the configured contextual grouping; hierarchical
+  labels use scenario, source lineage, and terminal
+- DBSCAN noise is excluded and its count remains explicit
+- Silhouette and Davies--Bouldin are non-applicable for fewer than two
+  retained clusters or any singleton cluster; scores describe geometry only,
+  never ATP physical or numerical cause
+
 Correction spec:
 `specs/features/clustering-anomaly-correction/spec.md`
 
-Updated: 2026-10-01
+Updated: 2026-10-19
