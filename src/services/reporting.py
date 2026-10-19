@@ -13,6 +13,8 @@ from src.services.config import AnalysisConfig
 from src.services.pipeline import PipelineResult
 
 ARTIFACT_NAMES = (
+    "histogram_observations.csv",
+    "distribution_comparison.csv",
     "raw_observations.csv",
     "validated_observations.csv",
     "statistical_evidence.csv",
@@ -58,6 +60,12 @@ def write_result_artifacts(
         raise FileExistsError(message)
 
     config.output_dir.mkdir(parents=True, exist_ok=True)
+    result.histogram_observations.write_csv(
+        config.output_dir / "histogram_observations.csv"
+    )
+    result.distribution_comparison.write_csv(
+        config.output_dir / "distribution_comparison.csv"
+    )
     result.raw_observations.write_csv(
         config.output_dir / "raw_observations.csv"
     )
@@ -115,6 +123,10 @@ def _build_metadata(
         "generator_version": config.generator_version,
         "artifacts": list(ARTIFACT_NAMES),
         "counts": {
+            "histogram_observations": result.histogram_observations.height,
+            "distribution_comparison_rows": (
+                result.distribution_comparison.height
+            ),
             "annotated_observations": (result.annotated_observations.height),
             "distribution_adequacy_rows": (
                 result.distribution_adequacy.height
@@ -151,6 +163,14 @@ def _build_metadata(
         },
         "runtime": {
             "generated_at_utc": datetime.now(UTC).isoformat(),
+        },
+        "histogram_policy": {
+            "phases": ["A", "B", "C"],
+            "bins_per_panel": 20,
+            "normalization": "density",
+            "location_policy": "estimated",
+            "selection": "minimum AIC; not an adequacy test",
+            "observations": "all validated peaks before clustering",
         },
         "software": {
             "matplotlib": version("matplotlib"),

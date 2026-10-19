@@ -74,6 +74,18 @@ def test_computes_verified_two_sided_wilson_interval() -> None:
     )
 
 
+def test_uses_configured_confidence_level_for_wilson_interval() -> None:
+    row = summarize_statistical_evidence(
+        _observations([1.0, 1.0, 3.0, 3.0]),
+        threshold=2.0,
+        confidence_level=0.90,
+    ).row(0, named=True)
+
+    assert row["confidence_level"] == 0.90
+    assert row["confidence_interval_lower"] == pytest.approx(0.1824001632)
+    assert row["confidence_interval_upper"] == pytest.approx(0.8175998368)
+
+
 @pytest.mark.parametrize(
     ("values", "expected_probability", "expected_bound"),
     [
@@ -181,6 +193,16 @@ def test_rejects_non_finite_threshold(threshold: float) -> None:
     with pytest.raises(ValueError, match="threshold must be finite"):
         summarize_statistical_evidence(
             _observations([1.0]), threshold=threshold
+        )
+
+
+@pytest.mark.parametrize("confidence_level", [0.0, 1.0, float("nan")])
+def test_rejects_invalid_confidence_level(confidence_level: float) -> None:
+    with pytest.raises(ValueError, match="between zero and one"):
+        summarize_statistical_evidence(
+            _observations([1.0]),
+            threshold=2.0,
+            confidence_level=confidence_level,
         )
 
 

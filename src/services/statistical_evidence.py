@@ -58,6 +58,7 @@ def summarize_statistical_evidence(
     observations: DataFrame,
     *,
     threshold: float,
+    confidence_level: float = _CONFIDENCE_LEVEL,
     value_col: str = "value_pu",
     unit: str = "p.u.",
 ) -> DataFrame:
@@ -65,17 +66,21 @@ def summarize_statistical_evidence(
 
     Null and non-finite measurements remain in ``count`` and are excluded
     from ``valid_count`` and every calculation. Empirical evidence uses the
-    strict event ``value > threshold``. Its two-sided 95% Wilson interval is
+    strict event ``value > threshold``. Its two-sided Wilson interval is
     calculated by SciPy from the occurrence count and valid denominator.
 
     Returns:
         One evidence row per scenario, sample size, terminal, and phase.
 
     Raises:
-        ValueError: If threshold is non-finite or required columns are absent.
+        ValueError: If numeric parameters are invalid or required columns are
+            absent.
     """
     if not isfinite(threshold):
         message = "threshold must be finite."
+        raise ValueError(message)
+    if not isfinite(confidence_level) or not 0.0 < confidence_level < 1.0:
+        message = "confidence_level must be between zero and one."
         raise ValueError(message)
 
     required_columns = (*_SCOPE_COLUMNS, value_col)
@@ -103,6 +108,7 @@ def summarize_statistical_evidence(
                 group,
                 values,
                 threshold=threshold,
+                confidence_level=confidence_level,
                 value_col=value_col,
                 unit=unit,
             )
@@ -130,6 +136,7 @@ def _summarize_group(
     values: list[float],
     *,
     threshold: float,
+    confidence_level: float,
     value_col: str,
     unit: str,
 ) -> dict[str, EvidenceValue]:
@@ -161,7 +168,7 @@ def _summarize_group(
             "denominator": 0,
             "empirical_probability": None,
             "empirical_percentage": None,
-            "confidence_level": _CONFIDENCE_LEVEL,
+            "confidence_level": confidence_level,
             "confidence_interval_method": "wilson",
             "confidence_interval_lower": None,
             "confidence_interval_upper": None,
@@ -179,7 +186,7 @@ def _summarize_group(
     confidence_interval = binomtest(
         occurrence_count, valid_count
     ).proportion_ci(
-        confidence_level=_CONFIDENCE_LEVEL,
+        confidence_level=confidence_level,
         method="wilson",
     )
     reason: str | None = None
@@ -200,7 +207,7 @@ def _summarize_group(
         "denominator": valid_count,
         "empirical_probability": probability,
         "empirical_percentage": probability * 100.0,
-        "confidence_level": _CONFIDENCE_LEVEL,
+        "confidence_level": confidence_level,
         "confidence_interval_method": "wilson",
         "confidence_interval_lower": float(confidence_interval.low),
         "confidence_interval_upper": float(confidence_interval.high),

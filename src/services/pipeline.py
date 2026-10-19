@@ -13,6 +13,10 @@ from src.services.distribution_adequacy import (
     evaluate_distribution_adequacy,
     evaluate_mad_evidence,
 )
+from src.services.distribution_histograms import (
+    compare_distributions,
+    plot_distribution_histograms,
+)
 from src.services.kmeans_evidence import evaluate_kmeans_evidence
 from src.services.preprocessing import (
     load_directory,
@@ -35,7 +39,6 @@ from src.services.visualization import (
     plot_exceedance_curve,
     plot_hierarchical_tree,
     plot_kmeans_clusters,
-    plot_overvoltage_histogram,
     plot_switching_time_curve,
 )
 
@@ -65,6 +68,8 @@ class PipelineResult:
     summary: DataFrame
     statistical_evidence: DataFrame
     distribution_adequacy: DataFrame
+    histogram_observations: DataFrame
+    distribution_comparison: DataFrame
     figures: PipelineFigures
 
 
@@ -112,9 +117,23 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         raise ValueError(message)
 
     analyzed = validation.cleaned
+    histogram_validation = validate_observations(
+        raw_observations,
+        terminals=config.terminals,
+        phases=("A", "B", "C"),
+        expected_runs=expected_runs,
+        time_bounds=time_bounds,
+    )
+    if not histogram_validation.is_valid:
+        raise ValueError(
+            "Three-phase histogram observations cannot be analyzed."
+        )
+    histogram_observations = histogram_validation.cleaned
+    distribution_comparison = compare_distributions(histogram_observations)
     statistical_evidence = summarize_statistical_evidence(
         analyzed,
         threshold=config.threshold,
+        confidence_level=config.confidence_level,
     )
     distribution_adequacy = evaluate_distribution_adequacy(
         analyzed,
@@ -159,7 +178,9 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         fits=fits,
         cluster_col=None,
     )
-    overvoltage_histogram, _ = plot_overvoltage_histogram(compared)
+    overvoltage_histogram, _ = plot_distribution_histograms(
+        histogram_observations, distribution_comparison, config.terminals
+    )
     switching_time, _ = plot_switching_time_curve(switching_times)
     kmeans_clusters, _ = plot_kmeans_clusters(
         compared.filter(col("kmeans_cluster").is_not_null())
@@ -184,6 +205,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         summary=summary,
         statistical_evidence=statistical_evidence,
         distribution_adequacy=distribution_adequacy,
+        histogram_observations=histogram_observations,
+        distribution_comparison=distribution_comparison,
         figures=PipelineFigures(
             combined=combined,
             exceedance=exceedance,

@@ -104,6 +104,8 @@ def test_writer_saves_complete_rerunnable_artifact_package(
     metadata = json.loads(metadata_text)
     assert metadata["artifacts"] == list(ARTIFACT_NAMES)
     assert metadata["counts"] == {
+        "histogram_observations": 12,
+        "distribution_comparison_rows": 18,
         "annotated_observations": 4,
         "validated_observations": 4,
         "statistical_evidence_rows": 2,

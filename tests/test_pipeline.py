@@ -104,6 +104,8 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     assert result.statistical_evidence.height == 2
     assert result.statistical_evidence["denominator"].sum() == 4
     assert result.distribution_adequacy.height == 2
+    assert result.histogram_observations.height == 12
+    assert result.distribution_comparison.height == 18
     assert set(result.distribution_adequacy["decision"]) == {"undersized"}
     assert result.annotated_observations.height == (
         result.statistical_evidence["denominator"].sum()
@@ -195,6 +197,8 @@ def test_main_loads_json_config_and_reports_counts(
         f"to {config.output_dir}.\n"
     )
     assert {path.name for path in config.output_dir.iterdir()} == {
+        "histogram_observations.csv",
+        "distribution_comparison.csv",
         "raw_observations.csv",
         "validated_observations.csv",
         "annotated_observations.csv",
