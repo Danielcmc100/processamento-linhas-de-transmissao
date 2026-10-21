@@ -811,7 +811,12 @@ def plot_hierarchical_tree(
     linkage_matrix = hierarchy.linkage(values, method="ward")  # type: ignore[reportUnknownArgumentType]
     fig, ax = plt.subplots(figsize=figsize)
     hierarchy.dendrogram(
-        linkage_matrix, ax=ax, color_threshold=0.7 * max(linkage_matrix[:, 2])
+        linkage_matrix,
+        ax=ax,
+        color_threshold=0.7 * max(linkage_matrix[:, 2]),
+        truncate_mode="lastp",
+        p=30,
+        show_leaf_counts=True,
     )
     ax.set_title("Hierarchical Clustering Dendrogram")
     ax.set_ylabel("Ward distance")

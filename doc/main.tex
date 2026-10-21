@@ -48,6 +48,7 @@
 \usepackage[final]{pdfpages}
 \usepackage{hyphenat}
 \usepackage{longtable}
+\usepackage{pdflscape}
 \usepackage{graphicx}
 \usepackage[section]{placeins}
 
@@ -396,7 +397,7 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 \begin{resumo}
 
-Este trabalho apresenta uma proposta computacional para automatizar a extração, o tratamento estatístico, a análise probabilística e a classificação de dados provenientes de simulações de transitórios eletromagnéticos em manobras de energização de linhas de transmissão. O estudo parte do problema de que a inspeção manual dos arquivos gerados pelo \textit{Alternative Transients Program} (ATP) pode ser lenta, repetitiva e suscetível a interpretações inconsistentes, especialmente quando há múltiplas simulações e grande volume de resultados. A proposta considera a identificação de sobretensões máximas, a caracterização estatística dos dados, o uso de critérios preliminares para detecção de valores extremos e a aplicação de técnicas de aprendizagem de máquina não supervisionada, como K-Means e DBSCAN, para auxiliar na identificação de padrões de comportamento e possíveis anomalias. A aplicação constitui uma ferramenta de apoio à decisão técnica: seus resultados sinalizam candidatos para investigação, mas não determinam automaticamente sua causa física ou numérica, seu descarte ou o nível de isolamento a ser adotado. Espera-se que a integração entre análise estatística, visualização de dados e algoritmos de clusterização contribua para \textcolor{red}{oferecer critérios quantitativos para comparar os resultados das simulações de energização e direcionar a avaliação técnica.}
+Este trabalho desenvolve uma rotina computacional para extrair, organizar e analisar máximos de tensão provenientes de simulações de energização de linhas de transmissão no \textit{Alternative Transients Program} (ATP). A avaliação utiliza dois cenários, com e sem resistor de pré-inserção, cinco quantidades de simulações, três terminais e três fases, totalizando 204.300 observações escalares. O foco é a análise comparativa de K-Means, DBSCAN e seleção hierárquica de cauda superior, utilizando Silhouette e Davies--Bouldin, contagens de grupos e estados de aplicabilidade. A comparação examina como os resultados variam com a quantidade de casos, sem interpretar separação geométrica como comprovação de erro numérico. A análise probabilística emprega frequências empíricas e intervalos de confiança; a rejeição da hipótese normal em 88 dos 90 grupos impede adotar uma distribuição gaussiana comum como referência de validação dos candidatos. A rotina preserva rastreabilidade e produz evidências reproduzíveis para investigação posterior. A validação causal por especialista, com formas de onda e repetições das simulações, constitui trabalho futuro, fora do escopo deste TCC.
 
 %reduzir a subjetividade da avaliação técnica e oferecer suporte mais consistente à interpretação dos resultados de simulações de energização.
 
@@ -1131,6 +1132,7 @@ demonstram adequação estatística, e concordância entre detectores não
 estabelece causa física ou numérica.
 
 \subsection{Estatística descritiva e probabilidade de excedência}
+\label{sec:metodo-estatistico}
 
 Para cada combinação de cenário, tamanho da amostra, terminal e fase, são
 calculados número total e número válido de observações, média, desvio padrão
@@ -1184,27 +1186,31 @@ menos de oito valores finitos ou com MAD nulo são não aplicáveis e não
 contribuem para concordância entre métodos.
 
 \subsection{Evidência contextual de K-Means e DBSCAN}
+\label{sec:metodo-anomalias}
 
 Os modelos operam separadamente por cenário, linhagem da fonte, terminal e
 fase. Essa separação evita que diferenças ordinárias de posição ao longo da
 linha ou assimetrias entre fases sejam convertidas em anomalias. O atributo
-numérico utilizado é $V_{pu}$ padronizado com parâmetros estimados apenas no
-subconjunto de desenvolvimento. As configurações, as sementes aleatórias e as
-regras de calibração são congeladas antes da execução nos dados-alvo.
+numérico utilizado é $V_{pu}$. Nesta análise exploratória, todos os valores
+de cada grupo participam da calibração da escala e do ajuste dos modelos;
+não há conjunto independente de teste. As configurações e as sementes
+aleatórias são registradas para reprodução. A avaliação geométrica usa
+o mesmo atributo em P.U.; em uma dimensão, a mudança linear de escala
+não altera os dois índices considerados.
 
 No K-Means, os rótulos identificam somente a pertença descritiva aos grupos.
 Nem o maior rótulo nem o agrupamento de maior centróide constitui, por si só,
 evidência de anomalia. Para cada observação, calcula-se a distância ao
 centróide atribuído no espaço padronizado. O critério explícito é a distância
 estritamente superior ao percentil 99 das distâncias do conjunto de
-desenvolvimento. O relatório preserva número de grupos, estado aleatório,
+calibração. O relatório preserva número de grupos, estado aleatório,
 centróides, escore, limiar, regra de escala, chave do grupo e identificador da
 configuração. Assim, um agrupamento denso de tensões elevadas pode permanecer
 inteiramente válido.
 
 No DBSCAN, o número mínimo de vizinhos é declarado na configuração e o raio
 efetivo é calibrado pelo percentil 95 das distâncias ao vizinho de ordem
-correspondente no conjunto de desenvolvimento padronizado. São registrados o
+correspondente no conjunto de calibração padronizado. São registrados o
 espaço de atributos, a escala, a origem dos parâmetros, o raio efetivo, o
 número de grupos, a quantidade e a taxa de ruído. Um ponto classificado como
 ruído constitui evidência analítica somente quando o ajuste é aplicável.
@@ -1220,7 +1226,7 @@ analítica'', nunca ``erro numérico confirmado do ATP''.
 
 Para comparar geometricamente os agrupamentos ajustados, o fluxo
 calcula, para cada grupo comparável, o coeficiente de Silhouette e o índice
-de Davies--Bouldin. O primeiro cresce quando as observações estão mais
+de Davies--Bouldin \cite{rousseeuw1987,davies1979}. O primeiro cresce quando as observações estão mais
 coesas dentro de seus grupos e mais separadas dos demais; no segundo, valores
 menores indicam grupos mais compactos e afastados. No DBSCAN, os pontos
 rotulados como ruído são excluídos antes do cálculo, pois não pertencem a um
@@ -1230,6 +1236,43 @@ artefato \texttt{clustering\_comparison.csv} registra contagens, exclusões,
 escores, aplicabilidade e motivo. Esses índices descrevem somente a
 geometria da partição no atributo $V_{pu}$; não estabelecem, por si sós, a causa
 física ou numérica de uma observação e não substituem revisão técnica.
+
+\subsection{Partição hierárquica e critérios da comparação}
+
+O terceiro método é uma seleção hierárquica de cauda superior por ligação
+simples em uma dimensão. Ordenam-se os máximos de cada terminal e
+inspecionam-se as lacunas adjacentes. Uma separação só é aceita quando
+isola até 10\% dos maiores valores, conserva pelo menos três observações
+no grupo de referência e supera simultaneamente 0,05~P.U. e cinco vezes
+a mediana das lacunas. Sem separação suficiente, todos os pontos recebem
+o mesmo rótulo. A execução é separada por fase; portanto, as fases não
+são misturadas, embora a chave interna desse método não inclua a fase.
+Essa partição exploratória não equivale a um diagnóstico de anomalia e
+não participa da votação dos quatro detectores.
+
+Para cada observação, Silhouette compara a distância média ao próprio
+cluster, $a(i)$, com a menor distância média a outro cluster, $b(i)$:
+\begin{equation}
+s(i)=\frac{b(i)-a(i)}{\max\{a(i),b(i)\}}.
+\end{equation}
+O escore da partição é a média de $s(i)$, entre $-1$ e $1$.
+Davies--Bouldin mede, para cada cluster, a pior razão entre dispersões
+internas e distância entre centróides, calculando a média dessas razões.
+Silhouette maior e Davies--Bouldin menor favorecem separação geométrica.
+Nenhum deles estima probabilidade de erro numérico.
+
+A comparação cobre dois cenários, cinco tamanhos amostrais, três terminais,
+três fases e três métodos: 270 registros. No DBSCAN, o denominador dos
+índices exclui o ruído; nos demais métodos, inclui todos os pontos com
+rótulo. Logo, uma classificação direta dos métodos exige conferir também
+as contagens retidas e excluídas. A política adotada registra índices como
+não aplicáveis quando há um único cluster ou algum cluster unitário;
+essa política é mais restritiva que a definição usual de Silhouette.
+A síntese apresenta medianas entre grupos aplicáveis e a quantidade desses
+grupos, sem substituir valores ausentes por zero. O crescimento de $N$
+é uma comparação descritiva entre fontes: não foram demonstradas
+independência nem relação de inclusão entre suas simulações. Assim,
+não se atribui causalmente toda mudança de escore ao tamanho amostral.
 
 \subsection{Ensaios controlados dos detectores}
 
@@ -1328,8 +1371,8 @@ resultados sustentam a aceitação do parser corrigido para o escopo declarado
 dos pontos de verificação das fontes.
 
 O registro de aceitação e os resultados reproduzíveis são mantidos em
-\texttt{doc/parser\_validation\_report.md}, com os arquivos CSV de referência
-em \texttt{doc/evidence/}. A varredura de toda a coleção verifica as contagens
+\path{docs/research/parser_validation_report.md}, com os arquivos CSV de referência
+em \path{docs/research/evidence/}. A varredura de toda a coleção verifica as contagens
 de execuções e os comprimentos das tabelas; ela não constitui uma verificação
 independente de cada coluna ou de cada valor numérico. A aceitação dos pontos
 de verificação das fontes é restrita aos dez arquivos selecionados e à
@@ -1354,7 +1397,7 @@ Os caminhos das fontes preservam identidades distintas entre os arquivos,
 verificação também realizada por um teste de regressão com múltiplos arquivos.
 O procedimento, a revisão, o manifesto SHA-256, os resultados e a decisão de
 aceitação estão registrados em
-\texttt{doc/observation\_structure\_validation\_report.md}.
+\path{docs/research/observation_structure_validation_report.md}.
 A comparação foi realizada de forma automatizada; não se afirma a realização
 de uma revisão humana independente.
 A cobertura estrutural é exaustiva para esses dez arquivos; a comparação
@@ -1459,26 +1502,26 @@ Apêndice~\ref{app:validation-records}.
 \section{Resultados estatísticos e probabilísticos}
 \label{sec:resultados-estatisticos}
 
-O pacote final de evidências foi gerado em 22 de setembro de 2026 a partir
+A segunda versão do pacote de evidências foi gerada em 21 de outubro de 2026 a partir
 dos dez arquivos declarados, com a base de 112677~V, o limiar de 2,3~P.U. e
 os três terminais e as três fases já validados nas seções anteriores,
 totalizando noventa combinações de cenário, tamanho amostral, terminal e
 fase. Para cada combinação foram calculados contagem, contagem válida,
 média, desvio padrão amostral, mediana, quartis, percentis 90, 95 e 99,
 mínimo e máximo, conforme a metodologia da
-Seção~\ref{sec:resultados-estatisticos} do capítulo de metodologia. A título
+Seção~\ref{sec:metodo-estatistico} do capítulo de metodologia. A título
 de exemplo, no grupo $T_{OPO}$, fase A, com 10.000 simulações, o CRPI
 apresentou média de 1,1769~P.U. e desvio padrão de 0,1209~P.U., enquanto o
 SRPI apresentou média de 1,7006~P.U. e desvio padrão de 0,1317~P.U., valores
 consistentes com a definição de chaveamento de cada cenário.
 
 A Tabela~\ref{tab:defesa-probabilidade}, reproduzida automaticamente de
-\texttt{results/defense-evidence/v1/tables/probability.tex}, apresenta a
+\path{results/defense-evidence/v2/tables/probability.tex}, apresenta a
 probabilidade empírica de excedência de 2,3~P.U. para as noventa
 combinações, com o número de eventos, o denominador, o intervalo de Wilson
 de 95\% e o estado de validação.
 
-\input{../results/defense-evidence/v1/tables/probability.tex}
+\input{evidence/v2/tables/probability.tex}
 
 Nenhuma das 204.300 observações aceitas excedeu 2,3~P.U.; a probabilidade
 empírica é, portanto, zero em todos os noventa grupos, com o limite superior
@@ -1488,12 +1531,12 @@ definição metodológica, e não como ausência de resultado. A reconciliação
 entre as contagens diretas e as tabelas de frequência e de probabilidade
 impressas pelo ATP produziu 1.151 intervalos comparáveis, todos com estado
 de validação ``válido'' dentro da tolerância definida pela precisão impressa
-(fonte: \texttt{results/defense-evidence/v1/sources/}
+(fonte: \path{results/defense-evidence/v2/sources/}
 \texttt{probability\_reconciliation.csv}).
 
 A adequação gaussiana foi avaliada pelo teste de Anderson--Darling a 5\% de
 significância nos noventa grupos (fonte:
-\texttt{results/defense-evidence/v1/sources/distribution\_adequacy.csv}). A
+\path{results/defense-evidence/v2/sources/distribution_adequacy.csv}). A
 normalidade foi rejeitada em 88 dos 90 grupos; as duas exceções ocorrem em
 grupos do SRPI com apenas 50 simulações ($1/2\,LT$, fase B, e $T_{MAN}$, fase
 C), compatível com a menor potência do teste em amostras pequenas. No grupo
@@ -1509,7 +1552,7 @@ desse grupo de referência.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]
-{../results/defense-evidence/v1/figures/distribution-crpi-t_opo-a.png}
+{evidence/v2/figures/distribution-crpi-t_opo-a.png}
 \caption{Histograma com densidade gaussiana ajustada e gráfico
 quantil--quantil para o CRPI, terminal $T_{OPO}$, fase A, $N=10\,000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
@@ -1522,7 +1565,7 @@ empírica permanece principal. Fonte: elaborado pelo autor a partir de
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]
-{../results/defense-evidence/v1/figures/distribution-srpi-t_opo-a.png}
+{evidence/v2/figures/distribution-srpi-t_opo-a.png}
 \caption{Histograma com densidade gaussiana ajustada e gráfico
 quantil--quantil para o SRPI, terminal $T_{OPO}$, fase A, $N=10\,000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
@@ -1541,24 +1584,193 @@ decisão de adequação permanece ``rejeitado'' e a inferência gaussiana é
 apresentada apenas como comparação qualificada, nunca como substituta da
 probabilidade empírica, conforme a política declarada na metodologia.
 
+\subsection{Referência do GTPPLOT e limite da validação por probabilidade}
+
+O documento \textit{Gráficos estadísticos con el GTPPLOT}, de
+\citeonline{hevia2000gtpplot}, identificado pelo arquivo
+\texttt{2000-N4-Estati-1.pdf}, descreve a obtenção de histogramas e curvas
+de excedência a partir das tabulações estatísticas do ATP. Cada simulação
+contribui com um pico absoluto por variável; uma tabela agrupada utiliza
+o maior pico entre as variáveis do grupo, mantendo $N$ observações,
+e não a soma das contagens das fases. A distribuição escolhida para os
+tempos de fechamento dos interruptores não determina, por si só, uma
+distribuição normal para os picos de tensão. O artigo fundamenta a
+interpretação das tabelas, sem fornecer referência de verdade para os
+agrupamentos deste sistema elétrico.
+
+Considerou-se validar candidatos pela probabilidade associada ao caso.
+Essa validação não pôde ser estabelecida por uma única distribuição
+paramétrica comum: as medições apresentam formas distintas conforme
+cenário, terminal e fase, e a hipótese normal foi rejeitada em 88 dos
+90 grupos. Não se demonstrou que cada medição siga uma família distinta,
+nem que os dados não sigam distribuição alguma; o resultado demonstra
+que a normal comum não é referência adequada. Outras famílias não foram
+validadas sistematicamente neste trabalho. Mesmo as duas não rejeições
+em $N=50$ não comprovam normalidade.
+
+Uma comparação exploratória adicional ajustou as famílias normal,
+gama e lognormal por máxima verossimilhança, com localização estimada,
+em cada grupo. No CRPI, o menor AIC selecionou gama em 27 grupos e
+lognormal em 18; no SRPI, selecionou normal em 29, gama em 13 e
+lognormal em três. Os 270 ajustes e suas decisões relativas estão em
+\path{results/defense-evidence/v2/sources/distribution_comparison.csv}.
+Essa heterogeneidade impede impor uma única família como referência
+comum sem verificação adicional. AIC compara ajustes candidatos e não
+testa adequação absoluta: uma normal pode ser a melhor das três opções
+e ainda ser rejeitada por Anderson--Darling. Logo, a seleção de uma
+família neste levantamento não constitui validação probabilística do
+caso nem atribui causa aos extremos.
+
+A frequência empírica de excedência continua calculável por grupo,
+independentemente de ajuste paramétrico. Entretanto, a raridade de um
+valor não determina sua causa física ou numérica; tampouco frequência
+zero em 2,3~P.U. valida ou invalida os candidatos dos detectores. Por
+isso, a análise probabilística descritiva foi realizada, mas a validação
+causal de candidatos pela probabilidade do caso não foi alcançada.
+
+\section{Análise comparativa dos métodos de clusterização}
+\label{sec:comparacao-clusterizacao}
+
+A versão v2 reúne os índices internos das partições efetivamente produzidas
+pelo fluxo, sem reajustar os modelos para maximizar os escores. A
+Tabela~\ref{tab:cluster-summary} sintetiza os resultados dos nove grupos
+terminal--fase de cada cenário e tamanho amostral. Os 270 registros
+individuais, incluindo número de clusters, quantidade de observações,
+ruído excluído e motivos de não aplicabilidade, estão em
+\path{results/defense-evidence/v2/sources/clustering_comparison.csv}.
+DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
+partição elegível para avaliação, sem atribuir artificialmente escore zero.
+
+\clearpage
+\input{evidence/v2/tables/clustering_summary.tex}
+
+Os índices foram aplicáveis em 90 dos 90 grupos do K-Means, em quatro
+dos 90 grupos do DBSCAN e em seis dos 90 grupos do método hierárquico.
+Todos os quatro grupos avaliáveis do DBSCAN pertencem a $N=50$;
+para $N\geq100$, sua partição não atende aos critérios geométricos
+adotados. Em $N=10\,000$, apenas K-Means mantém índices calculáveis.
+Essas contagens qualificam a abrangência da comparação e dizem respeito
+às partições, não à aplicabilidade dos detectores de candidatos.
+
+\subsection{K-Means: separação geométrica com número de grupos fixado}
+
+O K-Means utiliza $k=2$ em todos os grupos. Seus índices descrevem a
+separação obtida sob essa restrição: mesmo uma distribuição contínua sem
+duas populações físicas pode ser dividida em dois conjuntos. Assim,
+um Silhouette elevado e um Davies--Bouldin reduzido sustentam a coesão
+da partição no espaço de tensão, mas não comprovam duas classes de
+fenômenos elétricos nem identificam o cluster de maior centróide como erro.
+O detector por distância ao centróide é uma evidência distinta dos rótulos
+utilizados nos índices internos.
+
+No SRPI, a mediana de Silhouette dos nove grupos passa de 0,6491 em
+$N=50$ para 0,6258 em $N=10\,000$, enquanto a mediana de
+Davies--Bouldin passa de 0,4499 para 0,5032. Em $N=100$, Silhouette
+atinge 0,6770, evidenciando comportamento não monotônico. O aumento
+amostral, portanto, não melhora automaticamente a separação interna
+produzida pelo mesmo número de centróides.
+
+\subsection{DBSCAN: densidade, ruído e aplicabilidade dos índices}
+
+O DBSCAN admite quantidade variável de clusters e pontos de ruído.
+Quando mantém apenas um cluster após excluir o ruído, o detector ainda
+pode estar aplicável, embora Silhouette e Davies--Bouldin sejam não
+aplicáveis. Portanto, ausência de escore não equivale a falha de execução
+nem a desempenho inferior ao K-Means. Nos grupos com índices calculáveis,
+é necessário conferir o total de observações retidas: excluir pontos de
+ruído altera a população avaliada e pode favorecer a separação aparente.
+Uma mediana calculada em poucos grupos também não representa os nove
+grupos de um cenário com a mesma abrangência da mediana do K-Means.
+
+No CRPI, terminal $T_{MAN}$, fase A, $N=50$, ambos os métodos produzem
+dois clusters. O K-Means apresenta Silhouette de 0,8063 e
+Davies--Bouldin de 0,2893, utilizando os 50 valores. O DBSCAN apresenta
+0,8054 e 0,2616, respectivamente, mas utiliza 49 valores após excluir
+um ponto de ruído. O segundo índice é menor no DBSCAN, enquanto
+Silhouette é ligeiramente maior no K-Means; além disso, os denominadores
+são distintos. Esse exemplo impede equiparar o menor índice a uma
+superioridade geral de detecção.
+
+\subsection{Método hierárquico: cauda superior separada por lacuna}
+
+A regra hierárquica procura uma cauda superior pequena e afastada,
+conforme os limiares da metodologia. Um único cluster significa que não
+foi encontrada separação suficiente; dois clusters podem incluir apenas
+um ponto na cauda, situação excluída pela política de avaliação. Essa
+restrição evita tratar um extremo isolado como evidência geométrica
+robusta de uma população. O método tem finalidade distinta da divisão
+global em dois grupos do K-Means e da conectividade por densidade do
+DBSCAN. O dendrograma de Ward disponível nos artefatos exploratórios
+não representa essa regra de seleção e não fundamenta sua avaliação.
+
+Uma comparação sobre a mesma população ilustra a divergência entre
+índices: no CRPI, terminal $T_{OPO}$, fase A, $N=200$, ambos os métodos
+hierárquico e K-Means utilizam as 200 observações e dois clusters.
+O hierárquico apresenta Silhouette de 0,5444 e Davies--Bouldin de
+0,3182; o K-Means apresenta 0,7127 e 0,4065. Silhouette favorece
+K-Means, enquanto Davies--Bouldin favorece a regra hierárquica.
+Logo, os critérios medem aspectos diferentes da geometria e não
+produzem necessariamente a mesma ordenação dos métodos.
+
+\subsection{Influência da quantidade de casos e limites da comparação}
+
+As Figuras~\ref{fig:cluster-crpi} e~\ref{fig:cluster-srpi} mantêm terminal
+$T_{OPO}$ e fase A fixos e mostram a evolução dos índices com $N$.
+A quantidade de casos afeta a ocupação das caudas, as distâncias entre
+vizinhos, as lacunas e os parâmetros calibrados nos próprios grupos.
+Por isso, mais casos podem alterar a partição e sua aplicabilidade;
+não há garantia de crescimento de Silhouette ou redução de
+Davies--Bouldin. A comparação das cinco quantidades é observacional,
+sem réplicas independentes por tamanho, e não estima um efeito causal
+isolado de $N$ nem estabelece um número ótimo de simulações.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]
+{evidence/v2/figures/clustering-crpi.png}
+\caption{Silhouette e Davies--Bouldin por quantidade de casos no CRPI,
+terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
+conforme o registro individual. Fonte: elaboração própria a partir de
+\texttt{sources/clustering\_comparison.csv}.}
+\label{fig:cluster-crpi}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]
+{evidence/v2/figures/clustering-srpi.png}
+\caption{Silhouette e Davies--Bouldin por quantidade de casos no SRPI,
+terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
+conforme o registro individual. Fonte: elaboração própria a partir de
+\texttt{sources/clustering\_comparison.csv}.}
+\label{fig:cluster-srpi}
+\end{figure}
+
+\FloatBarrier
+A síntese comparativa considera conjuntamente os dois índices, a
+aplicabilidade, a fração de ruído e a finalidade de cada método.
+Não se declara vencedor universal nem se converte uma medida de
+separação interna em confiabilidade causal dos candidatos. Essa
+confiabilidade exige a avaliação futura do especialista.
+
 \section{Evidências analíticas de anomalia}
 \label{sec:evidencias-anomalia}
 
 As evidências de anomalia foram calculadas separadamente por cenário,
-linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:evidencias-anomalia}
+linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:metodo-anomalias}
 da metodologia, e cobrem as 204.300 observações do pacote
-(fonte: \texttt{results/defense-evidence/v1/sources/method\_comparison.csv}).
+(fonte: \path{results/defense-evidence/v2/sources/method_comparison.csv}).
 No grupo de referência $T_{OPO}$, fase A, $N=10\,000$, o critério $3\sigma$
 não sinalizou nenhuma observação em nenhum dos dois cenários, enquanto o
 escore robusto MAD sinalizou 109 observações no CRPI (1,09\%) e 852 no SRPI
 (8,52\%). O K-Means, aplicável nos dois cenários, sinalizou 99 observações
-em cada um por distância ao centróide acima do percentil 99 do
-desenvolvimento; nesse mesmo grupo, todas as 99 observações sinalizadas pelo
+em cada um por distância ao centróide acima do percentil 99 da
+calibração; nesse mesmo grupo, todas as 99 observações sinalizadas pelo
 K-Means coincidem com observações também sinalizadas pelo MAD. O DBSCAN foi
 aplicável nos dois cenários, mas não classificou nenhuma observação como
 ruído nesse grupo específico, resultando em zero candidatos por esse
-método -- um resultado explícito de não aplicabilidade prática do parâmetro
-calibrado nessa combinação, e não de ausência de evidência. O número total de
+método -- um resultado de zero sinalizações por um detector aplicável; isso
+não implica que os índices geométricos sejam calculáveis. O número total de
 candidatos analíticos (união dos métodos aplicáveis) foi 109 no CRPI e 852
 no SRPI, coincidindo com a contagem apresentada na
 Seção~\ref{sec:convergencia-amostral}.
@@ -1578,12 +1790,12 @@ artefato (\texttt{analysis\_mode=exploratory}).
 \label{sec:convergencia-amostral}
 
 A Tabela~\ref{tab:defesa-convergencia}, reproduzida de
-\texttt{results/defense-evidence/v1/tables/convergence.tex}, compara os
+\path{results/defense-evidence/v2/tables/convergence.tex}, compara os
 cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000 simulações) sob a
 mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
 método, para os noventa grupos de cenário, terminal e fase.
 
-\input{../results/defense-evidence/v1/tables/convergence.tex}
+\input{evidence/v2/tables/convergence.tex}
 
 A largura do intervalo de confiança da probabilidade empírica diminui de
 forma monotônica com o tamanho amostral em todos os grupos, de 0,0713 em
@@ -1601,7 +1813,7 @@ dez fontes não são presumidas independentes ou aninhadas entre si.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]
-{../results/defense-evidence/v1/figures/convergence-crpi-t_opo-a.png}
+{evidence/v2/figures/convergence-crpi-t_opo-a.png}
 \caption{Convergência das medidas descritivas, da probabilidade empírica e
 da taxa de candidatos entre os cinco tamanhos amostrais, CRPI, terminal
 $T_{OPO}$, fase A. Fonte: elaborado pelo autor a partir de
@@ -1612,7 +1824,7 @@ $T_{OPO}$, fase A. Fonte: elaborado pelo autor a partir de
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]
-{../results/defense-evidence/v1/figures/convergence-srpi-t_opo-a.png}
+{evidence/v2/figures/convergence-srpi-t_opo-a.png}
 \caption{Convergência das medidas descritivas, da probabilidade empírica e
 da taxa de candidatos entre os cinco tamanhos amostrais, SRPI, terminal
 $T_{OPO}$, fase A. Fonte: elaborado pelo autor a partir de
@@ -1624,7 +1836,7 @@ $T_{OPO}$, fase A. Fonte: elaborado pelo autor a partir de
 \label{sec:avaliacao-controlada}
 
 O pacote de evidências final registra, em
-\texttt{results/defense-evidence/v1/package\_status.json}, que a revisão
+\path{results/defense-evidence/v2/package_status.json}, que a revisão
 técnica com evidência elétrica completa permanece pendente sobre o conjunto
 de dados-alvo real. O ensaio controlado com perturbações sintéticas e a
 repetição da grade de sensibilidade de parâmetros, por outro lado, foram
@@ -1637,7 +1849,7 @@ A Tabela~\ref{tab:defesa-benchmark} reproduz as contagens de confusão e as
 métricas derivadas do ensaio controlado, para as três famílias de
 intervenção (pontual, contextual e coletiva) nas taxas de contaminação de
 1\%, 5\% e 10\%, mais a condição limpa de referência (fonte:
-\texttt{results/defense-evidence/v1/sources/controlled\_benchmark.csv}). Na
+\path{results/defense-evidence/v2/sources/controlled_benchmark.csv}). Na
 condição limpa, o K-Means produziu 42 falsos positivos sobre 5.400
 observações de avaliação (taxa de falsos positivos de 0,0078), contra 391
 falsos positivos do DBSCAN calibrado por novidade de densidade (taxa de
@@ -1652,14 +1864,14 @@ precisão superior à do DBSCAN em toda condição comparável, à custa de
 recuperar uma fração menor dos pontos intervencionados nas taxas mais
 baixas.
 
-\input{../results/defense-evidence/v1/tables/benchmark.tex}
+\input{evidence/v2/tables/benchmark.tex}
 
 A grade congelada de sensibilidade de parâmetros -- número de grupos e
 sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --
 foi replicada sobre o mesmo grupo de referência do conjunto de dados-alvo,
 com estabilidade medida pelo índice de Jaccard identidade-a-identidade e
 limiar de qualificação de 0,80 (fonte:
-\texttt{results/defense-evidence/v1/sources/sensitivity.csv}). Das vinte
+\path{results/defense-evidence/v2/sources/sensitivity.csv}). Das vinte
 réplicas de parâmetro avaliadas (dez por método, cinco por cenário), todas
 foram aplicáveis e todas produziram índice de Jaccard igual a 1,0000 em
 relação à configuração de referência declarada, superando o limiar de
@@ -1673,7 +1885,7 @@ concordância entre métodos, discordância, escore elevado e controle sem
 sinalização, conforme a regra de amostragem declarada na metodologia. A
 Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
 
-\input{../results/defense-evidence/v1/tables/technical_review.tex}
+\input{evidence/v2/tables/technical_review.tex}
 
 Todos os cinco casos permanecem com conclusão ``não resolvido'', pois não há
 forma de onda, repetição de simulação com passo reduzido nem revisor
@@ -1694,7 +1906,7 @@ objetivo de comparar a coerência entre os métodos estatísticos e os
 algoritmos de clusterização também é atendido: a discordância entre o
 critério clássico $3\sigma$ e o escore robusto MAD no grupo de referência é
 relatada explicitamente, em vez de ser resumida em um único rótulo, e o
-DBSCAN mostrou-se não aplicável na prática (zero candidatos) para a
+DBSCAN permaneceu aplicável, com zero candidatos para a
 combinação de parâmetros congelada nesse grupo, o que ilustra a
 sensibilidade desse método à calibração e à escala local dos dados --
 achado consistente com a limitação do DBSCAN discutida na revisão de
@@ -1702,10 +1914,10 @@ literatura.
 
 O objetivo de desenvolver uma rotina computacional reprodutível que integre
 extração, tratamento, análise estatística, análise probabilística, detecção
-de anomalias e apresentação dos resultados é parcialmente atendido: o
+de anomalias e apresentação dos resultados é atendido no escopo computacional: o
 pipeline integrado, o manifesto de reprodutibilidade e as tabelas e figuras
 deste capítulo foram gerados de forma automática e rastreável a partir dos
-dez arquivos declarados (\texttt{results/defense-evidence/v1/}
+dez arquivos declarados (\path{results/defense-evidence/v2/}
 \texttt{reproducibility\_manifest.json}), incluindo o ensaio controlado com
 perturbações sintéticas e a repetição da grade de sensibilidade de
 parâmetros, ambos concluídos sobre o grupo de referência do conjunto-alvo
@@ -1741,10 +1953,10 @@ os critérios declarados. Seus resultados sustentam conclusões sobre o conjunto
 e as condições examinados, mas não substituem a validação elétrica independente
 necessária para atribuir causa aos candidatos sinalizados.
 
-\subsection{Lacunas declaradas do pacote de evidências}
+\subsection{Limites da validação causal e trabalho futuro}
 \label{sec:lacunas-pacote}
 
-O manifesto \texttt{results/defense-evidence/v1/package\_status.json}
+O manifesto \path{results/defense-evidence/v2/package_status.json}
 declara explicitamente o estado ``incompleto'' do pacote final e restringe
 as camadas aceitas à validade dos dados, ao cálculo estatístico e à geração
 de candidatos analíticos; a validade elétrica dos candidatos não integra as
@@ -1766,8 +1978,8 @@ DBSCAN -- é apresentada, neste trabalho, como erro numérico do ATP
 confirmado ou como evento físico confirmado, mesmo nas condições em que o
 ensaio controlado e a sensibilidade de parâmetros indicam desempenho ou
 estabilidade favoráveis no grupo de referência sintético e testado. Essa
-lacuna permanece como validação obrigatória pendente, distinta de
-extensões legítimas de pesquisa, conforme retomado na conclusão.
+validação elétrica é proposta como trabalho futuro, fora do escopo
+comparativo deste TCC, conforme retomado na conclusão.
 
 \chapter{Conclusão}
 \label{chap:conclusao}
@@ -1817,7 +2029,10 @@ observações aceitas excedeu 2,3~P.U.; a probabilidade empírica é zero nos
 noventa grupos, com incerteza explícita, e os 1.151 intervalos reconciliados
 com o ATP foram todos válidos. Esse objetivo é considerado atendido.
 
-\item Os algoritmos K-Means e DBSCAN foram aplicados para identificar
+\item Os algoritmos K-Means, DBSCAN e o método hierárquico foram comparados
+por Silhouette e Davies--Bouldin nas cinco quantidades de simulações,
+com estados de aplicabilidade preservados. K-Means e DBSCAN também foram
+aplicados para identificar
 agrupamentos de comportamento e observações atípicas, com escore, limiar e
 aplicabilidade explícitos por grupo comparável. Esse objetivo é considerado
 atendido: além do nível descritivo e de geração de candidatos, a validação
@@ -1831,7 +2046,7 @@ constitui, por si só, evidência elétrica de causa (Seção~\ref{sec:lacunas-p
 \item A comparação entre os resultados das técnicas estatísticas e dos
 algoritmos de clusterização foi realizada de forma explícita, preservando
 concordâncias e discordâncias -- incluindo a divergência observada entre o
-critério $3\sigma$ e o escore MAD, e a não aplicabilidade prática do DBSCAN
+critério $3\sigma$ e o escore MAD, e o resultado de zero sinalizações do DBSCAN
 no grupo de referência. Esse objetivo é considerado atendido.
 
 \item A rotina computacional reprodutível que integra extração, tratamento,
@@ -1840,10 +2055,9 @@ apresentação dos resultados foi implementada e executada de ponta a ponta
 para os dez arquivos declarados, com manifesto de reprodutibilidade,
 tabelas e figuras geradas automaticamente, incluindo o ensaio controlado e
 a sensibilidade de parâmetros sobre o grupo de referência do conjunto de
-dados-alvo. Esse objetivo é considerado parcialmente atendido: a
-integração técnica está completa, mas o próprio pacote final se declara
-incompleto, pois a revisão técnica plena com evidência elétrica
-independente permanece pendente.
+dados-alvo. Esse objetivo é considerado atendido no escopo computacional. O estado
+incompleto do pacote refere-se à revisão elétrica independente, mantida
+como trabalho futuro, e não à execução do fluxo comparativo.
 
 \end{itemize}
 
@@ -1860,21 +2074,16 @@ escopo acadêmico, por proteger propriedade intelectual da empresa parceira
 e por exigir avaliação técnica especializada que extrapola os métodos aqui
 validados.
 
-Como trabalhos futuros, distinguem-se duas categorias. A primeira reúne
-validações necessárias e ainda não concluídas neste pacote: a obtenção de
-formas de onda, de repetições de simulação com passo reduzido e de um
-revisor elétrico independente qualificado para fechar a revisão técnica
-iniciada neste trabalho, além da extensão do ensaio controlado e da grade
-de sensibilidade de parâmetros, já concluídos no grupo de referência, aos
-demais grupos comparáveis do conjunto de dados-alvo. A
-segunda reúne extensões legítimas para além do escopo desta proposta: o
-refinamento de referências estatísticas robustas adicionais, a
-investigação sistemática de sensibilidade numérica por repetição de
-simulação com passos sucessivamente menores, e -- explicitamente fora do
-escopo de qualquer etapa futura decorrente diretamente deste trabalho -- a
-automação de recomendações de nível de isolamento e a lógica de sistema
-especialista da empresa parceira, que permanecem sob a responsabilidade
-técnica e comercial da organização.
+Como próximo passo, propõe-se a validação dos candidatos por especialista
+em transitórios eletromagnéticos, com inspeção das formas de onda,
+conferência das condições de chaveamento e repetição das simulações com
+passos de integração menores. Essa validação causal está fora dos
+objetivos deste TCC e constitui trabalho futuro. Também se recomenda
+ampliar os ensaios controlados e avaliar outras famílias de distribuição
+separadamente por grupo, com verificação de ajuste e das caudas, antes de
+usar probabilidades paramétricas como evidência complementar. A lógica
+de sistema especialista e a recomendação do nível de isolamento
+permanecem sob responsabilidade técnica da empresa parceira.
 
 % ----------------------------------------------------------
 % ELEMENTOS PÓS-TEXTUAIS
@@ -1909,9 +2118,9 @@ início, no interior e no final dos nós. Um caso de regressão sintético
 reproduz a falha original e verifica o mapeamento corrigido.
 
 Os registros de aceitação são mantidos em
-\path{doc/parser_validation_report.md} e
-\path{doc/observation_structure_validation_report.md}, com referências e
-manifestos em \path{doc/evidence/}. A revalidação estrutural ocorreu em
+\path{docs/research/parser_validation_report.md} e
+\path{docs/research/observation_structure_validation_report.md}, com referências e
+manifestos em \path{docs/research/evidence/}. A revalidação estrutural ocorreu em
 10 de setembro de 2026, após a correção do cabeçalho do CRPI. As exportações
 anteriores à correção exigem regeneração e validação antes do reúso.
 
@@ -1927,7 +2136,7 @@ com os arquivos de casos locais originais disponíveis, executando
 simulações foram corrigidas para esse valor; a própria fórmula de conversão
 de produção não exigiu alteração.
 
-Os artefatos de apoio são mantidos em \path{doc/evidence/}:
+Os artefatos de apoio são mantidos em \path{docs/research/evidence/}:
 \path{pu_source_excerpt.txt} contém os excertos das fontes,
 \path{pu_conversion_checkpoints.csv} registra todas as 60 comparações
 numéricas e \path{pu_validation_2026-09-11.txt} registra o resultado da
@@ -1942,15 +2151,15 @@ auditoria para manter as evidências compactas. O manifesto
 \path{pu_validation.sha256} identifica as dez entradas LIS e ATP, as
 exportações mantidas e os resultados das comparações. Ele pode ser verificado
 com
-\texttt{sha256sum -c doc/evidence/pu\_validation.sha256}.
+\texttt{sha256sum -c docs/research/evidence/pu\_validation.sha256}.
 
 \section{Reprodução da auditoria de integridade e limpeza}
 
 A aceitação desse escopo de apoio à validação da integridade dos dados foi
-registrada em \path{doc/data_cleaning_validation_report.md}. A reprodução utiliza
+registrada em \path{docs/research/data_cleaning_validation_report.md}. A reprodução utiliza
 \texttt{uv run python -m scripts.audit\_data\_cleaning}; os resultados por
 arquivo, os registros de falhas introduzidas e os hashes exatos dos arquivos
-de origem e do código encontram-se em \path{doc/evidence/}, nos arquivos
+de origem e do código encontram-se em \path{docs/research/evidence/}, nos arquivos
 \path{cleaning_cases.csv}, \path{cleaning_corruptions.csv} e
 \path{cleaning_validation.sha256}. Essa aceitação não estabelece a adequação
 à distribuição gaussiana, a independência estatística entre arquivos, as

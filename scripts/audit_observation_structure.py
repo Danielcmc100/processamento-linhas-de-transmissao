@@ -24,7 +24,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument(
         "--checkpoints",
         type=Path,
-        default=Path("doc/evidence/parser_audit_checkpoints.csv"),
+        default=Path("docs/research/evidence/parser_audit_checkpoints.csv"),
     )
     parser.add_argument("--base-voltage", type=float, default=100_000.0)
     return parser.parse_args()

@@ -21,7 +21,7 @@ unavailable; ordinary local tools were used after the failed invocation.
 
 ## What the conversation actually requests
 
-Source: [chat.txt](../chat.txt), exported timestamps 10/9/26 and 10/10/26.
+Source: [chat.txt](../../chat.txt), exported timestamps 10/9/26 and 10/10/26.
 The locale of the exported dates is not declared. Images were omitted from
 the text export but subsequently supplied in the conversation. The visual
 assessment below updates that limitation; raw inputs and fitting settings
@@ -93,7 +93,7 @@ one histogram suggests more than one mode.
 ## What the article supports
 
 Source: Orlando P. Hevia, *Graficos estadisticos con el GTPPLOT*, supplied
-[PDF](../2000-N4-Estati-1.pdf). Verify publication metadata before adding its
+[PDF](../references/2000-N4-Estati-1.pdf). Verify publication metadata before adding its
 bibliography entry; the filename alone does not establish venue or date.
 
 - Pages 1-2: ATP generates peak-frequency tables; GTPPLOT reads those tables.

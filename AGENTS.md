@@ -124,7 +124,9 @@ Para fundamentar o seu referencial teórico, recomendo buscar estas fontes:
 - Não ignore erros de segurança (S101, S404, etc já estão configurados)
 - Use preview features do Ruff
 - Exclua `migrations` e `venv` da análise
-- Sempre que analisar ou explicar um tema, guarde um resumo na pasta `doc`
+- Store research notes and analysis summaries in `docs/research/`.
+- Reserve `doc/` for self-contained thesis sources and template assets.
+- Preserve template assets even when the current manuscript does not reference them.
 
 ---
 

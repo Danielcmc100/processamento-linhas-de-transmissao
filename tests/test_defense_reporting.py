@@ -215,3 +215,17 @@ def test_outputs_are_deterministic_and_existing_targets_are_safe(
 
     with pytest.raises(FileExistsError, match="already exist"):
         _generate(first_dir)
+
+
+def test_tables_paginate_and_wrap_within_landscape_width(
+    tmp_path: Path,
+) -> None:
+    result = _generate(tmp_path)
+    for path in result.latex_paths.values():
+        latex = path.read_text(encoding="utf-8")
+        assert r"\begin{landscape}" in latex
+        assert r"\begin{longtable}" in latex
+        assert r"\linewidth-2\tabcolsep" in latex
+        assert r"\endfirsthead" in latex
+        assert r"\endhead" in latex
+        assert r"\begin{table}" not in latex

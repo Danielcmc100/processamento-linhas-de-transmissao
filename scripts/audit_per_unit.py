@@ -10,7 +10,7 @@ from src.parser import parse_statistical_data
 from src.services.preprocessing import extract_maxima_dataframe
 
 BASE = 112_677.0
-EVIDENCE = Path("doc/evidence")
+EVIDENCE = Path("docs/research/evidence")
 ROOT = Path("input_files/casos")
 
 

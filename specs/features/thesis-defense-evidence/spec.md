@@ -2,7 +2,7 @@
 
 **Status:** Draft
 **Complexity:** Complex
-**Source:** `doc/defense_validation_plan.md`
+**Source:** `docs/research/defense_validation_plan.md`
 **Primary manuscript:** `doc/main.tex`
 **Related features:**
 

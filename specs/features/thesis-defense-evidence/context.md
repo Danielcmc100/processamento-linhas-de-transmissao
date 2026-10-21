@@ -69,10 +69,10 @@ or unsupported physical-versus-numerical causal classification.
 
 ## Specific references
 
-- Scientific protocol: `doc/defense_validation_plan.md`.
+- Scientific protocol: `docs/research/defense_validation_plan.md`.
 - Existing manual review protocol:
-  `doc/manual_anomaly_detection_and_test_design.md`.
-- Accepted parser, observation, P.U., and cleaning evidence: `doc/evidence/`.
+  `docs/research/manual_anomaly_detection_and_test_design.md`.
+- Accepted parser, observation, P.U., and cleaning evidence: `docs/research/evidence/`.
 
 ## Deferred ideas
 

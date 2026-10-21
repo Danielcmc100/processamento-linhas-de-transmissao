@@ -4,8 +4,8 @@ Date: 2026-10-17.
 
 ## Basis and limits
 
-Sources: [advisor chat](../chat.txt),
-[ATP probability notes](../.notebook/atp-histogram-probability.md), and
+Sources: [advisor chat](../../chat.txt),
+[ATP probability notes](../../.notebook/atp-histogram-probability.md), and
 [completion assessment](advisor_article_completion_assessment.md).
 Project planning files and the existing hierarchical-metrics note were also
 read to identify conflicting completion criteria.

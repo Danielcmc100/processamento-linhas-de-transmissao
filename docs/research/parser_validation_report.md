@@ -18,9 +18,9 @@ No new Git commit or remote publication is made by this validation.
 Run from the repository root with the existing `uv.lock` (Python 3.13.9):
 
 ```bash
-rtk proxy sha256sum -c doc/evidence/parser_validation_2026-09-10.sha256
+rtk proxy sha256sum -c docs/research/evidence/parser_validation_2026-09-10.sha256
 rtk proxy uv run python -m scripts.audit_parser
-rtk proxy uv run python -m scripts.audit_parser --checkpoints doc/evidence/parser_crpi_checkpoints.csv
+rtk proxy uv run python -m scripts.audit_parser --checkpoints docs/research/evidence/parser_crpi_checkpoints.csv
 rtk proxy uv run task format
 rtk proxy uv run task lint
 rtk proxy uv run task test

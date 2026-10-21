@@ -21,7 +21,7 @@ def _arguments() -> Namespace:
     parser.add_argument(
         "--checkpoints",
         type=Path,
-        default=Path("doc/evidence/parser_audit_checkpoints.csv"),
+        default=Path("docs/research/evidence/parser_audit_checkpoints.csv"),
     )
     return parser.parse_args()
 
@@ -92,7 +92,7 @@ def _audit_file(
         f"{path} header count",
     )
     if "/CRPI/" in relative_path:
-        header_path = Path("doc/evidence/parser_crpi_headers.csv")
+        header_path = Path("docs/research/evidence/parser_crpi_headers.csv")
         with header_path.open(encoding="utf-8", newline="") as file:
             expected = [
                 (row["variable_name"], row["node_name"])

@@ -17,7 +17,7 @@ from src.services.validation import (
 )
 
 ROOT = Path("input_files/casos")
-EVIDENCE = Path("doc/evidence")
+EVIDENCE = Path("docs/research/evidence")
 TERMINALS = ("T_MAN", "1_2LT", "T_OPO")
 PHASES = ("A", "B", "C")
 BASE = 112677.0

@@ -3,6 +3,7 @@
 from argparse import ArgumentParser
 from dataclasses import asdict
 from datetime import UTC, datetime
+from hashlib import sha256
 from importlib.metadata import version
 from json import dumps
 from pathlib import Path
@@ -44,6 +45,10 @@ from src.services.dataset_manifest import (
     validate_dataset_manifest,
 )
 from src.services.dbscan_evidence import evaluate_dbscan_evidence
+from src.services.defense_clustering import (
+    export_clustering_comparison,
+    export_distribution_comparison,
+)
 from src.services.defense_reporting import (
     RoundingPolicy,
     generate_defense_tables,
@@ -203,6 +208,8 @@ def build_defense_evidence(
         overwrite=overwrite,
     )
     _generate_figures(annotated, adequacy, convergence, output / "figures")
+    export_clustering_comparison(output)
+    export_distribution_comparison(output)
 
     status = {
         "schema_version": SCHEMA_VERSION,
@@ -682,6 +689,11 @@ def _write_manifest(
             "sample_sizes": [50, 100, 200, 1_000, 10_000],
             "terminals": list(TERMINALS),
             "phases": list(PHASES),
+            "implementation_sha256": {
+                path.as_posix(): sha256(path.read_bytes()).hexdigest()
+                for directory in (Path("scripts"), Path("src"))
+                for path in sorted(directory.rglob("*.py"))
+            },
         },
         code_revision=revision,
         dependencies={
@@ -695,7 +707,8 @@ def _write_manifest(
             )
         },
         commands=[
-            "uv run python -m scripts.build_defense_evidence --overwrite"
+            "uv run python -m scripts.build_defense_evidence "
+            f"--root {root} --output {output}"
         ],
         output_files=output_paths,
         generated_at_utc=datetime.now(UTC).isoformat(),
@@ -752,7 +765,12 @@ def _claim_evidence(source_files: dict[str, Path]) -> list[dict[str, object]]:
             "distribution_adequacy",
             "distribution_adequacy",
         ),
-        ("08", "cluster-separation", "comparison", "method_comparison"),
+        (
+            "08",
+            "cluster-separation",
+            "clustering_comparison",
+            "clustering_comparison",
+        ),
         ("09", "kmeans-evidence", "kmeans_evidence", "annotated_observations"),
         ("10", "dbscan-evidence", "dbscan_evidence", "annotated_observations"),
         ("11", "method-comparison", "comparison", "method_comparison"),

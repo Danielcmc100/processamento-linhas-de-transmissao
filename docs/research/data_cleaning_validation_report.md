@@ -102,7 +102,7 @@ audit ledger records the deliberately blocked experiments.
 Run from the repository root with local input files and the existing uv.lock:
 
 ```bash
-rtk proxy sha256sum -c doc/evidence/cleaning_validation.sha256
+rtk proxy sha256sum -c docs/research/evidence/cleaning_validation.sha256
 rtk proxy uv run python -m scripts.audit_data_cleaning
 rtk proxy uv run task format
 rtk proxy uv run task lint

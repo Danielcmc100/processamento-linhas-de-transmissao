@@ -94,51 +94,17 @@ The saved `configuration.json` can be passed to the same command to reproduce
 the analysis. Select a new output directory or set `overwrite` to `true` when
 regenerating an existing package.
 
-## Compilação do TCC
+## Thesis compilation
 
-O documento principal está em [`doc/main.tex`](doc/main.tex). A compilação deve
-ser executada a partir da pasta `doc`, pois o arquivo utiliza caminhos relativos
-para as imagens, referências bibliográficas e o estilo LaTeX.
+[`doc/`](doc/) contains only the standalone thesis build sources, local
+figures and tables, preserved template assets, bibliography and UFPA style files.
+Research notes, audit evidence and reference material live under [`docs/`](docs/).
 
-### Dependências
-
-Em sistemas Ubuntu ou Debian, instale o LaTeX e os pacotes necessários com:
-
-```bash
-sudo apt update
-sudo apt install latexmk texlive-latex-extra \
-    texlive-publishers texlive-lang-portuguese \
-    texlive-fonts-recommended texlive-science
+```sh
+just build
 ```
 
-### Compilação automática
-
-```bash
-cd doc
-latexmk -pdf -interaction=nonstopmode -file-line-error main.tex
-```
-
-O arquivo `doc/main.pdf` será gerado após a compilação. O `latexmk` executa
-automaticamente as passagens necessárias do LaTeX, incluindo o processamento
-da bibliografia com BibTeX e a atualização do índice.
-
-### Compilação manual
-
-Caso o `latexmk` não esteja disponível, execute:
-
-```bash
-cd doc
-pdflatex main.tex
-bibtex main
-pdflatex main.tex
-pdflatex main.tex
-```
-
-### Limpeza dos arquivos auxiliares
-
-Para remover arquivos temporários gerados pela compilação, mantendo o PDF:
-
-```bash
-cd doc
-latexmk -c
-```
+Output: `doc/build/main.pdf`. System dependencies are listed in
+[`justfile`](justfile). See [`docs/README.md`](docs/README.md) for
+installation, build commands and evidence regeneration. Compilation does
+not require Python, ATP inputs or files outside `doc/`.

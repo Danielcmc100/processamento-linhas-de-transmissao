@@ -25,7 +25,7 @@ The remaining table and conclusions below preserve the scope of the original
 
 ## Decision and scope
 
-The [task index](../afazeres/README.md) now distinguishes Concluído,
+The [task index](../../afazeres/README.md) now distinguishes Concluído,
 Validando, and Pendente. All 12 previously completed cards moved to
 `afazeres/validando/`; the eight pending deliverables remain pending.
 Concluído is reserved for delivery with documented scientific acceptance
@@ -60,7 +60,7 @@ historical claims, not fresh verification results. Earlier estimates of about
 | 11 | `tests/` and checks configured in `pyproject.toml` | Dated final-revision verification mapped to scientific requirements |
 | 12 | `doc/main.tex` has introduction, theory, and electrical-system modeling | Recorded scientific review and consistency with final methodology/results |
 
-The active chapters in [main.tex](main.tex) are Introduction, Theoretical
+The active chapters in [main.tex](../../doc/main.tex) are Introduction, Theoretical
 Foundation, and Electrical-System Modeling. Methodology and Results/Discussion
 are not implemented as chapters; the Conclusion chapter is commented out.
 The introduction already describes voltage maxima, and the modeling chapter

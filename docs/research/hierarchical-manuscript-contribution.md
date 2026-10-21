@@ -3,7 +3,7 @@
 Analysis date: 2026-10-05.
 Sources: `doc/main.tex`, `src/services/clustering.py`,
 `src/services/pipeline.py`, `src/services/comparison.py`, and the regenerated
-case outputs analyzed in `doc/hierarchical-regenerated-results-analysis.md`.
+case outputs analyzed in `docs/research/hierarchical-regenerated-results-analysis.md`.
 The manuscript was not changed by this analysis.
 
 ## Main contribution

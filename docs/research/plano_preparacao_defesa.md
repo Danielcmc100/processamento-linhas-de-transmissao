@@ -194,7 +194,7 @@ menor.
 - `results/defense-evidence/v1/reproducibility_manifest.json` e
   `package_status.json`.
 - Relatórios de parser, estrutura de observações, conversão P.U. e limpeza,
-  além dos registros em `doc/evidence/`.
+  além dos registros em `docs/research/evidence/`.
 - Comandos exatos de reprodução, versão/configuração de código declaradas no
   manifesto e cópias locais das evidências necessárias.
 - Capturas/saídas em PDF caso terminal ou ambiente não estejam disponíveis.
@@ -389,7 +389,7 @@ slides.
 ## 11. Arquivos do projeto para conferir
 
 - `doc/main.tex`: manuscrito, metodologia, resultados, limitações e conclusão.
-- `doc/defense_validation_plan.md`: plano de evidências e linguagem de
+- `docs/research/defense_validation_plan.md`: plano de evidências e linguagem de
   aceitação.
 - `specs/features/thesis-defense-evidence/validation.md`: estado de
   validação e bloqueio de repetição com ATP.
@@ -397,9 +397,9 @@ slides.
   lacuna de revisão técnica.
 - `results/defense-evidence/v1/reproducibility_manifest.json`: proveniência
   e reprodução do pacote, conforme os campos nele registrados.
-- `doc/parser_validation_report.md`,
-  `doc/observation_structure_validation_report.md`,
-  `doc/data_cleaning_validation_report.md` e `doc/evidence/`: evidências
+- `docs/research/parser_validation_report.md`,
+  `docs/research/observation_structure_validation_report.md`,
+  `docs/research/data_cleaning_validation_report.md` e `docs/research/evidence/`: evidências
   referidas no manuscrito.
 
 Este plano orienta a preparação; confira números e conclusões nos artefatos

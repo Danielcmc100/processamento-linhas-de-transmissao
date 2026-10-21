@@ -46,9 +46,9 @@ decision.
 Run from the repository root using the existing `uv.lock`:
 
 ```bash
-rtk proxy sha256sum -c doc/evidence/observation_validation_2026-09-10.sha256
+rtk proxy sha256sum -c docs/research/evidence/observation_validation_2026-09-10.sha256
 rtk proxy uv run python -m scripts.audit_observation_structure
-rtk proxy uv run python -m scripts.audit_observation_structure --checkpoints doc/evidence/parser_crpi_checkpoints.csv
+rtk proxy uv run python -m scripts.audit_observation_structure --checkpoints docs/research/evidence/parser_crpi_checkpoints.csv
 rtk proxy uv run pytest tests/test_preprocessing.py -q
 ```
 

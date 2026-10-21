@@ -53,10 +53,10 @@
   tables/configuration, input hashes, counts, software versions, and an
   explicit overwrite policy.
 - The implementation and quality-gate evidence are documented in
-  `doc/validation-evidence.md`.
+  `docs/research/validation-evidence.md`.
 - Parser fidelity is accepted for the audited real ATP layouts. The evidence
   covers 235 primary files, 533,450 runs, and independently transcribed
-  checkpoints in `doc/parser_validation_report.md`.
+  checkpoints in `docs/research/parser_validation_report.md`.
 
 ## Next actions
 

@@ -31,3 +31,7 @@ doc/**/*.toc
 # Generated analysis packages
 results/
 *.epub
+
+# Thesis build outputs and preserved legacy build artifacts
+doc/build/
+docs/archive/

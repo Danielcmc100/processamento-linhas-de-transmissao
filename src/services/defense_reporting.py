@@ -424,20 +424,43 @@ def _render_latex(
 ) -> str:
     """Render one deterministic Brazilian Portuguese LaTeX table."""
     columns = definition.display_columns
-    alignment = "l" * len(columns)
+    weights = [
+        3
+        if name == "rationale"
+        else 1.5
+        if name in {"source_value", "method_evidence"}
+        else 1.3
+        if name == "empirical_probability"
+        else 1
+        for name, _ in columns
+    ]
+    total_weight = sum(weights)
+    alignment = (
+        "@{}"
+        + "".join(
+            r">{\RaggedRight\arraybackslash}p{\dimexpr"
+            f"{weight / total_weight:.6f}"
+            r"\linewidth-2\tabcolsep\relax}"
+            for weight in weights
+        )
+        + "@{}"
+    )
     header = " & ".join(label for _, label in columns) + r" \\"
     lines = [
-        "% Tabela gerada automaticamente.",
-        f"% Política de arredondamento: {rounding.decimal_places} casas "
-        "decimais apenas nesta apresentação.",
-        r"\begin{table}[htbp]",
-        r"\centering",
-        f"\\caption{{{_latex_escape(definition.caption)}}}",
-        f"\\label{{{definition.manuscript_label}}}",
-        f"\\begin{{tabular}}{{{alignment}}}",
+        "% Automatically generated presentation table.",
+        r"\begin{landscape}",
+        r"\begingroup\footnotesize",
+        r"\setlength{\tabcolsep}{3pt}",
+        r"\hyphenpenalty=100",
+        f"\\begin{{longtable}}{{{alignment}}}",
+        f"\\caption{{{_latex_escape(definition.caption)}}}"
+        f"\\label{{{definition.manuscript_label}}}\\\\",
         r"\hline",
         header,
+        r"\hline\endfirsthead",
         r"\hline",
+        header,
+        r"\hline\endhead",
     ]
     for row in table.iter_rows(named=True):
         values = [
@@ -445,7 +468,13 @@ def _render_latex(
             for column, _ in columns
         ]
         lines.append(" & ".join(values) + " \\\\")
-    lines.extend((r"\hline", r"\end{tabular}", r"\end{table}", ""))
+    lines.extend((
+        r"\hline",
+        r"\end{longtable}",
+        r"\endgroup",
+        r"\end{landscape}",
+        "",
+    ))
     return "\n".join(lines)
 
 
@@ -462,11 +491,28 @@ def _presentation_value(
     if isinstance(value, float):
         return f"{value:.{rounding.decimal_places}f}"
     translated = _translate_value(str(_machine_value(value)), column)
-    return _latex_escape(translated)
+    escaped = _latex_escape(translated)
+    if column in {"method", "method_evidence", "intervention_family"}:
+        return escaped.replace(r"\_", r"\_\allowbreak{}")
+    return escaped
 
 
 def _translate_value(value: str, column: str) -> str:
     """Translate controlled statuses while preserving technical identities."""
+    method_names = {
+        "sigma_3": "3 sigma",
+        "mad_modified_z": "MAD",
+        "kmeans": "K-Means",
+        "kmeans_distance": "distância ao centróide (K-Means)",
+        "dbscan_noise": "ruído (DBSCAN)",
+        "dbscan_density_novelty": "DBSCAN (novidade)",
+    }
+    if column == "method":
+        return method_names.get(value, value)
+    if column == "method_evidence":
+        return "; ".join(
+            method_names.get(part, part) for part in value.split(";")
+        )
     translations = {
         "qualified": "qualificado",
         "valid": "válido",
