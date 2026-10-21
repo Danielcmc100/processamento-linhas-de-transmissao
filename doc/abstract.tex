@@ -1,0 +1,25 @@
+\begin{resumo}[Abstract]
+\begin{otherlanguage*}{english}
+This work develops a computational routine to extract, organize, and analyze
+voltage maxima from transmission line energization simulations in the
+\textit{Alternative Transients Program} (ATP). The evaluation uses two
+scenarios, with and without a pre-insertion resistor, five simulation sample
+sizes, three terminals, and three phases, totaling 204,300 scalar
+observations. The focus is a comparative analysis of K-Means, DBSCAN, and
+hierarchical upper-tail selection using Silhouette and Davies--Bouldin
+indices, cluster counts, and applicability status. The comparison examines
+how results vary with the number of simulations, without interpreting
+geometric separation as proof of numerical error. The probabilistic
+analysis uses empirical frequencies and confidence intervals; rejection of
+the normality hypothesis in 88 of the 90 groups prevents adopting a common
+Gaussian distribution as a reference for validating candidates. The routine
+preserves traceability and produces reproducible evidence for further
+investigation. Causal validation by an expert, using waveforms and repeated
+simulations, remains future work outside the scope of this thesis.
+
+\vspace{\onelineskip}
+\noindent
+\textbf{Keywords}: Transient overvoltages. Anomaly detection. Machine learning.
+ATP/EMTP. Probabilistic analysis.
+\end{otherlanguage*}
+\end{resumo}
