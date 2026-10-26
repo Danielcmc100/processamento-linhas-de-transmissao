@@ -8,6 +8,7 @@ from unittest.mock import patch
 import matplotlib
 import matplotlib.pyplot as plt
 import pytest
+from polars import read_csv
 
 matplotlib.use("Agg")
 
@@ -111,6 +112,7 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
     assert isinstance(maximum_count, int)
     assert maximum_count <= 3
     assert result.summary.height == 2
+    assert "sigma_3_threshold" not in result.summary.columns
     assert set(result.summary["terminal"]) == {"T_MAN", "T_OPO"}
     assert set(result.summary["validation_status"]) == {"valid"}
     assert result.statistical_evidence.height == 2
@@ -214,6 +216,9 @@ def test_main_loads_json_config_and_reports_counts(
         "Saved 12 raw rows, 4 analyzed rows, and 2 summary rows "
         f"to {config.output_dir}.\n"
     )
+    summary = read_csv(config.output_dir / "summary.csv")
+    assert "sigma_3_threshold" not in summary.columns
+    assert {"mean", "std", "gaussian_exceedance"}.issubset(summary.columns)
     assert {path.name for path in config.output_dir.iterdir()} == {
         "histogram_observations.csv",
         "distribution_comparison.csv",

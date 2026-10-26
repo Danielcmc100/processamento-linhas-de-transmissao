@@ -6,11 +6,14 @@ without rendering any GUI window (using the ``Agg`` non-interactive backend).
 
 import matplotlib
 import polars as pl
+import pytest
 
 matplotlib.use("Agg")  # Must be set before importing pyplot
 
 from matplotlib.axes import Axes  # noqa: E402
+from matplotlib.collections import LineCollection  # noqa: E402
 from matplotlib.figure import Figure  # noqa: E402
+from matplotlib.pyplot import close  # noqa: E402
 
 from src.services.visualization import (  # noqa: E402
     TERMINAL_DISTANCES,
@@ -128,3 +131,57 @@ def test_terminal_distances_coverage():
     """All canonical terminals must be present in TERMINAL_DISTANCES."""
     expected = {"T_MAN", "1_4LT", "1_2LT", "3_4LT", "T_OPO"}
     assert expected == set(TERMINAL_DISTANCES)
+
+
+@pytest.mark.parametrize("combined", [False, True])
+def test_gaussian_overlay_has_only_mean_markers(combined: bool) -> None:
+    df = pl.DataFrame({
+        "terminal": ["T_MAN"] * 3,
+        "value_pu": [1.0, 1.5, 2.0],
+    })
+    fig, ax = plot_combined(df) if combined else plot_pdf_overlay(df)
+    try:
+        markers = [
+            item for item in ax.collections if isinstance(item, LineCollection)
+        ]
+        assert len(ax.lines) == 1
+        assert len(markers) == 1
+        segments = markers[0].get_segments()
+        assert len(segments) == 1
+        assert segments[0][:, 1].tolist() == [1.5, 1.5]
+    finally:
+        close(fig)
+
+
+@pytest.mark.parametrize(
+    "values",
+    [[], [float("nan"), float("inf")], [1.0], [2.0, 2.0]],
+)
+def test_pdf_overlay_skips_unfittable_samples(values: list[float]) -> None:
+    df = pl.DataFrame(
+        {"terminal": ["T_MAN"] * len(values), "value_pu": values},
+        schema={"terminal": pl.String, "value_pu": pl.Float64},
+    )
+    fig, ax = plot_pdf_overlay(df)
+    try:
+        assert len(ax.lines) == 0
+        assert len(ax.collections) == 0
+    finally:
+        close(fig)
+
+
+def test_pdf_overlay_fits_only_finite_values() -> None:
+    df = pl.DataFrame({
+        "terminal": ["T_MAN"] * 6,
+        "value_pu": [1.0, 1.5, 2.0, None, float("nan"), float("inf")],
+    })
+    fig, ax = plot_pdf_overlay(df)
+    try:
+        assert len(ax.lines) == 1
+        markers = [
+            item for item in ax.collections if isinstance(item, LineCollection)
+        ]
+        assert len(markers) == 1
+        assert markers[0].get_segments()[0][:, 1].tolist() == [1.5, 1.5]
+    finally:
+        close(fig)

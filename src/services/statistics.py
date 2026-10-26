@@ -1,7 +1,7 @@
 """Statistical distribution fitting and probability estimation.
 
 Fits a Gaussian (Normal) distribution to filtered overvoltage data
-and computes sigma levels and exceedance probabilities.
+and computes exceedance probabilities.
 """
 
 from typing import override
@@ -10,10 +10,7 @@ from numpy import isfinite, mean, ndarray, std
 from polars import DataFrame
 from scipy import stats
 
-from src.services.schemas import (
-    SigmaSummaryRow,
-    StatisticalSummaryRow,
-)
+from src.services.schemas import StatisticalSummaryRow
 
 
 class GaussianFitResult:
@@ -29,14 +26,6 @@ class GaussianFitResult:
         self.mean: float = mean
         self.std: float = std
         self.n_samples: int = n_samples
-
-    def sigma_level(self, n: float) -> float:
-        """Return the voltage threshold at *n* standard deviations above mean.
-
-        Returns:
-            Threshold value in P.U.
-        """
-        return self.mean + n * self.std
 
     def exceedance_probability(self, threshold: float) -> float:
         """Probability that a single event exceeds *threshold* (P.U.).
@@ -79,29 +68,6 @@ def fit_gaussian(
     )
 
 
-def sigma_summary(fit: GaussianFitResult) -> DataFrame:
-    """Return a summary table of sigma levels (1σ to 6σ).
-
-    Returns:
-        DataFrame with columns ``sigma``, ``threshold_pu``,
-        ``exceedance_prob``.
-    """
-    sigmas = [1, 2, 3, 4, 5, 6]
-    thresholds = [fit.sigma_level(s) for s in sigmas]
-    probs = [fit.exceedance_probability(t) for t in thresholds]
-
-    return SigmaSummaryRow.validate(
-        DataFrame(
-            {
-                "sigma": sigmas,
-                "threshold_pu": thresholds,
-                "exceedance_prob": probs,
-            },
-            schema=SigmaSummaryRow.dtypes,
-        )
-    )
-
-
 def summarize_statistics(
     df: DataFrame,
     *,
@@ -116,7 +82,7 @@ def summarize_statistics(
 
     Returns:
         One row per terminal and phase with empirical and fitted-Gaussian
-        evidence, sigma threshold, and an explicit validation status.
+        evidence and an explicit validation status.
     """
     summary_rows: list[dict[str, str | int | float | None]] = []
     groups = df.partition_by(["terminal", "phase"], maintain_order=True)
@@ -131,7 +97,6 @@ def summarize_statistics(
         n_valid = len(valid_values)
         mean_value: float | None = None
         std_value: float | None = None
-        sigma_3_threshold: float | None = None
         empirical_exceedance: float | None = None
         gaussian_exceedance: float | None = None
 
@@ -145,9 +110,6 @@ def summarize_statistics(
             validation_status = "insufficient_samples"
         else:
             std_value = float(std(valid_values, ddof=1))
-            sigma_3_threshold = (
-                mean_value + 3 * std_value if mean_value is not None else None
-            )
             if std_value == 0.0:
                 validation_status = "zero_variance"
             else:
@@ -166,7 +128,6 @@ def summarize_statistics(
             "n_valid": n_valid,
             "mean": mean_value,
             "std": std_value,
-            "sigma_3_threshold": sigma_3_threshold,
             "empirical_exceedance": empirical_exceedance,
             "gaussian_exceedance": gaussian_exceedance,
             "validation_status": validation_status,

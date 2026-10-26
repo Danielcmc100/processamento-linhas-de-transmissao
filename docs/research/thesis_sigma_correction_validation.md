@@ -134,3 +134,100 @@ publication, or complete READ-07 claim is made here.
 
 **SPEC_DEVIATION:** None. The documented downstream failure is explicitly
 permitted by T7.1 and remains assigned to T7.3.
+
+## T7.2 — Remove voltage-sigma summary and plot outputs
+
+Date: 2026-10-26. Scope: READ-07, T7.2 only, following T7.1 commit
+`81b633b`. The inherited verified baseline is 314 passing tests. This task
+does not complete READ-07, regenerate evidence, or publish manuscript assets.
+
+### Contract and caller classification
+
+- `statistics.py:summarize_statistics()` and
+  `schemas.py:StatisticalSummaryRow` no longer produce or declare
+  `sigma_3_threshold`, including empty and unestimable summaries.
+  Mean, sample deviation (`ddof=1`), empirical exceedance, Gaussian tail
+  estimates, and explicit validation statuses retain their computations.
+- Removed `statistics.py:sigma_summary()`,
+  `GaussianFitResult.sigma_level()`, and `schemas.py:SigmaSummaryRow`.
+  Repository caller search found only the table-to-threshold helper chain
+  and its detector-specific unit tests; no independent production caller
+  justified retaining this voltage-threshold table API.
+- Retained `fit_gaussian()` and `GaussianFitResult`: callers include
+  `distribution_adequacy.py`'s qualified Gaussian probability comparison,
+  `pipeline.py:_build_plot_fits()`, and
+  `visualization.py:plot_pdf_overlay()`. Retained
+  `exceedance_probability()` serves adequacy comparison and the existing
+  DBSCAN-selected observation annotations in `plot_exceedance_curve()`;
+  those markers are not voltage-sigma screening lines.
+- `visualization.py:plot_pdf_overlay()` retains the Gaussian PDF and one
+  solid mean marker, removing both dashed three-deviation voltage markers.
+  `plot_combined()` inherits this behavior. The PDF's four-standard-deviation
+  evaluation extent is retained solely as a curve-domain choice, not a
+  detector threshold, annotation, or vote. Empty, insufficient, non-finite,
+  and constant samples no longer render invalid fitted overlays; finite
+  observations remain usable in mixed samples.
+- `pipeline.py:run_pipeline()` passes the summary directly to
+  `reporting.py:write_result_artifacts()`, which writes `summary.csv`
+  without enumerating its columns. No caller implementation needed editing;
+  the pipeline/CLI integration tests verify the changed in-memory and
+  exported contracts. Generic reporting and schema tests also pass.
+- MAD formulas, normality/adequacy implementations, raw ATP/LIS files,
+  switching-time configuration and plotting, and historical outputs were
+  not changed. Their retained references are not evidence of a remaining
+  voltage-sigma detector. Active guidance/manuscript correction is T7.5.
+
+### Tests first and software gates
+
+Owning tests were changed before implementation. Two retired helper tests
+were replaced with descriptive-fit/API and sigma-free-schema checks; the
+Gaussian tail test supplies an independent voltage rather than calling a
+threshold helper. Existing statistical assertions remain, except for
+superseded threshold assertions. Added two summary edge-case tests and
+seven plot cases: direct/combined marker content, empty/non-finite/singleton/
+constant samples, and finite-only fitting. Integration checks cover summary
+columns and the actual CLI-exported CSV. Net increase: nine tests, from
+314 to 323; none skipped or disabled.
+
+RED command: `uv run pytest tests/test_statistics.py
+tests/test_visualization.py tests/test_pipeline.py`: **16 failed, 15 passed**,
+4.25 s. Failures exposed the old columns, helper, extra markers, and invalid
+overlays. The pipeline cleanup assertion also encountered open figures:
+legacy visualization smoke tests leave figures open, and a failed pipeline
+assertion prevents its own cleanup. The final targeted command uses normal
+suite ordering (pipeline before visualization); no test was disabled or
+weakened to hide the failure. Test changes after RED were formatting only.
+
+| Command | Result |
+| --- | --- |
+| `uv run pytest tests/test_pipeline.py tests/test_statistics.py tests/test_visualization.py` | 31 passed, 3.72 s |
+| `uv run task format` | Passed; 169 files unchanged on final run |
+| `uv run task lint` | Passed |
+| `uv run task test` | 323 passed, 14.10 s |
+| `uv run task typecheck` | 0 errors, 0 warnings, 0 notes |
+
+The first formatting run fixed import ordering and caught one overlong test
+schema literal, then passed after wrapping it. The inherited unrelated
+`VIRTUAL_ENV` warning persists; uv uses the repository environment.
+
+### Explicit T7.3 boundary and handoff
+
+Repeated the T7.1 fixture-to-method-matrix probe after T7.2 using a temporary
+directory under `/tmp/opencode`, closing figures and adding only the
+synthetic terminal-position column needed to isolate the contract. It again
+exited **1**, without suppression:
+
+```text
+ValueError: Missing method comparison columns: sigma_flag, sigma_applicability, sigma_reason.
+```
+
+`convergence.py:build_method_comparison_matrix()` and downstream publication
+remain T7.3 work. No compatibility columns were restored. No real-input
+regeneration or publication was attempted. This report holds the investigated
+caller pointers and gotchas rather than duplicating them in `.notebook/`;
+the notebook index was read and its historical sigma flow was not trusted
+over source. User-owned feature plans, project state, and visual-review notes
+are excluded from this task's commit; tracking remains with the orchestrator.
+
+**SPEC_DEVIATION:** None. T7.2's owned contracts and gates pass; the known
+T7.3 integration failure remains explicit and unresolved.

@@ -8,7 +8,6 @@ Provides functions to generate:
 """
 
 from collections.abc import Sequence
-from typing import Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -247,6 +246,9 @@ def plot_pdf_overlay(
     The PDF is rendered as a horizontal curve anchored at the terminal's
     fractional distance.  Its width is scaled to *pdf_width* (fractional
     distance units) so it fits neatly between neighbouring terminals.
+    Only the mean is marked; no voltage-sigma screening lines are drawn.
+    Non-finite values are excluded, and samples with fewer than two finite
+    values or zero variance have no fitted overlay.
 
     Returns:
         A ``(figure, axes)`` tuple.
@@ -265,11 +267,15 @@ def plot_pdf_overlay(
     terminals: Sequence[str] = df[terminal_col].unique().sort().to_list()
 
     for terminal in terminals:
-        subset = df.filter(pl.col(terminal_col) == terminal)
-        if subset.is_empty():
+        subset = df.filter(
+            (pl.col(terminal_col) == terminal) & pl.col(value_col).is_finite()
+        )
+        if subset.height < 2:
             continue
 
         fit: GaussianFitResult = fit_gaussian(subset, value_col=value_col)
+        if fit.std <= 0:
+            continue
         dist = distances.get(terminal, 0.0)
         color = _terminal_color(terminal)
 
@@ -303,35 +309,16 @@ def plot_pdf_overlay(
             zorder=4,
         )
 
-        # Mark mean and ±3σ lines.
-        line_styles: tuple[tuple[int, Literal["solid", "dashed"]], ...] = (
-            (0, "solid"),
-            (3, "dashed"),
+        ax.hlines(
+            fit.mean,
+            dist - 0.005,
+            dist + pdf_width + 0.005,
+            colors=[color],
+            linestyles="solid",
+            linewidth=0.9,
+            alpha=0.7,
+            zorder=5,
         )
-        for n_sigma, linestyle in line_styles:
-            level = fit.mean + n_sigma * fit.std
-            ax.hlines(
-                level,
-                dist - 0.005,
-                dist + pdf_width + 0.005,
-                colors=[color],
-                linestyles=linestyle,
-                linewidth=0.9,
-                alpha=0.7,
-                zorder=5,
-            )
-            if n_sigma != 0:
-                level_neg = fit.mean - n_sigma * fit.std
-                ax.hlines(
-                    level_neg,
-                    dist - 0.005,
-                    dist + pdf_width + 0.005,
-                    colors=[color],
-                    linestyles=linestyle,
-                    linewidth=0.9,
-                    alpha=0.7,
-                    zorder=5,
-                )
 
     return fig, ax
 

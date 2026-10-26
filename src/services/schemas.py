@@ -32,14 +32,6 @@ class SwitchingTimeObservation(Model):
     std_dev: float | None
 
 
-class SigmaSummaryRow(Model):
-    """One sigma-level row (1σ to 6σ) with threshold and exceedance."""
-
-    sigma: int = Field(dtype=Int64)
-    threshold_pu: float
-    exceedance_prob: float
-
-
 class StatisticalSummaryRow(Model):
     """One terminal/phase exceedance summary row."""
 
@@ -49,7 +41,6 @@ class StatisticalSummaryRow(Model):
     n_valid: int = Field(dtype=Int64)
     mean: float | None
     std: float | None
-    sigma_3_threshold: float | None
     empirical_exceedance: float | None
     gaussian_exceedance: float | None
     validation_status: str
