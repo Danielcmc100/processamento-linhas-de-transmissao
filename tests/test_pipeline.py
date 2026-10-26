@@ -91,13 +91,25 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
         "modified_mad_score",
         "mad_flag",
         "mad_applicability",
-        "sigma_flag",
-        "sigma_applicability",
         "method_agreement",
+        "applicable_method_count",
         "method_disagreement",
         "anomaly_candidate",
         "anomaly_reasons",
     }.issubset(result.annotated_observations.columns)
+    assert not any(
+        column.startswith("sigma_")
+        for column in result.annotated_observations.columns
+    )
+    assert all(
+        "sigma" not in reason
+        for reason in result.annotated_observations["anomaly_reasons"]
+    )
+    maximum_count = result.annotated_observations[
+        "applicable_method_count"
+    ].max()
+    assert isinstance(maximum_count, int)
+    assert maximum_count <= 3
     assert result.summary.height == 2
     assert set(result.summary["terminal"]) == {"T_MAN", "T_OPO"}
     assert set(result.summary["validation_status"]) == {"valid"}

@@ -17,7 +17,6 @@ from polars import (
 )
 
 _METHODS = (
-    ("sigma_flag", "sigma_applicability", "sigma_3"),
     ("mad_flag", "mad_applicability", "mad_modified_z"),
     ("flag", "applicability", "kmeans_distance"),
     ("dbscan_flag", "dbscan_applicability", "dbscan_noise"),

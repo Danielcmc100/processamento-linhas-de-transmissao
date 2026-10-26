@@ -16,14 +16,7 @@ def _annotated_observations() -> pl.DataFrame:
         "time": [0.04, 0.01, 0.03, 0.02, 0.05],
         "dbscan_cluster": [-1, 0, 7, -1, None],
         "kmeans_cluster": [0, 1, 1, 9, None],
-        "sigma_flag": [True, False, False, True, None],
-        "sigma_applicability": [
-            "applicable",
-            "applicable",
-            "applicable",
-            "applicable",
-            "non_applicable",
-        ],
+        "hierarchical_cluster": [1, 1, 0, 1, 1],
         "mad_flag": [True, False, True, False, None],
         "mad_applicability": [
             "applicable",
@@ -65,20 +58,21 @@ def test_comparison_records_explicit_votes_and_preserves_identity() -> None:
         "anomaly_reasons",
     ]
     assert result["simulation"].to_list() == [4, 1, 3, 2, 5]
-    assert result["method_agreement"].to_list() == [4, 0, 2, 1, 0]
-    assert result["applicable_method_count"].to_list() == [4, 4, 4, 2, 0]
+    assert result.select(observations.columns).equals(observations)
+    assert result["method_agreement"].to_list() == [3, 0, 2, 0, 0]
+    assert result["applicable_method_count"].to_list() == [3, 3, 3, 1, 0]
     assert result["method_disagreement"].to_list() == [
         False,
         False,
         True,
-        True,
+        False,
         False,
     ]
     assert result["anomaly_candidate"].to_list() == [
         True,
         False,
         True,
-        True,
+        False,
         False,
     ]
 
@@ -87,10 +81,10 @@ def test_reasons_list_only_met_explicit_criteria_in_stable_order() -> None:
     result = compare_anomaly_methods(_annotated_observations())
 
     assert result["anomaly_reasons"].to_list() == [
-        "sigma_3;mad_modified_z;kmeans_distance;dbscan_noise",
+        "mad_modified_z;kmeans_distance;dbscan_noise",
         "",
         "mad_modified_z;dbscan_noise",
-        "sigma_3",
+        "",
         "",
     ]
     assert all(
@@ -104,6 +98,7 @@ def test_cluster_labels_cannot_change_explicit_flags() -> None:
     changed_labels = observations.with_columns(
         pl.Series("dbscan_cluster", [42, -1, -1, 0, 8]),
         pl.Series("kmeans_cluster", [99, 99, 99, 99, 99]),
+        pl.Series("hierarchical_cluster", [0, 0, 1, 0, 0]),
     )
 
     baseline = compare_anomaly_methods(observations)
@@ -133,9 +128,9 @@ def test_non_applicable_methods_do_not_vote_or_create_disagreement() -> None:
         named=True,
     )
 
-    assert partly_applicable["method_agreement"] == 1
-    assert partly_applicable["applicable_method_count"] == 2
-    assert partly_applicable["method_disagreement"] is True
+    assert partly_applicable["method_agreement"] == 0
+    assert partly_applicable["applicable_method_count"] == 1
+    assert partly_applicable["method_disagreement"] is False
     assert no_applicable["method_agreement"] == 0
     assert no_applicable["applicable_method_count"] == 0
     assert no_applicable["method_disagreement"] is False
@@ -145,8 +140,6 @@ def test_non_applicable_methods_do_not_vote_or_create_disagreement() -> None:
 @pytest.mark.parametrize(
     "missing_column",
     [
-        "sigma_flag",
-        "sigma_applicability",
         "mad_flag",
         "mad_applicability",
         "flag",
@@ -233,3 +226,51 @@ def test_empty_comparison_has_declared_output_schema() -> None:
     assert result.schema["method_disagreement"] == pl.Boolean
     assert result.schema["anomaly_candidate"] == pl.Boolean
     assert result.schema["anomaly_reasons"] == pl.String
+
+
+@pytest.mark.parametrize(
+    ("flag_column", "applicability_column", "reason"),
+    [
+        ("mad_flag", "mad_applicability", "mad_modified_z"),
+        ("flag", "applicability", "kmeans_distance"),
+        ("dbscan_flag", "dbscan_applicability", "dbscan_noise"),
+    ],
+)
+@pytest.mark.parametrize("positive", [False, True])
+def test_single_applicable_method_defines_union_without_disagreement(
+    flag_column: str,
+    applicability_column: str,
+    reason: str,
+    positive: bool,
+) -> None:
+    observations = (
+        _annotated_observations()
+        .tail(1)
+        .with_columns(
+            pl.lit(positive).alias(flag_column),
+            pl.lit("applicable").alias(applicability_column),
+        )
+    )
+
+    result = compare_anomaly_methods(observations)
+
+    assert result["method_agreement"].to_list() == [int(positive)]
+    assert result["applicable_method_count"].to_list() == [1]
+    assert result["method_disagreement"].to_list() == [False]
+    assert result["anomaly_candidate"].to_list() == [positive]
+    assert result["anomaly_reasons"].to_list() == [reason if positive else ""]
+
+
+def test_retired_sigma_fields_cannot_supply_votes_or_require_validation() -> (
+    None
+):
+    observations = _annotated_observations().with_columns(
+        pl.lit("retired").alias("sigma_flag"),
+        pl.lit("retired").alias("sigma_applicability"),
+    )
+
+    result = compare_anomaly_methods(observations)
+
+    assert result["method_agreement"].to_list() == [3, 0, 2, 0, 0]
+    assert result["applicable_method_count"].to_list() == [3, 3, 3, 1, 0]
+    assert all("sigma" not in reason for reason in result["anomaly_reasons"])

@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from matplotlib.figure import Figure
-from polars import Boolean, DataFrame, col, concat_str, lit, when
+from polars import DataFrame, col
 
 from src.services.clustering import cluster_hierarchical
 from src.services.clustering_comparison import evaluate_cluster_comparison
@@ -143,9 +143,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
     )
     summary = summarize_statistics(analyzed, threshold=config.threshold)
 
-    with_sigma = _add_sigma_evidence(analyzed, distribution_adequacy)
     with_mad = evaluate_mad_evidence(
-        with_sigma,
+        analyzed,
         threshold=config.mad_threshold,
     )
     with_kmeans = evaluate_kmeans_evidence(
@@ -224,50 +223,6 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
             hierarchical_clusters=hierarchical_clusters,
             hierarchical_tree=hierarchical_tree,
         ),
-    )
-
-
-def _add_sigma_evidence(
-    observations: DataFrame,
-    adequacy: DataFrame,
-) -> DataFrame:
-    """Append adequacy-qualified three-sigma evidence by full scope."""
-    scope = ["scenario", "sample_size", "terminal", "phase"]
-    thresholds = adequacy.select(
-        *scope,
-        (col("fitted_mean") + 3.0 * col("fitted_standard_deviation")).alias(
-            "sigma_3_threshold"
-        ),
-        col("decision").alias("sigma_decision"),
-    )
-    joined = observations.join(
-        thresholds,
-        on=scope,
-        how="left",
-        maintain_order="left",
-    ).with_columns(
-        when(col("sigma_decision") == "not_rejected")
-        .then(lit("applicable"))
-        .otherwise(lit("non_applicable"))
-        .alias("sigma_applicability")
-    )
-    return joined.with_columns(
-        when(col("sigma_applicability") == "applicable")
-        .then(col("value_pu") > col("sigma_3_threshold"))
-        .otherwise(lit(None, dtype=Boolean))
-        .alias("sigma_flag"),
-        when(col("sigma_applicability") == "non_applicable")
-        .then(
-            concat_str(
-                lit("Gaussian adequacy status: "),
-                col("sigma_decision"),
-                lit("."),
-            )
-        )
-        .when(col("value_pu") > col("sigma_3_threshold"))
-        .then(lit("Value exceeds qualified three-sigma threshold."))
-        .otherwise(lit(None))
-        .alias("sigma_reason"),
     )
 
 
