@@ -289,3 +289,126 @@ complete fixture publication path. T7.4 owns real-data regeneration and
 reconciliation; T7.5 owns manuscript publication and active guidance.
 
 **SPEC_DEVIATION:** None.
+
+## T7.4 — Regenerate and reconcile canonical evidence
+
+Date: 2026-10-26. Scope: READ-07, T7.4, following `acd458d`.
+Before generation, `results/defense-evidence/` contained only v1 and v2.
+The following command completed successfully, without `--overwrite`:
+
+```text
+uv run python -m scripts.build_defense_evidence --output results/defense-evidence/v3
+```
+
+Matplotlib reported an unwritable user configuration directory and selected
+a temporary cache under `/tmp`; generation completed with exit code zero.
+No new ATP simulation or raw-input edit was performed.
+
+### Publication and preservation checks
+
+- All 3,743 input and historical v1/v2 files in the pre-generation SHA-256
+  inventory retained their original hashes.
+- The new reproducibility manifest passes
+  `reproducibility.py:validate_reproducibility_manifest()`. All ten source
+  hashes and all 609 output hashes match actual files. Its output list
+  covers every package file except the manifest itself.
+- The ten canonical dataset-manifest rows equal v2 exactly, including source
+  paths, hashes, declared/effective run counts and electrical bases. Their
+  204,300 accepted scalar observations are present in both the annotated
+  table and method matrix; statistical denominators sum to 204,300.
+- Every generated CSV was checked for retired sigma column names and the
+  `sigma_3` reason; every generated LaTeX table was checked for sigma labels.
+  None remains. Independently justified Gaussian diagnostics remain.
+- For every method-matrix observation, independent recomputation from the
+  three flags and applicability states matches applicable-method count,
+  positive agreement, candidate union, disagreement and ordered reasons.
+  Candidate counts independently grouped over all 90 electrical scopes
+  equal the new convergence table.
+- Package status remains `incomplete`, causal conclusion `unresolved`, and
+  all five selected electrical-review records remain unresolved with no
+  reviewer or completed review date. Synthetic benchmark results do not
+  acquire causal labels.
+
+### Complete source-table reconciliation against v2
+
+All 13 source tables retain their row counts. Ten are exactly equal across
+every field, rather than merely equal after display rounding:
+
+| Unchanged source table | Rows |
+| --- | ---: |
+| `dataset_manifest.csv` | 10 |
+| `statistical_evidence.csv` | 90 |
+| `distribution_adequacy.csv` | 90 |
+| `distribution_comparison.csv` | 270 |
+| `clustering_comparison.csv` | 270 |
+| `probability_reconciliation.csv` | 1,151 |
+| `controlled_benchmark.csv` | 20 |
+| `controlled_interventions.csv` | 2,592 |
+| `sensitivity.csv` | 20 |
+| `technical_review.csv` | 5 |
+
+The remaining three tables account for every detected difference:
+
+- `annotated_observations.csv` and `method_comparison.csv` each retain
+  204,300 rows and remove `sigma_3_threshold`, `sigma_applicability`,
+  `sigma_decision`, `sigma_flag`, and `sigma_reason`. Both change the
+  applicable-method denominator on exactly 100 rows: SRPI, N=50,
+  terminal `1_2LT` phase B and terminal `T_MAN` phase C, 50 rows each,
+  from four to three. All 204,300 current rows have denominator three.
+  Elsewhere, the old sigma method had already been non-applicable.
+- Those same tables have recomputed K-Means `score` values differing on
+  74,227 rows and `threshold` values differing on 61,000 rows. Maximum
+  absolute differences are respectively `4.440892098500626e-16` and
+  `2.220446049250313e-16`; maximum relative differences are
+  `3.079675386084815e-11` and `2.0805233204750386e-16`. These are small
+  floating-point recomputation differences, retained at raw precision;
+  no associated flag, applicability, candidate, agreement, reason or
+  disagreement changed. They are not attributed to a physical effect.
+- `method_comparison.csv` additionally changes `compared_methods` on every
+  row to `mad_modified_z;kmeans_distance;dbscan_noise`.
+- `convergence.csv` retains 90 rows and changes only `method_policy` to
+  `defense-v3-three-methods`; all descriptive measures, empirical
+  probabilities, intervals, candidates, rates and deltas remain equal.
+
+Candidate union is **13,716**, and disagreement count is **13,708** in
+both versions, established by recomputation and comparison. The retired
+detector had zero positive flags in v2; this explains the unchanged union
+and agreement, but does not erase the denominator changes. No other common
+source-table column differs. Normality rejection remains 88 of 90 groups;
+empirical occurrences above 2.3 P.U. remain zero in all 90 groups.
+
+### Reference-group handoff for manuscript correction
+
+The following counts are for terminal `T_OPO`, phase A, separately in each
+scenario. Each row's applicable-method denominator is three. All counts
+below equal v2 after independent v3 recomputation.
+
+| Scenario | N | Candidate union | MAD | K-Means | DBSCAN | Disagreement |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CRPI | 50 | 8 | 8 | 0 | 0 | 8 |
+| CRPI | 100 | 12 | 12 | 0 | 1 | 12 |
+| CRPI | 200 | 2 | 2 | 1 | 2 | 1 |
+| CRPI | 1,000 | 10 | 10 | 9 | 2 | 8 |
+| CRPI | 10,000 | 109 | 109 | 99 | 0 | 109 |
+| SRPI | 50 | 6 | 6 | 0 | 6 | 6 |
+| SRPI | 100 | 12 | 12 | 0 | 0 | 12 |
+| SRPI | 200 | 22 | 22 | 1 | 0 | 22 |
+| SRPI | 1,000 | 86 | 86 | 9 | 0 | 86 |
+| SRPI | 10,000 | 852 | 852 | 99 | 0 | 852 |
+
+T7.5 must remove the old detector's objectives, theory, votes and
+interpretations even where resulting candidate counts stay unchanged.
+The unchanged zero-event Wilson intervals describe uncertainty under the
+model, not independently proven convergence. The unchanged skewness and
+kurtosis do not establish a causal explanation for MAD behavior.
+
+Verification details were computed using temporary local scripts, with
+machine-readable reconciliation saved to `/tmp/t74-verification.json` for
+the sequential handoff. The report preserves all material results without
+adding a permanent verification framework. `results/` is ignored by Git;
+the generated v3 package remains available locally. Only the validation
+report is versioned by this task's commit. Initial staging approval was
+aborted; the author subsequently authorized another commit attempt. Manuscript assets, source references,
+copying, build and rendered-page review remain T7.5 work.
+
+**SPEC_DEVIATION:** None.
