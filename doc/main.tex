@@ -478,7 +478,7 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 
 \item Organizar e estruturar os dados extraídos em formato adequado para análise computacional, possibilitando o tratamento das informações referentes às sobretensões máximas observadas nas fases do sistema.
 
-\item Aplicar técnicas de pré-processamento e tratamento estatístico dos dados, incluindo cálculo de média, desvio padrão, medidas de dispersão e critérios baseados na regra empírica de $3\sigma$ para identificação preliminar de valores extremos.
+\item Aplicar técnicas de pré-processamento e tratamento estatístico dos dados, incluindo cálculo de média, desvio padrão, medidas de dispersão e escore robusto baseado no desvio absoluto mediano para identificação preliminar de observações atípicas.
 
 \item Realizar análise probabilística das sobretensões máximas obtidas nas simulações, estimando níveis de confiança, frequências empíricas e probabilidades de ocorrência associadas a eventos extremos.
 
@@ -587,12 +587,7 @@ De forma complementar, Colqui et al. \cite{colqui2022} discutem a implementaçã
 
 A partir dos dados extraídos dos arquivos do ATP, a análise estatística permite descrever e interpretar os valores de sobretensão obtidos nas simulações ou medições, sendo amplamente utilizada em aplicações de engenharia para sintetizar informações, avaliar variabilidade e apoiar decisões técnicas \cite{montgomery2020,devore2016}. Em estudos de sobretensões, ela auxilia na identificação de tendências centrais, dispersão dos valores e ocorrência de eventos extremos. Medidas como média, desvio padrão, mínimo, máximo, quartis e percentis são importantes para compreender o comportamento geral das tensões simuladas. A média fornece uma medida representativa do conjunto analisado, enquanto o desvio padrão expressa o grau de dispersão dos dados em relação a essa média.
 
-Quando os dados apresentam comportamento aproximadamente compatível com uma distribuição normal, a regra empírica de $3\sigma$ pode ser utilizada como critério preliminar para identificação de valores extremos. Por esse critério, valores localizados fora do intervalo
-
-\begin{equation}
-[\mu - 3\sigma, \mu + 3\sigma]
-\end{equation}
-podem ser tratados como candidatos a anomalias ou \textit{outliers}, em que $\mu$ representa a média e $\sigma$ representa o desvio padrão do conjunto de dados. Entretanto, esse critério deve ser aplicado com cautela, pois sua interpretação depende da distribuição dos dados. Em conjuntos assimétricos, multimodais ou com caudas pesadas, a regra de $3\sigma$ pode deixar de representar adequadamente a ocorrência de valores extremos.
+O ajuste de uma distribuição normal descreve uma referência probabilística cuja adequação deve ser examinada, pois máximos de tensão não são necessariamente gaussianos. A média e o desvio padrão descrevem posição e dispersão; a identificação de candidatos neste trabalho utiliza critérios explícitos de MAD, distância do K-Means e ruído do DBSCAN, apresentados na metodologia.
 
 Como complemento, podem ser utilizados quartis, percentis e a amplitude interquartil, conhecida como IQR, definida por
 
@@ -930,6 +925,13 @@ conjunto de valores máximos de tensão. O modelo também permite comparar
 configurações com e sem resistor de pré-inserção, além de diferentes
 representações da rede equivalente.
 
+O arquivo de modelo \texttt{case.atp} do caso completo SRPI com 10.000
+simulações contém o comando \texttt{\$DEPOSIT, SIGMAX=3.0}. Esse parâmetro
+pertence à configuração do chaveamento estatístico do modelo de entrada;
+não define um limiar para as tensões máximas de saída. A análise dos
+resultados preserva essa configuração e avalia separadamente a adequação
+das distribuições de tensão.
+
 Nos casos examinados, o passo de integração é de $10~\mu\text{s}$ e a janela
 simulada é de 0,3~s. Ao final de cada execução, o ATP registra no arquivo de
 saída a identificação da simulação, o ponto monitorado, a fase, o valor máximo
@@ -1176,9 +1178,8 @@ Grupos com menos de oito valores finitos são classificados como insuficientes
 para essa avaliação, e grupos com variância nula são classificados como
 degenerados. Quando a normalidade é rejeitada, inconclusiva ou inaplicável, a
 estimativa empírica permanece principal e a inferência gaussiana é apresentada
-apenas como comparação qualificada. A regra de $3\sigma$ somente contribui
-como evidência quando sua aplicabilidade é declarada; o valor acima desse
-limiar é um candidato analítico, não um erro confirmado.
+apenas como comparação qualificada, sem participar da votação de
+candidatos a anomalias.
 
 Como referência robusta, também se calcula o escore baseado na mediana e no
 desvio absoluto mediano, ou MAD:
@@ -1223,7 +1224,7 @@ ruído constitui evidência analítica somente quando o ajuste é aplicável.
 Grupos esparsos, constantes ou nos quais todos os pontos são classificados
 como ruído recebem estado não aplicável e não votam na comparação.
 
-A comparação considera quatro critérios booleanos explícitos: $3\sigma$, MAD,
+A comparação considera três critérios booleanos explícitos: MAD,
 distância do K-Means e ruído do DBSCAN. Somente métodos aplicáveis participam
 da contagem. O artefato conserva, para cada método, escore, limiar, indicador,
 aplicabilidade e motivo; concordâncias e discordâncias permanecem visíveis.
@@ -1254,7 +1255,7 @@ a mediana das lacunas. Sem separação suficiente, todos os pontos recebem
 o mesmo rótulo. A execução é separada por fase; portanto, as fases não
 são misturadas, embora a chave interna desse método não inclua a fase.
 Essa partição exploratória não equivale a um diagnóstico de anomalia e
-não participa da votação dos quatro detectores.
+não participa da votação dos três critérios de detecção.
 
 Para cada observação, Silhouette compara a distância média ao próprio
 cluster, $a(i)$, com a menor distância média a outro cluster, $b(i)$:
@@ -1302,7 +1303,7 @@ produzidos pelo ATP.
 
 \subsection{Convergência, comparação e sensibilidade}
 
-A análise de convergência compara 50, 100, 200, 1.000 e 10.000 simulações
+A comparação entre tamanhos amostrais considera 50, 100, 200, 1.000 e 10.000 simulações
 somente sob o mesmo cenário, base, terminal, fase, limiar, agrupamento e
 política de método. Para cada tamanho, são confrontados medidas descritivas,
 percentis, probabilidade empírica, largura do intervalo de confiança, estado
@@ -1522,12 +1523,12 @@ SRPI apresentou média de 1,7006~P.U. e desvio padrão de 0,1317~P.U., valores
 consistentes com a definição de chaveamento de cada cenário.
 
 A Tabela~\ref{tab:defesa-probabilidade}, reproduzida automaticamente de
-\path{results/defense-evidence/v2/tables/probability.tex}, apresenta a
+\path{results/defense-evidence/v3/tables/probability.tex}, apresenta a
 probabilidade empírica de excedência de 2,3~P.U. para as noventa
 combinações, com o número de eventos, o denominador, o intervalo de Wilson
 de 95\% e o estado de validação.
 
-\input{evidence/v2/tables/probability.tex}
+\input{evidence/v3/tables/probability.tex}
 
 Nenhuma das 204.300 observações aceitas excedeu 2,3~P.U.; a probabilidade
 empírica é, portanto, zero em todos os noventa grupos, com o limite superior
@@ -1537,12 +1538,12 @@ definição metodológica, e não como ausência de resultado. A reconciliação
 entre as contagens diretas e as tabelas de frequência e de probabilidade
 impressas pelo ATP produziu 1.151 intervalos comparáveis, todos com estado
 de validação ``válido'' dentro da tolerância definida pela precisão impressa
-(fonte: \path{results/defense-evidence/v2/sources/}
+(fonte: \path{results/defense-evidence/v3/sources/}
 \texttt{probability\_reconciliation.csv}).
 
 A adequação gaussiana foi avaliada pelo teste de Anderson--Darling a 5\% de
 significância nos noventa grupos (fonte:
-\path{results/defense-evidence/v2/sources/distribution_adequacy.csv}). A
+\path{results/defense-evidence/v3/sources/distribution_adequacy.csv}). A
 normalidade foi rejeitada em 88 dos 90 grupos; as duas exceções ocorrem em
 grupos do SRPI com apenas 50 simulações ($1/2\,LT$, fase B, e $T_{MAN}$, fase
 C), compatível com a menor potência do teste em amostras pequenas. No grupo
@@ -1563,7 +1564,7 @@ normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
 empírica permanece principal.}
 \label{fig:defesa-distribuicao-crpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v2/figures/distribution-crpi-t_opo-a.png}
+{evidence/v3/figures/distribution-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1578,7 +1579,7 @@ normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
 empírica permanece principal.}
 \label{fig:defesa-distribuicao-srpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v2/figures/distribution-srpi-t_opo-a.png}
+{evidence/v3/figures/distribution-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1623,7 +1624,7 @@ gama e lognormal por máxima verossimilhança, com localização estimada,
 em cada grupo. No CRPI, o menor AIC selecionou gama em 27 grupos e
 lognormal em 18; no SRPI, selecionou normal em 29, gama em 13 e
 lognormal em três. Os 270 ajustes e suas decisões relativas estão em
-\path{results/defense-evidence/v2/sources/distribution_comparison.csv}.
+\path{results/defense-evidence/v3/sources/distribution_comparison.csv}.
 Essa heterogeneidade impede impor uma única família como referência
 comum sem verificação adicional. AIC compara ajustes candidatos e não
 testa adequação absoluta: uma normal pode ser a melhor das três opções
@@ -1641,18 +1642,18 @@ causal de candidatos pela probabilidade do caso não foi alcançada.
 \section{Análise comparativa dos métodos de clusterização}
 \label{sec:comparacao-clusterizacao}
 
-A versão v2 reúne os índices internos das partições efetivamente produzidas
+A versão v3 reúne os índices internos das partições efetivamente produzidas
 pelo fluxo, sem reajustar os modelos para maximizar os escores. A
 Tabela~\ref{tab:cluster-summary} sintetiza os resultados dos nove grupos
 terminal--fase de cada cenário e tamanho amostral. Os 270 registros
 individuais, incluindo número de clusters, quantidade de observações,
 ruído excluído e motivos de não aplicabilidade, estão em
-\path{results/defense-evidence/v2/sources/clustering_comparison.csv}.
+\path{results/defense-evidence/v3/sources/clustering_comparison.csv}.
 DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
 partição elegível para avaliação, sem atribuir artificialmente escore zero.
 
 \clearpage
-\input{evidence/v2/tables/clustering_summary.tex}
+\input{evidence/v3/tables/clustering_summary.tex}
 
 Os índices foram aplicáveis em 90 dos 90 grupos do K-Means, em quatro
 dos 90 grupos do DBSCAN e em seis dos 90 grupos do método hierárquico.
@@ -1741,7 +1742,7 @@ terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
 conforme o registro individual.}
 \label{fig:cluster-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v2/figures/clustering-crpi.png}
+{evidence/v3/figures/clustering-crpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1754,7 +1755,7 @@ terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
 conforme o registro individual.}
 \label{fig:cluster-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v2/figures/clustering-srpi.png}
+{evidence/v3/figures/clustering-srpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1773,9 +1774,8 @@ confiabilidade exige a avaliação futura do especialista.
 As evidências de anomalia foram calculadas separadamente por cenário,
 linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:metodo-anomalias}
 da metodologia, e cobrem as 204.300 observações do pacote
-(fonte: \path{results/defense-evidence/v2/sources/method_comparison.csv}).
-No grupo de referência $T_{OPO}$, fase A, $N=10\,000$, o critério $3\sigma$
-não sinalizou nenhuma observação em nenhum dos dois cenários, enquanto o
+(fonte: \path{results/defense-evidence/v3/sources/method_comparison.csv}).
+No grupo de referência $T_{OPO}$, fase A, $N=10\,000$, o
 escore robusto MAD sinalizou 109 observações no CRPI (1,09\%) e 852 no SRPI
 (8,52\%). O K-Means, aplicável nos dois cenários, sinalizou 99 observações
 em cada um por distância ao centróide acima do percentil 99 da
@@ -1791,47 +1791,48 @@ Seção~\ref{sec:convergencia-amostral}.
 
 Esses valores são evidência descritiva e candidata, produzida por métodos
 aplicáveis e explícitos; eles não constituem, isoladamente, diagnóstico de
-erro numérico do ATP nem confirmação de evento físico. A discordância entre
-o critério $3\sigma$ (nenhuma sinalização) e o escore MAD (dezenas a
-centenas de sinalizações) no mesmo grupo é relatada como tal, sem que um dos
-métodos seja tratado como referência de verdade -- a assimetria e o excesso
-de curtose registrados na Seção~\ref{sec:resultados-estatisticos} explicam a
-maior sensibilidade do MAD nesse cenário. A comparação foi realizada em modo
+erro numérico do ATP nem confirmação de evento físico. As diferenças entre
+as sinalizações do MAD, do K-Means e do DBSCAN são relatadas sem tratar um
+dos métodos como referência de verdade. A assimetria e o excesso de curtose
+registrados na Seção~\ref{sec:resultados-estatisticos} descrevem as
+distribuições, mas não demonstram uma causa para o comportamento do MAD;
+essa relação exigiria uma análise específica. A comparação foi realizada em modo
 exploratório, sem correção de multiplicidade, conforme registrado no próprio
 artefato (\texttt{analysis\_mode=exploratory}).
 
-\section{Convergência entre tamanhos amostrais}
+\section{Comparação entre tamanhos amostrais}
 \label{sec:convergencia-amostral}
 
 A Tabela~\ref{tab:defesa-convergencia}, reproduzida de
-\path{results/defense-evidence/v2/tables/convergence.tex}, compara os
+\path{results/defense-evidence/v3/tables/convergence.tex}, compara os
 cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000 simulações) sob a
 mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
 método, para os noventa grupos de cenário, terminal e fase.
 
-\input{evidence/v2/tables/convergence.tex}
+\input{evidence/v3/tables/convergence.tex}
 
 A largura do intervalo de confiança da probabilidade empírica diminui de
 forma monotônica com o tamanho amostral em todos os grupos, de 0,0713 em
-$N=50$ para 0,0004 em $N=10\,000$, evidenciando consistência amostral da
-estimativa de excedência. A taxa de candidatos analíticos, por outro lado,
-não converge de forma igualmente regular: no SRPI, terminal $T_{OPO}$, fase
-A, a taxa permanece entre 8,52\% e 13,50\% em quatro dos cinco tamanhos
-(50, 100, 200 e 10.000 simulações), enquanto no CRPI, mesmo terminal e fase,
+$N=50$ para 0,0004 em $N=10\,000$. Com zero excedências, esse estreitamento
+reflete a redução da incerteza da proporção sob o modelo do intervalo, e
+não comprova, por si só, convergência independente da estimativa. A taxa de
+candidatos analíticos varia entre tamanhos: no SRPI, terminal $T_{OPO}$, fase
+A, a taxa varia de 8,52\% a 12\% nos cinco tamanhos avaliados, enquanto no
+CRPI, mesmo terminal e fase,
 a taxa varia de 16\% em $N=50$ até valores inferiores a 2\% entre $N=200$ e
 $N=10\,000$. A referência de 10.000 simulações é tratada como referência
-empírica de maior amostragem, não como verdade fundamental; a estabilidade
-observada descreve consistência amostral e não acurácia do detector, e as
+empírica de maior amostragem, não como verdade fundamental; a comparação
+descreve os conjuntos observados e não estabelece acurácia do detector, e as
 dez fontes não são presumidas independentes ou aninhadas entre si.
 
 \begin{figure}[htbp]
 \centering
-\caption{Convergência das medidas descritivas, da probabilidade empírica e
-da taxa de candidatos entre os cinco tamanhos amostrais, CRPI, terminal
+\caption{Comparação da probabilidade empírica e da taxa de candidatos
+entre os cinco tamanhos amostrais, CRPI, terminal
 $T_{OPO}$, fase A.}
 \label{fig:defesa-convergencia-crpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v2/figures/convergence-crpi-t_opo-a.png}
+{evidence/v3/figures/convergence-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -1839,12 +1840,12 @@ $T_{OPO}$, fase A.}
 
 \begin{figure}[htbp]
 \centering
-\caption{Convergência das medidas descritivas, da probabilidade empírica e
-da taxa de candidatos entre os cinco tamanhos amostrais, SRPI, terminal
+\caption{Comparação da probabilidade empírica e da taxa de candidatos
+entre os cinco tamanhos amostrais, SRPI, terminal
 $T_{OPO}$, fase A.}
 \label{fig:defesa-convergencia-srpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v2/figures/convergence-srpi-t_opo-a.png}
+{evidence/v3/figures/convergence-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -1854,7 +1855,7 @@ $T_{OPO}$, fase A.}
 \label{sec:avaliacao-controlada}
 
 O pacote de evidências final registra, em
-\path{results/defense-evidence/v2/package_status.json}, que a revisão
+\path{results/defense-evidence/v3/package_status.json}, que a revisão
 técnica com evidência elétrica completa permanece pendente sobre o conjunto
 de dados-alvo real. O ensaio controlado com perturbações sintéticas e a
 repetição da grade de sensibilidade de parâmetros, por outro lado, foram
@@ -1867,7 +1868,7 @@ A Tabela~\ref{tab:defesa-benchmark} reproduz as contagens de confusão e as
 métricas derivadas do ensaio controlado, para as três famílias de
 intervenção (pontual, contextual e coletiva) nas taxas de contaminação de
 1\%, 5\% e 10\%, mais a condição limpa de referência (fonte:
-\path{results/defense-evidence/v2/sources/controlled_benchmark.csv}). Na
+\path{results/defense-evidence/v3/sources/controlled_benchmark.csv}). Na
 condição limpa, o K-Means produziu 42 falsos positivos sobre 5.400
 observações de avaliação (taxa de falsos positivos de 0,0078), contra 391
 falsos positivos do DBSCAN calibrado por novidade de densidade (taxa de
@@ -1882,14 +1883,14 @@ precisão superior à do DBSCAN em toda condição comparável, à custa de
 recuperar uma fração menor dos pontos intervencionados nas taxas mais
 baixas.
 
-\input{evidence/v2/tables/benchmark.tex}
+\input{evidence/v3/tables/benchmark.tex}
 
 A grade congelada de sensibilidade de parâmetros -- número de grupos e
 sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --
 foi replicada sobre o mesmo grupo de referência do conjunto de dados-alvo,
 com estabilidade medida pelo índice de Jaccard identidade-a-identidade e
 limiar de qualificação de 0,80 (fonte:
-\path{results/defense-evidence/v2/sources/sensitivity.csv}). Das vinte
+\path{results/defense-evidence/v3/sources/sensitivity.csv}). Das vinte
 réplicas de parâmetro avaliadas (dez por método, cinco por cenário), todas
 foram aplicáveis e todas produziram índice de Jaccard igual a 1,0000 em
 relação à configuração de referência declarada, superando o limiar de
@@ -1903,7 +1904,7 @@ concordância entre métodos, discordância, escore elevado e controle sem
 sinalização, conforme a regra de amostragem declarada na metodologia. A
 Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
 
-\input{evidence/v2/tables/technical_review.tex}
+\input{evidence/v3/tables/technical_review.tex}
 
 Todos os cinco casos permanecem com conclusão ``não resolvido'', pois não há
 forma de onda, repetição de simulação com passo reduzido nem revisor
@@ -1921,9 +1922,9 @@ probabilística dos dados do ATP (Seção~\ref{sec:resultados-estatisticos}), e
 à aplicação de K-Means e DBSCAN para identificação de agrupamentos e de
 candidatos a observações atípicas (Seção~\ref{sec:evidencias-anomalia}). O
 objetivo de comparar a coerência entre os métodos estatísticos e os
-algoritmos de clusterização também é atendido: a discordância entre o
-critério clássico $3\sigma$ e o escore robusto MAD no grupo de referência é
-relatada explicitamente, em vez de ser resumida em um único rótulo, e o
+algoritmos de clusterização também é atendido: as diferenças entre o
+escore robusto MAD e a distância do K-Means no grupo de referência são
+relatadas explicitamente, em vez de serem resumidas em um único rótulo, e o
 DBSCAN permaneceu aplicável, com zero candidatos para a
 combinação de parâmetros congelada nesse grupo, o que ilustra a
 sensibilidade desse método à calibração e à escala local dos dados --
@@ -1935,7 +1936,7 @@ extração, tratamento, análise estatística, análise probabilística, detecç
 de anomalias e apresentação dos resultados é atendido no escopo computacional: o
 pipeline integrado, o manifesto de reprodutibilidade e as tabelas e figuras
 deste capítulo foram gerados de forma automática e rastreável a partir dos
-dez arquivos declarados (\path{results/defense-evidence/v2/}
+dez arquivos declarados (\path{results/defense-evidence/v3/}
 \texttt{reproducibility\_manifest.json}), incluindo o ensaio controlado com
 perturbações sintéticas e a repetição da grade de sensibilidade de
 parâmetros, ambos concluídos sobre o grupo de referência do conjunto-alvo
@@ -1974,7 +1975,7 @@ necessária para atribuir causa aos candidatos sinalizados.
 \subsection{Limites da validação causal e trabalho futuro}
 \label{sec:lacunas-pacote}
 
-O manifesto \path{results/defense-evidence/v2/package_status.json}
+O manifesto \path{results/defense-evidence/v3/package_status.json}
 declara explicitamente o estado ``incompleto'' do pacote final e restringe
 as camadas aceitas à validade dos dados, ao cálculo estatístico e à geração
 de candidatos analíticos; a validade elétrica dos candidatos não integra as
@@ -1991,7 +1992,7 @@ e de um revisor elétrico independente qualificado
 
 Em consequência, o manifesto registra a conclusão causal do pacote como
 ``não resolvida'' (\texttt{causal\_conclusion: "unresolved"}). Nenhuma
-observação sinalizada por qualquer método -- $3\sigma$, MAD, K-Means ou
+observação sinalizada por qualquer método -- MAD, K-Means ou
 DBSCAN -- é apresentada, neste trabalho, como erro numérico do ATP
 confirmado ou como evento físico confirmado, mesmo nas condições em que o
 ensaio controlado e a sensibilidade de parâmetros indicam desempenho ou
@@ -2031,14 +2032,12 @@ escalares, com identidade completa de simulação, terminal, fase e cenário,
 e sem exclusões na base aceita. Esse objetivo é considerado atendido.
 
 \item O pré-processamento e o tratamento estatístico, incluindo média,
-desvio padrão, medidas de dispersão e o critério empírico de $3\sigma$,
+desvio padrão, medidas de dispersão e o escore robusto MAD,
 foram implementados e aplicados às noventa combinações de cenário, tamanho
 amostral, terminal e fase. No grupo de referência analisado em detalhe, o
-critério $3\sigma$ não sinalizou nenhuma observação, o que motivou o uso
-complementar do escore robusto MAD como segunda referência estatística,
-já previsto na metodologia. Esse objetivo é considerado atendido, com a
-ressalva de que o $3\sigma$ isolado mostrou-se pouco sensível nos grupos
-com assimetria acentuada.
+MAD sinalizou 109 observações no CRPI e 852 no SRPI. Esses resultados
+descrevem candidatos analíticos segundo o critério declarado, sem
+estabelecer causa elétrica. Esse objetivo é considerado atendido.
 
 \item A análise probabilística das sobretensões máximas foi realizada com
 estimativa empírica de excedência, intervalo de confiança de Wilson e
@@ -2063,8 +2062,8 @@ constitui, por si só, evidência elétrica de causa (Seção~\ref{sec:lacunas-p
 
 \item A comparação entre os resultados das técnicas estatísticas e dos
 algoritmos de clusterização foi realizada de forma explícita, preservando
-concordâncias e discordâncias -- incluindo a divergência observada entre o
-critério $3\sigma$ e o escore MAD, e o resultado de zero sinalizações do DBSCAN
+concordâncias e discordâncias -- incluindo as diferenças entre MAD e
+distância do K-Means, e o resultado de zero sinalizações do DBSCAN
 no grupo de referência. Esse objetivo é considerado atendido.
 
 \item A rotina computacional reprodutível que integra extração, tratamento,

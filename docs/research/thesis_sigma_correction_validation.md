@@ -412,3 +412,106 @@ aborted; the author subsequently authorized another commit attempt. Manuscript a
 copying, build and rendered-page review remain T7.5 work.
 
 **SPEC_DEVIATION:** None.
+
+## T7.5 — Correct the manuscript and active guidance
+
+Date: 2026-10-26. Scope: READ-07 only; unrelated editorial tasks remain
+pending. T7.4's verified v3 package is the sole current evidence source.
+
+### Scientific claims and publication
+
+- Removed the output-voltage three-sigma objective, theoretical interval
+  equation, applicability prescription, fourth comparison vote, results
+  comparison, sensitivity explanation and conclusion claims from
+  `doc/main.tex`. MAD, K-Means distance and DBSCAN noise remain the three
+  applicable criteria; hierarchical labels stay non-voting. The MAD equation,
+  descriptive statistics, Gaussian adequacy and qualified probability
+  comparison remain unchanged.
+- The remaining manuscript references are the symbol for standard deviation
+  and the source-model command `SIGMAX=3.0`. The latter is verified at
+  `input_files/casos/10000-simulacoes/casos/T_MAN/SRPI/CASO-COMPLETO/SDEF/case.atp:7`,
+  with SHA-256
+  `0b89b013e7811d473b45896dc815ee1b9df18d50a3b91c50792904b4f14ec0ee`.
+  No additional distribution or switching-time parameters were inferred.
+- Wilson interval narrowing with zero events is described as reduced
+  uncertainty under the interval model, not independent convergence proof.
+  The across-N section and captions now describe comparisons. Captions
+  identify the two plotted rates rather than claiming unplotted descriptive
+  measures. Existing figure-internal metadata/layout remain T10.4 work.
+- Removed the unsupported statement that skewness/kurtosis explain MAD's
+  sensitivity. They remain descriptive measures; a causal or explanatory
+  relationship requires a dedicated analysis.
+- Current N=10,000 reference-group counts reconcile to
+  `sources/method_comparison.csv`: CRPI MAD/union 109, SRPI MAD/union 852,
+  K-Means 99 per scenario and DBSCAN zero per scenario. Across-N source
+  reconciliation also corrected the old SRPI rate-range sentence: the
+  T_OPO/A rates are 12%, 12%, 11%, 8.6% and 8.52%, so the range is
+  8.52%–12% across all five sizes. Neither the old 13.50% upper bound nor
+  exclusion of N=1,000 was supported by the current source table.
+- All manuscript evidence references point to v3. The unchanged 204,300
+  observations, zero exceedances, 88/90 normality rejections, 1,151 reconciled
+  ATP bins, benchmark/sensitivity metrics, clustering results and five
+  unresolved review records remain supported by the T7.4 table comparison.
+  No electrical-review completion or causal ATP-error claim was introduced.
+- `uv run python -m scripts.prepare_defense_document` copied all 11 referenced
+  tables/figures to `doc/evidence/v3/`. Every copied asset was compared byte
+  for byte with its versioned generated source. No v2 reference remains in
+  the manuscript. Historical assets and template files were retained.
+
+### Remaining sigma references: classification
+
+The search covered `src/`, `scripts/`, `tests/`, the manuscript, active
+guidance, `.notebook/`, `specs/` and `docs/`, alongside T7.4's raw-input and
+historical-package hash inventory. References were classified by role,
+rather than deleted by matching a word.
+
+| Location | Classification and treatment |
+| --- | --- |
+| Raw ATP/LIS inputs, including `SIGMAX=3.0`; `.notebook/article-case-comparison.md`; `docs/research/article_case_vs_project_cases.md` | Switching configuration/source comparison. Retained without editing input settings or inferring output Gaussianity. |
+| `doc/main.tex` symbol list | Independent descriptive standard deviation. Retained; detector equations removed. |
+| `statistics.py`, `distribution_adequacy.py`, plotting callers | Independent descriptive/Gaussian fitting functions remain; retired helpers and caller analysis are documented under T7.2. No voltage-sigma threshold or vote remains. |
+| `visualization.py` documentation and regression tests in comparison/pipeline/statistics/evidence builder | Explicit absence/retirement assertions. These references prevent reintroduction, rather than implement a detector. |
+| `tests/test_benchmark.py` | Arbitrary method-name labels in generic synthetic metric-aggregation fixtures; no production detector or evidence-generation caller. Retained as isolated test data. |
+| `AGENTS.md`, codebase architecture/testing docs, notebook flow/index | Active guidance corrected: three explicit criteria, qualified Gaussian diagnostics and preserved switching parameters. Outdated sigma API descriptions and label-voting notebook claims no longer guide implementation. |
+| `atp-data-processing-validation/{spec,design,tasks}.md`, `atp-processamento-validacao/{spec,design,tasks}.md`, `thesis-defense-evidence/spec.md` | Historical requirements explicitly superseded by READ-07 via dated headers. Original requirements, execution facts and results preserved below the notices. |
+| Research plans/proposals: `01_tcc_project_plan`, `proposta_tcc_definitivo`, `manual_anomaly_detection_and_test_design`, `defense_validation_plan`, `plano_preparacao_defesa`, `andamento_do_trabalho` | Historical detector instructions receive the same explicit supersession notice; they are not current requirements. |
+| Research execution/analysis: `work_progress_summary`, `hierarchical-manuscript-contribution`, `generated_case_plots_analysis` | Historical descriptions receive supersession notices without rewriting the reported old behavior. |
+| `data_cleaning_validation_report.md`, `advisor_next_steps_plan.md` | Retained boundary statements: no sigma-based cleaning and no universal Gaussian/sigma inference. They do not prescribe the retired detector. |
+| `docs/research/reuniao/transcricao.md` | Verbatim historical meeting evidence. Preserved; the later author decision in READ-07 governs implementation. |
+| This validation report, READ-07 spec/tasks and visual-review notes | Explicit correction history, acceptance conditions and regression evidence. Historical statements are dated and not current detector prescriptions. |
+| `results/defense-evidence/v1/`, `v2/` and corresponding old `doc/evidence/` assets | Historical evidence retained, not silently overwritten or relabeled. All 3,743 input/historical hashes still match the pre-generation snapshot. |
+
+### Editorial and publication gates
+
+- `just build`: passed; final `doc/build/main.pdf` has 80 physical pages.
+  Final log has no undefined references/citations, missing assets,
+  overfull/underfull boxes or LaTeX/package warnings. `git diff --check`
+  passes. Citation-key and label sets match the pre-edit manuscript.
+- Authored manuscript prose is Brazilian Portuguese. Technical commands,
+  labels, paths and bibliography keys retain their technical forms. Guidance
+  changes and supersession notices are English.
+- Rendered changed text pages with Poppler and inspected PNGs at physical
+  PDF pages 17, 22, 35, 40–43, 59–60, 65–66 and 71–74 (printed page numbers
+  are one less). Checked the final page 65 again after correcting its rate
+  range. Changed prose, equations and captions are readable, with no new
+  clipping or overlap. Scratch renders remain under `/tmp/t75-render/`.
+- Also rendered and inspected the versioned table/figure pages 48–58,
+  61–64 and 67–70, in addition to figures 13–14 on page 65. The final
+  clustering-introduction version label on page 55 was aligned to v3.
+  The root independently spot-checked pages 40 and 65.
+- Existing exhaustive landscape tables, whitespace around their page breaks,
+  small plot labels and mixed-language figure metadata remain visible
+  limitations assigned to T10/T11/T12. This scoped review does not certify
+  their later redesign or whole-document final layout.
+- No production/test code changed in T7.5; T7.3 owns copier regression tests
+  and software gates. The final exact Taskipy gate
+  `uv run task test` passed **327 tests**, 0 failed/skipped, in 85.62 s.
+  A final orchestrator preservation check again matched all 3,743 hashes.
+
+Initial staging approval for T7.4 was aborted. The author subsequently
+authorized another attempt: T7.4 is recorded in commit `3d3d3ce`, and
+T7.5 documentation, publication assets and task tracking are recorded
+with this manuscript commit. Generated `results/` remain Git-ignored.
+
+**SPEC_DEVIATION:** None in READ-07 behavior or verification. Atomic commit
+bookkeeping was completed after the author authorized the retry.

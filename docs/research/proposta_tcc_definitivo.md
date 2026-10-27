@@ -1,4 +1,12 @@
 **Proposta de Trabalho de Conclusão de Curso (TCC)**  
+
+> Historical record: output-voltage three-sigma requirements and detector
+> descriptions below were superseded on 2026-10-26 by READ-07 in
+> `specs/features/thesis-readability-and-sigma-correction/spec.md`.
+> Active candidates use applicable MAD, K-Means distance and DBSCAN noise.
+> Preserve switching configuration and independent Gaussian diagnostics;
+> historical results below remain evidence of their original execution.
+
 **1. Título Sugerido**  
 **Detecção de Anomalias e Análise Probabilística em Manobras de Energização de Linhas de Transmissão Utilizando ** **Machine** ** Learning**  
 **2. Delimitação do Tema**  

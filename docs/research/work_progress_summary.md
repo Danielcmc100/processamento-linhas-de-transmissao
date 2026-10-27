@@ -1,5 +1,13 @@
 # Work Progress Summary
 
+> Historical record: output-voltage three-sigma requirements and detector
+> descriptions below were superseded on 2026-10-26 by READ-07 in
+> `specs/features/thesis-readability-and-sigma-correction/spec.md`.
+> Active candidates use applicable MAD, K-Means distance and DBSCAN noise.
+> Preserve switching configuration and independent Gaussian diagnostics;
+> historical results below remain evidence of their original execution.
+
+
 Assessment date: 2026-09-03.
 
 ## Current status

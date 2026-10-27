@@ -1,5 +1,13 @@
 # TCC Project Plan: Processamento de Dados em Linhas de Transmissão Durante Manobras de Energização
 
+> Historical record: output-voltage three-sigma requirements and detector
+> descriptions below were superseded on 2026-10-26 by READ-07 in
+> `specs/features/thesis-readability-and-sigma-correction/spec.md`.
+> Active candidates use applicable MAD, K-Means distance and DBSCAN noise.
+> Preserve switching configuration and independent Gaussian diagnostics;
+> historical results below remain evidence of their original execution.
+
+
 ## 1. Contexto e Escopo (Context & Scope)
 Com base na transcrição da reunião de alinhamento, o Trabalho de Conclusão de Curso (TCC) terá seu escopo focado **exclusivamente na extração, processamento e validação estatística** dos resultados de simulação do software ATP. 
 

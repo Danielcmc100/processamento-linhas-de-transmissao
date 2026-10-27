@@ -24,8 +24,10 @@ ATP .lis files
   terminal extraction, and P.U. normalization.
 - `src/services/clustering.py`: standardized one-dimensional DBSCAN and
   K-Means operations plus valid-event filtering.
-- `src/services/statistics.py`: Gaussian fit result and sigma/probability
-  calculations.
+- `src/services/statistics.py`: descriptive summaries, Gaussian fit results
+  and qualified probability calculations. Output-voltage sigma thresholds
+  were retired by READ-07; candidate comparison uses applicable MAD,
+  K-Means distance and DBSCAN noise evidence.
 - `src/services/visualization.py`: scatter, Gaussian overlay, and empirical
   versus fitted exceedance plots.
 - `main.py`: fixed-configuration end-to-end orchestration.

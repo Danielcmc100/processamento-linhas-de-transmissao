@@ -1,21 +1,22 @@
 # Clustering Anomaly Flow
-> Global K-Means labels currently act as anomaly evidence
+> Applicable explicit evidence votes; cluster labels remain descriptive
 
 Entry: `src/services/pipeline.py:run_pipeline()`
-Flow: sigma and MAD evidence → grouped K-Means → grouped DBSCAN →
+Flow: MAD evidence → grouped K-Means → grouped DBSCAN →
 terminal-local hierarchical labels → method comparison
 
-K-Means: `src/services/clustering.py:cluster_kmeans()`
-- Fits only `value_pu` globally after standardization
-- Labels ordered by centroid; labels describe voltage partitions
+K-Means: `src/services/kmeans_evidence.py:evaluate_kmeans_evidence()`
+- Fits standardized `value_pu` in configured comparable groups
+- Explicit distance evidence votes; labels describe voltage partitions
 
 Comparison: `src/services/comparison.py:compare_anomaly_methods()`
-- Highest K-Means label currently counts as anomaly signal
-- Target datasets therefore flag approximately 53% of rows
+- Only applicable MAD, K-Means distance and DBSCAN noise evidence votes
+- Highest cluster labels and hierarchical labels never vote
+- Voltage-sigma evidence was retired by READ-07; no compatibility switch
 
-DBSCAN: `src/services/clustering.py:detect_outliers_dbscan_per_terminal()`
-- Per-terminal fit uses raw P.U. values
-- Current target configs use `eps=3.0`, `min_samples=2`; all rows label zero
+DBSCAN: `src/services/dbscan_evidence.py:evaluate_dbscan_evidence()`
+- Comparable groups use standardized P.U. and calibrated radius
+- Applicable noise evidence votes; non-applicable groups do not vote
 
 Hierarchical clustering: `src/services/clustering.py:cluster_hierarchical()`
 - Uses terminal-local sorted gaps, equivalent to 1D single-linkage distances
@@ -44,4 +45,4 @@ Internal comparison: `src/services/clustering_comparison.py:evaluate_cluster_com
 Correction spec:
 `specs/features/clustering-anomaly-correction/spec.md`
 
-Updated: 2026-10-19
+Updated: 2026-10-26 (READ-07; earlier label-voting/sigma flow superseded)

@@ -11,7 +11,7 @@ O desafio reside na interpretação do volume massivo de dados sintéticos gerad
 * **Geral:** Desenvolver um modelo analítico baseado em Ciência de Dados para interpretar o desempenho de LTs sob manobras de energização, automatizando a detecção de erros e a classificação de sobretensões.
 * **Específicos:**
 * Implementar algoritmos de **Clusterização (Aprendizado Não Supervisionado)** para agrupar padrões de tensão nas fases A, B e C.
-* Aplicar modelos estatísticos de **Distribuição Gaussiana** com fixação de desvio padrão ($3\sigma$) para validar a confiabilidade dos dados simulados.
+* Evaluate Gaussian adequacy separately from candidate detection; retain descriptive mean, sample standard deviation, empirical exceedance and Wilson intervals. Candidate criteria are MAD, K-Means distance and DBSCAN noise, under their applicability rules.
 * Identificar e filtrar erros numéricos originados no ATP, separando-os de eventos físicos de sobretensão.
 
 
@@ -159,7 +159,8 @@ Com base na transcrição da reunião de alinhamento, o Trabalho de Conclusão d
 
 ### 3.4. Análise Estatística
 - Mapeamento dos resultados agrupados e válidos para uma **Distribuição Gaussiana**.
-- Cálculo de probabilidades e níveis de confiança (utilizando as definições de $3\sigma$ / $6\sigma$) para valores extremos (ex: probabilidade de ultrapassar 2.3 P.U. no terminal receptor).
+- Calculate empirical exceedance probabilities and Wilson confidence intervals for extreme voltages (for example, exceeding 2.3 P.U. at the receiving terminal); Gaussian estimates remain qualified comparisons after adequacy diagnostics.
+- Three sigma belongs to the statistical switching configuration in the ATP input model, not to an output-voltage detector. Preserve raw switching parameters. Do not introduce voltage-sigma thresholds, flags, votes, reasons or overlays; hierarchical labels remain descriptive and non-voting. This correction supersedes historical voltage-sigma requirements in earlier project plans.
 
 ### 3.5. Visualização de Dados
 - Geração de gráficos de dispersão (Scatter Plots) mapeando a distribuição de tensão (P.U.) ao longo da distância da linha de transmissão (km), conforme o referencial discutido na reunião.
