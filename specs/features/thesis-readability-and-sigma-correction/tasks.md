@@ -111,12 +111,16 @@ T3 section; relocation inventory, preserved citations/equations/assets and
 **Depends on:** T3
 **Reuses:** Existing electrical, visualization, K-Means, and DBSCAN discussion.
 **Done when:**
-- [ ] Definition, literature, limitations, and application have distinct
+- [x] Definition, literature, limitations, and application have distinct
   paragraph roles where currently mixed.
-- [ ] Citations remain attached to the claims they support.
-- [ ] No arbitrary word limit or paragraph split damages logical continuity.
+- [x] Citations remain attached to the claims they support.
+- [x] No arbitrary word limit or paragraph split damages logical continuity.
 **Tests:** Paragraph-purpose review; no Python layer changed.
 **Gate/verify:** E; compare argument and citation coverage before/after.
+
+**Completion evidence:** `docs/research/thesis_readability_validation.md`,
+T4 section; purpose inventory, whitespace-normalized source identity and
+79-page build with affected theory-page visual review pass.
 
 ## T5 — Standardize terms, spelling, and acronyms (proposal 5)
 

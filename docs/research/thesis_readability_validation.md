@@ -103,3 +103,49 @@ tables, images or template assets changed.
   `UV_CACHE_DIR=/tmp/uv-cache`.
 - `uv run task test` passes: 327 passed in 76.65 seconds, no failures
   or skips. `git diff --check` passes. No SPEC_DEVIATION.
+
+
+## T4 — Theory paragraph roles (READ-04)
+
+Executed on 2026-10-27 after T3 (`f0467e5`). The change inserts 29 semantic
+paragraph boundaries within the theoretical-foundation chapter. No words,
+scientific claims or commands are added, removed or reordered.
+
+### Paragraph-purpose inventory
+
+| Topic | Roles now separated |
+| --- | --- |
+| Electrical systems and energization | System/line context; switching events; cited insulation implications; transient definition; energization dependencies; cited ATP/EMTP application. |
+| ATP and data extraction | Tool capabilities; cited real-network application; cited line-model discussion; relevance of model quality to this study. |
+| Statistical and probabilistic analysis | Statistical purpose; descriptive measures; caution about interpreting outliers separated from the confidence-expression definition. |
+| Visualization | Exploratory/literature rationale; scatter-plot definition; study attributes; conceptual illustration; application before/after analysis. |
+| Anomaly detection and learning | General anomaly definition; study context; interpretation caution; learning definition; learning families; unsupervised application; domain literature; transfer to this study. |
+| Clustering | Similarity-based definition; application to simulated overvoltages. |
+| K-Means | Historical literature; partition/iteration/objective definition; cited practical strengths; fixed-k limitation; cited illustration; geometric interpretation; study application. |
+| DBSCAN | Origin and density-based principle; parameters/neighborhood; point classes; expansion procedure; cited comparison; anomaly-detection rationale; study application; interpretation caution; parameter/density limitations. |
+
+### Preservation and editorial review
+
+- Whitespace-normalized before/after comparison of the entire manuscript is
+  exactly equal. Every word, citation, equation, label, figure and inclusion
+  remains in the same order with the same content. Citations therefore stay
+  attached to their original supported claims, and all local caveats remain.
+- Boundaries follow changes of explanatory purpose rather than a word limit.
+  Equation introductions and definitions stay linked. The original theory
+  argument still runs from electrical phenomena through simulation,
+  statistics/visualization and unsupervised pattern analysis to methodology.
+- Terminology, future-tense procedures and conceptual-figure curation remain
+  assigned to T5, T6 and T10 respectively. Existing float/reflow issues,
+  including the DBSCAN figure interrupting the limitations paragraph, remain
+  assigned to final integrated placement in T12.
+
+### Verification
+
+- `just build` passes: 79 physical PDF pages; final LaTeX log has no actual
+  warnings, unresolved references/citations, missing assets or overfull boxes.
+- Poppler-rendered physical PDF pages 19–30 (printed pages 18–29) inspected.
+  All affected theoretical sections show readable paragraph boundaries,
+  intact equations/citations and no clipping.
+- Required pre-commit Taskipy checks: format and lint pass with no Python
+  changes; `uv run task test` reports 327 passed in 73.54 seconds, no
+  failures or skips.
