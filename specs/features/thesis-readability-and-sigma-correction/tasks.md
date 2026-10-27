@@ -1,6 +1,6 @@
 # Thesis Readability and Sigma Correction Tasks
 
-**Status:** T7.1–T7.5 implemented and verified; other tasks planned
+**Status:** T1 and T7.1–T7.5 implemented and verified; other tasks planned
 **Specification:** [spec.md](spec.md)
 **Scope:** One parent task per original proposal; T7 has five executable
 subtasks. Additional figure/table requests are grouped under T10 and T11,
@@ -64,12 +64,14 @@ The sequence avoids edits to shared files being overwritten.
 **Depends on:** T7.5
 **Reuses:** Existing scope, validity-layer, and limitations sections.
 **Done when:**
-- [ ] A section inventory identifies the canonical statement of each limit.
-- [ ] Repeated boilerplate is removed without losing detector-specific or
+- [x] A section inventory identifies the canonical statement of each limit.
+- [x] Repeated boilerplate is removed without losing detector-specific or
   result-specific caveats.
-- [ ] No statistical result is promoted to a causal electrical conclusion.
+- [x] No statistical result is promoted to a causal electrical conclusion.
 **Tests:** Editorial review; no Python layer changed.
 **Gate/verify:** E; compare retained caveats against the inventory.
+**Completion evidence:** `docs/research/thesis_readability_validation.md`,
+T1 section; 79-page build and affected-page visual review pass.
 
 ## T2 — Introduce results with the principal findings (proposal 2)
 

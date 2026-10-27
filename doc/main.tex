@@ -441,11 +441,11 @@ A utilização de simulações computacionais é particularmente relevante nesse
 % Além disso, nem todo valor extremo observado em uma simulação representa, necessariamente, a condição mais adequada para orientar uma decisão de projeto. Em alguns casos, picos isolados podem estar associados a condições operacionais muito específicas, comportamentos transitórios pouco representativos do conjunto analisado ou, ainda, a efeitos numéricos que precisam ser verificados por meio de uma análise mais criteriosa. Essa distinção é essencial, pois impacta diretamente a avaliação do nível de isolamento e, consequentemente, os custos e a segurança de projetos em sistemas de transmissão.
 % Assim, a adoção direta do maior valor observado como única referência de projeto pode conduzir a interpretações excessivamente conservadoras, sobretudo quando esse valor corresponde a uma ocorrência isolada ou estatisticamente discrepante em relação ao conjunto de dados analisado. Por isso, torna-se importante combinar a análise dos valores máximos com critérios estatísticos e com a interpretação física do fenômeno transitório estudado.
 
-Apesar da importância do ATP em estudos de transitórios eletromagnéticos, a análise dos arquivos gerados pelo programa ainda pode ser trabalhosa. Em simulações com muitos cenários, os resultados ficam distribuídos em arquivos extensos, exigindo que o usuário localize manualmente os maiores valores de sobretensão e organize essas informações para posterior interpretação. Esse processo, além de repetitivo, pode gerar inconsistências, principalmente quando diferentes instantes de fechamento dos disjuntores, fases e pontos de monitoramento são considerados. Por esse motivo, este trabalho propõe uma rotina computacional para auxiliar a análise dos resultados de energização de linhas de transmissão. A proposta não busca substituir a interpretação técnica do fenômeno elétrico, mas oferecer uma forma mais organizada e reprodutível de identificar valores máximos, observar padrões estatísticos e apontar possíveis anomalias no conjunto de simulações.
+Apesar da importância do ATP em estudos de transitórios eletromagnéticos, a análise dos arquivos gerados pelo programa ainda pode ser trabalhosa. Em simulações com muitos cenários, os resultados ficam distribuídos em arquivos extensos, exigindo que o usuário localize manualmente os maiores valores de sobretensão e organize essas informações para posterior interpretação. Esse processo, além de repetitivo, pode gerar inconsistências, principalmente quando diferentes instantes de fechamento dos disjuntores, fases e pontos de monitoramento são considerados. Por esse motivo, este trabalho propõe uma rotina computacional para identificar valores máximos, observar padrões estatísticos e apontar possíveis anomalias de forma organizada e reprodutível.
 
 \section{Problema de pesquisa}
 
-Diante desse cenário, este trabalho aborda o problema de como identificar e organizar, de forma automatizada e rastreável, sobretensões máximas que se afastam dos padrões observados nas simulações de energização. A questão central da pesquisa é: de que maneira técnicas de tratamento estatístico, análise probabilística e aprendizagem de máquina não supervisionada podem auxiliar na identificação de observações discrepantes e na seleção de candidatos para investigação técnica em bases produzidas por simulações estatísticas no ATP? A proposta não pretende determinar, apenas a partir dos valores máximos, se uma observação discrepante corresponde a um fenômeno físico ou a um artefato numérico.
+Diante desse cenário, este trabalho aborda o problema de como identificar e organizar, de forma automatizada e rastreável, sobretensões máximas que se afastam dos padrões observados nas simulações de energização. A questão central da pesquisa é: de que maneira técnicas de tratamento estatístico, análise probabilística e aprendizagem de máquina não supervisionada podem auxiliar na identificação de observações discrepantes e na seleção de candidatos para investigação técnica em bases produzidas por simulações estatísticas no ATP?
 
 A detecção de anomalias em bases de dados de sistemas elétricos tem sido amplamente investigada com o apoio de técnicas estatísticas e algoritmos de aprendizagem de máquina, especialmente em aplicações relacionadas ao monitoramento de redes, identificação de falhas, análise de medições, detecção de ataques à integridade dos dados e reconhecimento de comportamentos incomuns em sistemas elétricos e \textit{smart grids} \cite{chandola2009,guato2024,ardebili2024,gillioz2026}. Embora esses estudos não estejam necessariamente voltados à análise de sobretensões transitórias geradas por simulações no ATP, eles fornecem base conceitual e metodológica para o uso de técnicas de detecção de anomalias na interpretação automatizada de dados provenientes de sistemas elétricos. Nesse contexto, métodos não supervisionados apresentam potencial de aplicação, pois permitem reconhecer estruturas internas nos dados e identificar observações discrepantes sem a necessidade de rotulação prévia das amostras \cite{guato2024,gillioz2026}.
 
@@ -455,7 +455,7 @@ A justificativa deste trabalho está relacionada à necessidade de tornar a aná
 
 Parte-se da expectativa de que a combinação entre métodos estatísticos clássicos, análise probabilística e técnicas de aprendizagem de máquina não supervisionada contribua para tornar a avaliação mais robusta, reduzindo a subjetividade da inspeção manual e oferecendo suporte mais consistente à tomada de decisão em estudos de coordenação de isolamento. Algoritmos como K-Means e DBSCAN podem auxiliar, respectivamente, na identificação de agrupamentos predominantes e de regiões de baixa densidade associadas a observações atípicas \cite{ardebili2024}. Assim, além de contribuir para a confiabilidade técnica do processo analítico, a proposta pode favorecer a otimização de investimentos, ao evitar superdimensionamentos motivados por eventos sem relevância prática.
 
-A contribuição deste trabalho consiste em desenvolver uma rotina computacional em Python capaz de integrar a extração, a organização, o tratamento estatístico, a análise probabilística e a geração de evidências analíticas sobre os dados obtidos no ATP. A rotina identifica e organiza observações discrepantes como candidatos para investigação posterior, preservando sua rastreabilidade até a simulação de origem. Ela não diagnostica a causa física ou numérica desses casos nem substitui a avaliação de um especialista.
+A contribuição deste trabalho consiste em desenvolver uma rotina computacional em Python capaz de integrar a extração, a organização, o tratamento estatístico, a análise probabilística e a geração de evidências analíticas sobre os dados obtidos no ATP. A rotina identifica e organiza observações discrepantes como candidatos para investigação posterior, preservando sua rastreabilidade até a simulação de origem.
 
 
 \section{Objetivos}
@@ -492,6 +492,7 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 \end{itemize}
 
 \section{Escopo e limites da proposta}
+\label{sec:escopo-limites}
 
 %O modelo computacional proposto constitui uma ferramenta de apoio à decisão técnica. Sua função é organizar os dados produzidos pelo ATP, calcular indicadores estatísticos e probabilísticos, identificar padrões e sinalizar observações que mereçam investigação. Assim, os resultados apresentados pela aplicação representam evidências analíticas e candidatos a anomalias, e não decisões conclusivas sobre a natureza dos eventos observados.
 
@@ -510,11 +511,9 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 % chaveamento e, quando necessário, inspeção das formas de onda. A ferramenta,
 % portanto, não substitui o especialista nem a validação elétrica independente.
 
-A proposta deste trabalho é desenvolver um modelo computacional para auxiliar a análise dos resultados de simulações de energização realizadas no ATP. O modelo organiza os dados, calcula indicadores estatísticos e probabilísticos, identifica padrões de comportamento e aponta, de forma rastreável, resultados que precisam ser examinados com maior atenção. Essa é a contribuição central do trabalho: detectar e organizar candidatos para investigação técnica posterior. A identificação não determina se um caso é fenômeno físico, erro de dados ou artefato numérico; essa conclusão depende de evidência elétrica complementar e de avaliação especializada.
-
 O escopo do trabalho compreende a extração dos arquivos estatísticos gerados pelo ATP, a estruturação e a normalização dos valores máximos de tensão, a realização de análises estatísticas e probabilísticas, a aplicação de métodos não supervisionados e a apresentação reprodutível dos resultados. Durante esse processo, cada valor analisado permanece associado à simulação, à fase e ao ponto de monitoramento que o originaram. Essa rastreabilidade permite localizar o caso correspondente e realizar verificações complementares.
 
-Não fazem parte do escopo deste trabalho a classificação definitiva de um resultado como fenômeno físico ou erro numérico do ATP, a exclusão automática dos valores sinalizados, o desenvolvimento de um sistema especialista e a recomendação do nível de isolamento. Essas decisões dependem da análise do sistema elétrico, da verificação dos parâmetros de chaveamento e, quando necessário, da inspeção das formas de onda. A ferramenta, portanto, não substitui o especialista nem a validação elétrica independente.
+As saídas constituem candidatos para investigação técnica, sem classificação definitiva como fenômeno físico, defeito de dados ou artefato numérico do ATP. Essa interpretação exige evidência elétrica complementar e avaliação especializada, com conferência do caso de origem, dos parâmetros de chaveamento e das formas de onda. Permanecem fora do escopo a atribuição causal, a exclusão automática dos valores sinalizados, o desenvolvimento de um sistema especialista e a recomendação do nível de isolamento. A ferramenta não substitui a validação elétrica independente; as limitações efetivamente encontradas são reunidas na Seção~\ref{sec:alcance-limitacoes}.
 
 
 \section{Organização do trabalho}
@@ -1102,14 +1101,13 @@ se registros duplicados ou ausentes bloqueiam a análise e se valores
 inválidos são excluídos com rastreabilidade.
 
 Os comandos, os manifestos, os relatórios e o histórico das correções são
-reunidos no Apêndice~\ref{app:validation-records}. As verificações de software
-apoiam a reprodutibilidade, mas não substituem a validação elétrica nem
-estabelecem a causa física dos valores extremos.
+reunidos no Apêndice~\ref{app:validation-records}.
 
 \section{Métodos de análise estatística e detecção de anomalias}
 \label{sec:analysis-methods}
 
 \subsection{Escopo experimental e separação das evidências}
+\label{sec:camadas-validade}
 
 A matriz final de análise compreende dez fontes: os cenários SRPI e CRPI,
 cada qual com 50, 100, 200, 1.000 e 10.000 simulações. Os cenários são
@@ -1240,9 +1238,9 @@ rotulados como ruído são excluídos antes do cálculo, pois não pertencem a u
 cluster. As métricas são declaradas não aplicáveis quando há menos de dois
 clusters retidos ou quando algum cluster possui apenas uma observação. O
 artefato \texttt{clustering\_comparison.csv} registra contagens, exclusões,
-escores, aplicabilidade e motivo. Esses índices descrevem somente a
-geometria da partição no atributo $V_{pu}$; não estabelecem, por si sós, a causa
-física ou numérica de uma observação e não substituem revisão técnica.
+escores, aplicabilidade e motivo. Esses índices descrevem a geometria da
+partição no atributo $V_{pu}$, conforme a separação das camadas de validade
+da Seção~\ref{sec:camadas-validade}.
 
 \subsection{Partição hierárquica e critérios da comparação}
 
@@ -1355,8 +1353,7 @@ revisor, data, evidências e justificativa. A ausência de forma de onda, de
 repetição comparável ou de revisor elétrico qualificado força o estado não
 resolvido e impede atribuição causal. Quando não houver revisão elétrica
 independente qualificada, essa limitação será declarada no texto dos
-resultados. Nenhuma dessas etapas produz recomendação automática de nível de
-isolamento ou remoção automática de observações.
+resultados.
 
 \chapter{Resultados e discussão}
 \label{chap:results}
@@ -1364,8 +1361,8 @@ isolamento ou remoção automática de observações.
 Este capítulo reúne as validações do parser, da estrutura das observações, da
 conversão em P.U. e da limpeza, seguidas pelos resultados estatísticos e pelas
 evidências analíticas de anomalia. Cada resultado permanece restrito ao
-escopo, ao método e à camada de validade declarados. Em particular, uma
-indicação analítica não constitui diagnóstico causal de erro do ATP.
+escopo, ao método e à camada de validade declarados na
+Seção~\ref{sec:camadas-validade}.
 
 \section{Fidelidade da extração}
 
@@ -1383,9 +1380,7 @@ em \path{docs/research/evidence/}. A varredura de toda a coleção verifica as c
 de execuções e os comprimentos das tabelas; ela não constitui uma verificação
 independente de cada coluna ou de cada valor numérico. A aceitação dos pontos
 de verificação das fontes é restrita aos dez arquivos selecionados e à
-precisão impressa. Novos leiautes exigem nova validação. Essa auditoria do
-software de apoio não classifica extremos como eventos físicos ou numéricos e
-não encerra a validação independente das observações prevista neste trabalho.
+precisão impressa. Novos leiautes exigem nova validação.
 
 \section{Completude e identidade das observações}
 
@@ -1409,8 +1404,8 @@ A comparação foi realizada de forma automatizada; não se afirma a realizaçã
 de uma revisão humana independente.
 A cobertura estrutural é exaustiva para esses dez arquivos; a comparação
 numérica independente abrange apenas os pontos de verificação declarados da
-fase A. A aceitação não estima uma taxa de erro, não valida outros leiautes nem
-classifica anomalias como físicas ou numéricas. Exportações antigas do CRPI
+fase A. A aceitação não estima uma taxa de erro nem valida outros leiautes.
+Exportações antigas do CRPI
 exigem regeneração e sua própria validação posterior antes do reúso.
 
 \section{Validação da conversão em P.U.}
@@ -1463,10 +1458,8 @@ não se afirma a aprovação independente por um engenheiro. Todas as 60
 comparações e as 90 comparações de médias do ATP foram aprovadas. As
 verificações de software
 \texttt{task format}, \texttt{task lint}, 100 testes automatizados e o
-BasedPyright também foram aprovados, sem erros de tipagem ou avisos. Essas
-verificações de software apoiam a reprodutibilidade, mas não estabelecem,
-sozinhas, a validade
-elétrica. A decisão de aceitação é sustentada pela derivação da referência
+BasedPyright também foram aprovados, sem erros de tipagem ou avisos.
+A decisão de aceitação é sustentada pela derivação da referência
 nominal, pela base explícita do ATP e pelas comparações numéricas
 independentes apresentadas neste capítulo.
 
@@ -1479,10 +1472,9 @@ permanecem como evidência da aritmética e da estrutura das observações,
 enquanto sua referência elétrica é substituída nesta análise. Artefatos
 anteriores foram substituídos pela regeneração atual, com a base fase-terra
 de 112677~V. Fontes alteradas, outros cenários ou convenções de saída
-diferentes exigem nova validação. Não foi realizada nova simulação no ATP nem
-auditoria das formas de onda. A aceitação não valida a adequação gaussiana, a
-causa física dos valores extremos ou escolhas de isolamento; essas
-interpretações exigem avaliação técnica própria.
+diferentes exigem nova validação. O alcance dessa aceitação é a conversão
+dos máximos impressos para P.U.; a adequação gaussiana é avaliada
+separadamente na Seção~\ref{sec:resultados-estatisticos}.
 
 \section{Resultados da integridade e da limpeza}
 
@@ -1764,9 +1756,8 @@ conforme o registro individual.}
 \FloatBarrier
 A síntese comparativa considera conjuntamente os dois índices, a
 aplicabilidade, a fração de ruído e a finalidade de cada método.
-Não se declara vencedor universal nem se converte uma medida de
-separação interna em confiabilidade causal dos candidatos. Essa
-confiabilidade exige a avaliação futura do especialista.
+As diferenças de finalidade e de população avaliada impedem declarar
+um vencedor universal.
 
 \section{Evidências analíticas de anomalia}
 \label{sec:evidencias-anomalia}
@@ -1789,9 +1780,7 @@ candidatos analíticos (união dos métodos aplicáveis) foi 109 no CRPI e 852
 no SRPI, coincidindo com a contagem apresentada na
 Seção~\ref{sec:convergencia-amostral}.
 
-Esses valores são evidência descritiva e candidata, produzida por métodos
-aplicáveis e explícitos; eles não constituem, isoladamente, diagnóstico de
-erro numérico do ATP nem confirmação de evento físico. As diferenças entre
+As diferenças entre
 as sinalizações do MAD, do K-Means e do DBSCAN são relatadas sem tratar um
 dos métodos como referência de verdade. A assimetria e o excesso de curtose
 registrados na Seção~\ref{sec:resultados-estatisticos} descrevem as
@@ -1906,12 +1895,9 @@ Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
 
 \input{evidence/v3/tables/technical_review.tex}
 
-Todos os cinco casos permanecem com conclusão ``não resolvido'', pois não há
-forma de onda, repetição de simulação com passo reduzido nem revisor
-elétrico independente qualificado disponível para este trabalho. Essa
-ausência é declarada como limitação explícita, e nenhum caso recebe rótulo
-de defeito de dados, artefato numérico ou extremo fisicamente plausível
-sem essa evidência complementar.
+Todos os cinco casos permanecem com conclusão ``não resolvido''. As
+evidências ausentes e suas consequências para a interpretação são
+detalhadas na Seção~\ref{sec:lacunas-pacote}.
 
 \section{Discussão}
 \label{sec:discussao-resultados}
@@ -1940,19 +1926,15 @@ dez arquivos declarados (\path{results/defense-evidence/v3/}
 \texttt{reproducibility\_manifest.json}), incluindo o ensaio controlado com
 perturbações sintéticas e a repetição da grade de sensibilidade de
 parâmetros, ambos concluídos sobre o grupo de referência do conjunto-alvo
-(Seção~\ref{sec:avaliacao-controlada}). O próprio pacote ainda se declara
-``incompleto'' (\texttt{package\_status.json}), pois a revisão técnica
-plena com evidência elétrica independente não foi concluída. O desempenho
+(Seção~\ref{sec:avaliacao-controlada}). O desempenho
 de detecção medido no ensaio controlado é restrito às condições sintéticas
 testadas e ao grupo de referência avaliado; não é generalizado como
 acurácia de detecção de erros numéricos reais do ATP nos demais grupos, e a
 estabilidade de parâmetro observada não é equiparada a acurácia do
-detector. Nenhum candidato analítico sem evidência elétrica complementar é
-descrito como físico ou numérico neste trabalho; a conclusão causal
-permanece ``não resolvida'' para os cinco casos revisados e, por extensão,
-para os demais candidatos do pacote.
+detector. O estado de validação do pacote é delimitado a seguir.
 
 \section{Alcance e limitações dos resultados}
+\label{sec:alcance-limitacoes}
 
 A base tabular de máximos sustenta conclusões sobre a distribuição dos máximos de
 tensão, mas não representa as séries temporais nem a forma das ondas. Ela não
@@ -1960,17 +1942,11 @@ permite, isoladamente, concluir sobre duração, frequência, taxa de variação
 conteúdo oscilatório do transitório. Tais conclusões exigiriam armazenar e
 analisar as formas de onda ou atributos temporais adicionais.
 
-As observações sinalizadas descrevem comportamentos discrepantes dentro do
-ambiente de simulação e são organizadas como candidatos para investigação
-técnica posterior. A classificação estatística, isoladamente, não comprova que
-um ponto seja um erro numérico nem que corresponda a um evento físico real.
-Essa distinção requer a conferência do caso de origem, dos parâmetros de
-chaveamento e da coerência do resultado com os demais pontos e fases. Neste
-trabalho, a extração, a organização, o pré-processamento, a análise estatística,
-a análise probabilística e a clusterização foram realizados e avaliados segundo
-os critérios declarados. Seus resultados sustentam conclusões sobre o conjunto
-e as condições examinados, mas não substituem a validação elétrica independente
-necessária para atribuir causa aos candidatos sinalizados.
+Os resultados sustentam conclusões sobre os dez arquivos e as condições
+examinadas, segundo as camadas da Seção~\ref{sec:camadas-validade}. As
+restrições de cobertura numérica, adequação dos modelos, aplicabilidade dos
+índices, condições sintéticas e comparação entre fontes foram apresentadas
+junto aos respectivos resultados.
 
 \subsection{Limites da validação causal e trabalho futuro}
 \label{sec:lacunas-pacote}
@@ -1978,27 +1954,21 @@ necessária para atribuir causa aos candidatos sinalizados.
 O manifesto \path{results/defense-evidence/v3/package_status.json}
 declara explicitamente o estado ``incompleto'' do pacote final e restringe
 as camadas aceitas à validade dos dados, ao cálculo estatístico e à geração
-de candidatos analíticos; a validade elétrica dos candidatos não integra as
-camadas aceitas nesta versão, ainda que o ensaio controlado e a grade de
-sensibilidade de parâmetros já tenham sido executados e reportados
-(Seção~\ref{sec:avaliacao-controlada}). Uma lacuna concreta permanece
-registrada no manifesto e reafirmada neste capítulo:
+de candidatos analíticos. A validade elétrica dos candidatos permanece
+pendente: não foram disponibilizadas formas de onda, repetições de simulação
+com passo de integração reduzido nem revisão por profissional qualificado
+em engenharia elétrica e independente. Não foi realizada nova simulação no ATP nem
+auditoria das formas de onda.
 
-\begin{itemize}
-\item a revisão técnica carece de formas de onda, de repetição de simulação
-e de um revisor elétrico independente qualificado
-(Seção~\ref{sec:avaliacao-controlada}).
-\end{itemize}
-
-Em consequência, o manifesto registra a conclusão causal do pacote como
-``não resolvida'' (\texttt{causal\_conclusion: "unresolved"}). Nenhuma
-observação sinalizada por qualquer método -- MAD, K-Means ou
-DBSCAN -- é apresentada, neste trabalho, como erro numérico do ATP
-confirmado ou como evento físico confirmado, mesmo nas condições em que o
-ensaio controlado e a sensibilidade de parâmetros indicam desempenho ou
-estabilidade favoráveis no grupo de referência sintético e testado. Essa
-validação elétrica é proposta como trabalho futuro, fora do escopo
-comparativo deste TCC, conforme retomado na conclusão.
+Em consequência, os cinco casos selecionados e os demais candidatos do
+pacote mantêm conclusão causal ``não resolvida''
+(\texttt{causal\_conclusion: "unresolved"}). Os critérios MAD, K-Means e
+DBSCAN não permitem confirmar erro numérico ou evento físico apenas por
+raridade, separação geométrica, concordância ou estabilidade da seleção.
+Essa classificação requer conferir o caso de origem, as condições de
+chaveamento e a coerência entre fases e terminais, além das evidências
+elétricas ausentes. A validação causal é proposta como trabalho futuro,
+nos limites de escopo da Seção~\ref{sec:escopo-limites}.
 
 \chapter{Conclusão}
 \label{chap:conclusao}
@@ -2011,11 +1981,8 @@ transmissão. Sua contribuição é identificar e organizar, com rastreabilidade
 candidatos a observações discrepantes para investigação técnica posterior.
 Nos dez arquivos declarados, o modelo extrai, organiza, descreve
 estatisticamente e sinaliza observações segundo critérios explícitos, mantendo
-a ligação entre código, dados de origem e resultados apresentados. Esses
-sinais não constituem diagnóstico causal: o modelo não determina se um
-candidato é artefato numérico ou evento físico, nem substitui a avaliação de
-um especialista. Essa distinção delimita o alcance das conclusões sustentadas
-pelo pacote de evidências.
+a ligação entre código, dados de origem e resultados apresentados, dentro
+do alcance definido na Seção~\ref{sec:alcance-limitacoes}.
 
 Quanto aos objetivos específicos, os resultados apresentados sustentam as
 seguintes conclusões:
@@ -2078,29 +2045,19 @@ como trabalho futuro, e não à execução do fluxo comparativo.
 
 \end{itemize}
 
-A conclusão causal deste trabalho permanece não resolvida. Nenhum candidato
-analítico identificado pelos critérios estatísticos ou pelos algoritmos de
-clusterização é aqui classificado como erro numérico confirmado do ATP ou
-como evento físico confirmado; essa classificação exigiria evidência
-elétrica complementar -- forma de onda, repetição de simulação com passo de
-integração reduzido e revisão por profissional qualificado independente --
-que não estava disponível para este trabalho. Da mesma forma, este trabalho
-não formula, direta ou indiretamente, nenhuma recomendação automática de
-nível de isolamento; essa decisão foi deliberadamente mantida fora do
-escopo acadêmico, por proteger propriedade intelectual da empresa parceira
-e por exigir avaliação técnica especializada que extrapola os métodos aqui
-validados.
+A conclusão causal permanece não resolvida pelas lacunas descritas na
+Seção~\ref{sec:lacunas-pacote}. A recomendação de nível de isolamento e a
+lógica de sistema especialista permanecem sob responsabilidade técnica da
+empresa parceira, preservando sua propriedade intelectual conforme o
+escopo da Seção~\ref{sec:escopo-limites}.
 
 Como próximo passo, propõe-se a validação dos candidatos por especialista
 em transitórios eletromagnéticos, com inspeção das formas de onda,
 conferência das condições de chaveamento e repetição das simulações com
-passos de integração menores. Essa validação causal está fora dos
-objetivos deste TCC e constitui trabalho futuro. Também se recomenda
+passos de integração menores. Também se recomenda
 ampliar os ensaios controlados e avaliar outras famílias de distribuição
 separadamente por grupo, com verificação de ajuste e das caudas, antes de
-usar probabilidades paramétricas como evidência complementar. A lógica
-de sistema especialista e a recomendação do nível de isolamento
-permanecem sob responsabilidade técnica da empresa parceira.
+usar probabilidades paramétricas como evidência complementar.
 
 % ----------------------------------------------------------
 % ELEMENTOS PÓS-TEXTUAIS
