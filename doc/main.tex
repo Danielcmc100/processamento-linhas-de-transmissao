@@ -924,12 +924,12 @@ conjunto de valores máximos de tensão. O modelo também permite comparar
 configurações com e sem resistor de pré-inserção, além de diferentes
 representações da rede equivalente.
 
-O arquivo de modelo \texttt{case.atp} do caso completo SRPI com 10.000
-simulações contém o comando \texttt{\$DEPOSIT, SIGMAX=3.0}. Esse parâmetro
-pertence à configuração do chaveamento estatístico do modelo de entrada;
+O caso completo SRPI com 10.000 simulações utiliza o parâmetro de três
+desvios padrão na configuração do chaveamento estatístico do modelo de entrada;
 não define um limiar para as tensões máximas de saída. A análise dos
 resultados preserva essa configuração e avalia separadamente a adequação
-das distribuições de tensão.
+das distribuições de tensão. O comando original está registrado no
+Apêndice~\ref{app:fontes-eletricas}.
 
 Nos casos examinados, o passo de integração é de $10~\mu\text{s}$ e a janela
 simulada é de 0,3~s. Ao final de cada execução, o ATP registra no arquivo de
@@ -971,8 +971,8 @@ O parser utiliza as posições impressas das colunas de variáveis para
 preservar células vazias no início, no interior e no final dos nós. Esse
 procedimento mantém a associação entre cada variável e seu ponto de medição.
 
-O escopo avaliado dos pontos de verificação das fontes compreende
-\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, com 50, 100, 200,
+O escopo avaliado dos pontos de verificação das fontes compreende os casos
+completos, sem defeito, dos cenários SRPI e CRPI, com 50, 100, 200,
 1.000 e 10.000 simulações por cenário. A referência do CRPI registra todos os
 48 pares ordenados de variável/nó, transcritos diretamente do arquivo de saída do ATP. A auditoria
 compara esses pares nos cinco arquivos. As primeiras e últimas execuções
@@ -1019,16 +1019,10 @@ Uma fonte do ATP associada ao barramento 9049 utiliza 112676,528~V a 60~Hz.
 Os cartões estatísticos arredondam as bases para 112677~V, para nós
 fase-terra, e 195161~V, para ramos fase-fase. O LIS imprime explicitamente as
 duas bases nas distribuições dos picos monitorados.
-O arquivo de rede equivalente
-\path{input_files/CEPEL_DATA/BR2612PJ-CC-MIN-EQUIV.ana}, nas linhas 34 e 38,
-identifica os barramentos 9049 e 48461 como 138~kV. No caso SRPI de 100
-execuções, as linhas 392--395 de \texttt{case.atp} especificam a amplitude da
-fonte, enquanto as linhas 330--333 especificam a base estatística. O arquivo
-\texttt{case.lis}, linha 3095, declara explicitamente
-\texttt{V-base = 1.12677000E+05} para \texttt{T\_MANA}; as linhas 3262,
-3323 e 3383 declaram \texttt{195161} para os ramos entre fases. Esses
-registros conciliam a tensão nominal do sistema com as duas normalizações
-efetivamente utilizadas pelo ATP. A base fase-terra arredondada difere do pico
+Os registros da rede equivalente e dos arquivos ATP e LIS conciliam a
+tensão nominal de 138~kV dos barramentos 9049 e 48461 com essas duas
+normalizações. A localização dos registros está no
+Apêndice~\ref{app:fontes-eletricas}. A base fase-terra arredondada difere do pico
 nominal calculado em apenas 0,471832~V, ou aproximadamente 4,1875 partes por
 milhão. O algoritmo deste trabalho extrai exclusivamente máximos de nós
 fase-terra; portanto, sua conversão é
@@ -1369,23 +1363,21 @@ Seção~\ref{sec:camadas-validade}.
 Todas as 240 comparações de pares de cabeçalho do CRPI coincidiram. Nos dois
 cenários, os 20 pontos de verificação de chaveamento e os 60 pares de
 máximo/instante com sinal coincidiram exatamente. A varredura completa
-reconciliou 235 arquivos e 533.450 execuções. A etapa de verificação de
-software foi aprovada nos 100 testes, pelo Ruff e pelo BasedPyright. Esses
+reconciliou 235 arquivos e 533.450 execuções. Esses
 resultados sustentam a aceitação do parser corrigido para o escopo declarado
 dos pontos de verificação das fontes.
 
-O registro de aceitação e os resultados reproduzíveis são mantidos em
-\path{docs/research/parser_validation_report.md}, com os arquivos CSV de referência
-em \path{docs/research/evidence/}. A varredura de toda a coleção verifica as contagens
+A varredura de toda a coleção verifica as contagens
 de execuções e os comprimentos das tabelas; ela não constitui uma verificação
 independente de cada coluna ou de cada valor numérico. A aceitação dos pontos
 de verificação das fontes é restrita aos dez arquivos selecionados e à
-precisão impressa. Novos leiautes exigem nova validação.
+precisão impressa. Novos leiautes exigem nova validação. Os registros de
+aceitação e de execução estão no Apêndice~\ref{app:historico-parser}.
 
 \section{Completude e identidade das observações}
 
-A estrutura das observações foi revalidada em 10 de setembro de 2026, após a
-correção do parser do CRPI. Os cinco tamanhos de cada cenário SRPI e CRPI
+A estrutura das observações foi revalidada para os cinco tamanhos de cada
+cenário SRPI e CRPI, que
 produziram 204.300 observações escalares em dez arquivos. Cada simulação
 declarada continha todas as nove combinações esperadas de terminal e fase, com
 chaves compostas únicas, incluindo as três fases restauradas em
@@ -1397,21 +1389,18 @@ Seção~\ref{sec:per-unit-validation}.
 
 Os caminhos das fontes preservam identidades distintas entre os arquivos,
 verificação também realizada por um teste de regressão com múltiplos arquivos.
-O procedimento, a revisão, o manifesto SHA-256, os resultados e a decisão de
-aceitação estão registrados em
-\path{docs/research/observation_structure_validation_report.md}.
+O procedimento e os registros da revalidação estão reunidos no
+Apêndice~\ref{app:historico-parser}.
 A comparação foi realizada de forma automatizada; não se afirma a realização
 de uma revisão humana independente.
 A cobertura estrutural é exaustiva para esses dez arquivos; a comparação
 numérica independente abrange apenas os pontos de verificação declarados da
 fase A. A aceitação não estima uma taxa de erro nem valida outros leiautes.
-Exportações antigas do CRPI
-exigem regeneração e sua própria validação posterior antes do reúso.
 
 \section{Validação da conversão em P.U.}
 
-Em 11 de setembro de 2026, dez arquivos de
-\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, com 50, 100, 200,
+Dez arquivos de casos completos e sem defeito dos cenários SRPI e CRPI,
+com 50, 100, 200,
 1000 e 10000 execuções por cenário, foram auditados. Todos os 60 pontos de
 verificação da fase A, transcritos independentemente, coincidiram com o CSV
 exportado, usando aritmética Decimal com tolerância de $10^{-12}$~P.U. Todas
@@ -1424,8 +1413,9 @@ independentemente do LIS e seus hashes SHA-256 foram verificados antes do
 processamento. As razões esperadas foram calculadas com aritmética Decimal e
 comparadas com os valores relidos do CSV gerado. Todas as 204300 observações
 foram exportadas e relidas. Os três exemplos da Tabela~\ref{tab:pu-validation}
-vêm da simulação 1 do caso SRPI de 100 execuções, com valores com sinal
-impressos na linha 1789 do LIS.
+vêm da simulação 1 do caso SRPI de 100 execuções. A localização das
+referências e os registros de execução estão no
+Apêndice~\ref{app:auditoria-pu}.
 
 \begin{table}[htbp]
 \centering
@@ -1444,21 +1434,11 @@ $T_{OPO}$ & $-204404.45$ & 1.814074300877730149 & 1.8140743008777303 \\
 \end{tabular}
 \end{table}
 
-A configuração anterior de 100000~V superestima os valores fase-terra em P.U. em
-12,677\% em relação à referência do ATP. Ela é rejeitada para a reprodução
-desses casos. Um limiar de 2,3~P.U. corresponde agora a 259157,1~V; resultados
-estatísticos anteriores exigem regeneração e validação separada. Em
-contrapartida, a base anterior mapeava o mesmo limiar numérico para 230000~V.
-Uma referência arbitrária de 100000~V é matematicamente possível, mas exigiria
-uma interpretação diferente explicitamente definida e limiares
-consistentemente reescalados; ela não reproduz essas tabelas do ATP.
+A referência arbitrária de 100000~V superestimaria os valores fase-terra
+em P.U. em 12,677\% e não reproduziria as tabelas do ATP. Com a base aceita,
+o limiar de 2,3~P.U. corresponde a 259157,1~V. O histórico de substituição
+da referência anterior está no Apêndice~\ref{app:auditoria-pu}.
 
-Em 11 de setembro de 2026, foi realizada a revisão das fontes e dos cálculos;
-não se afirma a aprovação independente por um engenheiro. Todas as 60
-comparações e as 90 comparações de médias do ATP foram aprovadas. As
-verificações de software
-\texttt{task format}, \texttt{task lint}, 100 testes automatizados e o
-BasedPyright também foram aprovados, sem erros de tipagem ou avisos.
 A decisão de aceitação é sustentada pela derivação da referência
 nominal, pela base explícita do ATP e pelas comparações numéricas
 independentes apresentadas neste capítulo.
@@ -1467,11 +1447,9 @@ A conversão é, portanto, aceita para os dez casos SRPI/CRPI declarados como
 modelo completo e sem defeitos, em $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, nas fases
 A, B e C, utilizando 112677~V para máximos fase-terra. As declarações de
 195161~V para ramos fase-fase também foram verificadas no ATP e no LIS, mas
-esses ramos não integram a extração atual. As auditorias históricas com 100000~V
-permanecem como evidência da aritmética e da estrutura das observações,
-enquanto sua referência elétrica é substituída nesta análise. Artefatos
-anteriores foram substituídos pela regeneração atual, com a base fase-terra
-de 112677~V. Fontes alteradas, outros cenários ou convenções de saída
+esses ramos não integram a extração atual. A revisão das fontes e dos
+cálculos não constitui aprovação independente por um engenheiro.
+Fontes alteradas, outros cenários ou convenções de saída
 diferentes exigem nova validação. O alcance dessa aceitação é a conversão
 dos máximos impressos para P.U.; a adequação gaussiana é avaliada
 separadamente na Seção~\ref{sec:resultados-estatisticos}.
@@ -1501,8 +1479,8 @@ Apêndice~\ref{app:validation-records}.
 \section{Resultados estatísticos e probabilísticos}
 \label{sec:resultados-estatisticos}
 
-A segunda versão do pacote de evidências foi gerada em 21 de outubro de 2026 a partir
-dos dez arquivos declarados, com a base de 112677~V, o limiar de 2,3~P.U. e
+O pacote de evidências utiliza os dez arquivos declarados, com a base de
+112677~V, o limiar de 2,3~P.U. e
 os três terminais e as três fases já validados nas seções anteriores,
 totalizando noventa combinações de cenário, tamanho amostral, terminal e
 fase. Para cada combinação foram calculados contagem, contagem válida,
@@ -1514,8 +1492,8 @@ apresentou média de 1,1769~P.U. e desvio padrão de 0,1209~P.U., enquanto o
 SRPI apresentou média de 1,7006~P.U. e desvio padrão de 0,1317~P.U., valores
 consistentes com a definição de chaveamento de cada cenário.
 
-A Tabela~\ref{tab:defesa-probabilidade}, reproduzida automaticamente de
-\path{results/defense-evidence/v3/tables/probability.tex}, apresenta a
+A Tabela~\ref{tab:defesa-probabilidade}, gerada automaticamente a partir
+do pacote de evidências identificado no Apêndice~\ref{app:pacote-evidencias}, apresenta a
 probabilidade empírica de excedência de 2,3~P.U. para as noventa
 combinações, com o número de eventos, o denominador, o intervalo de Wilson
 de 95\% e o estado de validação.
@@ -1529,13 +1507,10 @@ $N=10\,000$. O resultado é relatado como zero com sua incerteza, conforme a
 definição metodológica, e não como ausência de resultado. A reconciliação
 entre as contagens diretas e as tabelas de frequência e de probabilidade
 impressas pelo ATP produziu 1.151 intervalos comparáveis, todos com estado
-de validação ``válido'' dentro da tolerância definida pela precisão impressa
-(fonte: \path{results/defense-evidence/v3/sources/}
-\texttt{probability\_reconciliation.csv}).
+de validação ``válido'' dentro da tolerância definida pela precisão impressa.
 
 A adequação gaussiana foi avaliada pelo teste de Anderson--Darling a 5\% de
-significância nos noventa grupos (fonte:
-\path{results/defense-evidence/v3/sources/distribution_adequacy.csv}). A
+significância nos noventa grupos. A
 normalidade foi rejeitada em 88 dos 90 grupos; as duas exceções ocorrem em
 grupos do SRPI com apenas 50 simulações ($1/2\,LT$, fase B, e $T_{MAN}$, fase
 C), compatível com a menor potência do teste em amostras pequenas. No grupo
@@ -1590,8 +1565,7 @@ probabilidade empírica, conforme a política declarada na metodologia.
 \subsection{Referência do GTPPLOT e limite da validação por probabilidade}
 
 O documento \textit{Gráficos estadísticos con el GTPPLOT}, de
-\citeonline{hevia2000gtpplot}, identificado pelo arquivo
-\texttt{2000-N4-Estati-1.pdf}, descreve a obtenção de histogramas e curvas
+\citeonline{hevia2000gtpplot}, descreve a obtenção de histogramas e curvas
 de excedência a partir das tabulações estatísticas do ATP. Cada simulação
 contribui com um pico absoluto por variável; uma tabela agrupada utiliza
 o maior pico entre as variáveis do grupo, mantendo $N$ observações,
@@ -1615,8 +1589,8 @@ Uma comparação exploratória adicional ajustou as famílias normal,
 gama e lognormal por máxima verossimilhança, com localização estimada,
 em cada grupo. No CRPI, o menor AIC selecionou gama em 27 grupos e
 lognormal em 18; no SRPI, selecionou normal em 29, gama em 13 e
-lognormal em três. Os 270 ajustes e suas decisões relativas estão em
-\path{results/defense-evidence/v3/sources/distribution_comparison.csv}.
+lognormal em três. Os 270 ajustes e suas decisões relativas estão
+catalogados no Apêndice~\ref{app:pacote-evidencias}.
 Essa heterogeneidade impede impor uma única família como referência
 comum sem verificação adicional. AIC compara ajustes candidatos e não
 testa adequação absoluta: uma normal pode ser a melhor das três opções
@@ -1639,8 +1613,8 @@ pelo fluxo, sem reajustar os modelos para maximizar os escores. A
 Tabela~\ref{tab:cluster-summary} sintetiza os resultados dos nove grupos
 terminal--fase de cada cenário e tamanho amostral. Os 270 registros
 individuais, incluindo número de clusters, quantidade de observações,
-ruído excluído e motivos de não aplicabilidade, estão em
-\path{results/defense-evidence/v3/sources/clustering_comparison.csv}.
+ruído excluído e motivos de não aplicabilidade, permanecem disponíveis no
+registro detalhado indicado no Apêndice~\ref{app:pacote-evidencias}.
 DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
 partição elegível para avaliação, sem atribuir artificialmente escore zero.
 
@@ -1764,8 +1738,7 @@ um vencedor universal.
 
 As evidências de anomalia foram calculadas separadamente por cenário,
 linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:metodo-anomalias}
-da metodologia, e cobrem as 204.300 observações do pacote
-(fonte: \path{results/defense-evidence/v3/sources/method_comparison.csv}).
+da metodologia, e cobrem as 204.300 observações do pacote.
 No grupo de referência $T_{OPO}$, fase A, $N=10\,000$, o
 escore robusto MAD sinalizou 109 observações no CRPI (1,09\%) e 852 no SRPI
 (8,52\%). O K-Means, aplicável nos dois cenários, sinalizou 99 observações
@@ -1792,8 +1765,8 @@ artefato (\texttt{analysis\_mode=exploratory}).
 \section{Comparação entre tamanhos amostrais}
 \label{sec:convergencia-amostral}
 
-A Tabela~\ref{tab:defesa-convergencia}, reproduzida de
-\path{results/defense-evidence/v3/tables/convergence.tex}, compara os
+A Tabela~\ref{tab:defesa-convergencia}, gerada a partir do pacote de
+evidências, compara os
 cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000 simulações) sob a
 mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
 método, para os noventa grupos de cenário, terminal e fase.
@@ -1843,8 +1816,7 @@ $T_{OPO}$, fase A.}
 \section{Avaliação controlada, sensibilidade a parâmetros e revisão técnica}
 \label{sec:avaliacao-controlada}
 
-O pacote de evidências final registra, em
-\path{results/defense-evidence/v3/package_status.json}, que a revisão
+O pacote de evidências final registra que a revisão
 técnica com evidência elétrica completa permanece pendente sobre o conjunto
 de dados-alvo real. O ensaio controlado com perturbações sintéticas e a
 repetição da grade de sensibilidade de parâmetros, por outro lado, foram
@@ -1856,8 +1828,7 @@ por bloco de execução descrita na metodologia.
 A Tabela~\ref{tab:defesa-benchmark} reproduz as contagens de confusão e as
 métricas derivadas do ensaio controlado, para as três famílias de
 intervenção (pontual, contextual e coletiva) nas taxas de contaminação de
-1\%, 5\% e 10\%, mais a condição limpa de referência (fonte:
-\path{results/defense-evidence/v3/sources/controlled_benchmark.csv}). Na
+1\%, 5\% e 10\%, mais a condição limpa de referência. Na
 condição limpa, o K-Means produziu 42 falsos positivos sobre 5.400
 observações de avaliação (taxa de falsos positivos de 0,0078), contra 391
 falsos positivos do DBSCAN calibrado por novidade de densidade (taxa de
@@ -1878,8 +1849,7 @@ A grade congelada de sensibilidade de parâmetros -- número de grupos e
 sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --
 foi replicada sobre o mesmo grupo de referência do conjunto de dados-alvo,
 com estabilidade medida pelo índice de Jaccard identidade-a-identidade e
-limiar de qualificação de 0,80 (fonte:
-\path{results/defense-evidence/v3/sources/sensitivity.csv}). Das vinte
+limiar de qualificação de 0,80. Das vinte
 réplicas de parâmetro avaliadas (dez por método, cinco por cenário), todas
 foram aplicáveis e todas produziram índice de Jaccard igual a 1,0000 em
 relação à configuração de referência declarada, superando o limiar de
@@ -1922,8 +1892,8 @@ extração, tratamento, análise estatística, análise probabilística, detecç
 de anomalias e apresentação dos resultados é atendido no escopo computacional: o
 pipeline integrado, o manifesto de reprodutibilidade e as tabelas e figuras
 deste capítulo foram gerados de forma automática e rastreável a partir dos
-dez arquivos declarados (\path{results/defense-evidence/v3/}
-\texttt{reproducibility\_manifest.json}), incluindo o ensaio controlado com
+dez arquivos declarados, conforme o manifesto de reprodutibilidade
+catalogado no Apêndice~\ref{app:pacote-evidencias}, incluindo o ensaio controlado com
 perturbações sintéticas e a repetição da grade de sensibilidade de
 parâmetros, ambos concluídos sobre o grupo de referência do conjunto-alvo
 (Seção~\ref{sec:avaliacao-controlada}). O desempenho
@@ -1951,8 +1921,8 @@ junto aos respectivos resultados.
 \subsection{Limites da validação causal e trabalho futuro}
 \label{sec:lacunas-pacote}
 
-O manifesto \path{results/defense-evidence/v3/package_status.json}
-declara explicitamente o estado ``incompleto'' do pacote final e restringe
+O registro de estado do pacote final declara explicitamente seu estado
+``incompleto'' e restringe
 as camadas aceitas à validade dos dados, ao cálculo estatístico e à geração
 de candidatos analíticos. A validade elétrica dos candidatos permanece
 pendente: não foram disponibilizadas formas de onda, repetições de simulação
@@ -2083,6 +2053,7 @@ revisões e as datas identificam as auditorias originais, não uma nova
 execução decorrente da organização deste texto.
 
 \section{Histórico do parser e estrutura das observações}
+\label{app:historico-parser}
 
 Uma auditoria de fidelidade às fontes foi ampliada em 10 de setembro de 2026,
 após a identificação de um defeito de alinhamento do cabeçalho do CRPI. A
@@ -2098,8 +2069,53 @@ Os registros de aceitação são mantidos em
 manifestos em \path{docs/research/evidence/}. A revalidação estrutural ocorreu em
 10 de setembro de 2026, após a correção do cabeçalho do CRPI. As exportações
 anteriores à correção exigem regeneração e validação antes do reúso.
+Na auditoria original, a etapa de verificação de software foi aprovada nos
+100 testes, pelo Ruff e pelo BasedPyright. Esse número identifica aquela
+execução histórica, sem substituir a verificação da versão atual.
+
+As fontes dos pontos de verificação pertencem ao diretório
+\texttt{T\_MAN/\{SRPI,CRPI\}/CASO-COMPLETO/SDEF}, com 50, 100, 200,
+1.000 e 10.000 simulações por cenário. Os manifestos SHA-256 identificam
+os arquivos completos usados nas comparações.
+
+\section{Localização das referências elétricas}
+\label{app:fontes-eletricas}
+
+O arquivo de rede equivalente
+\path{input_files/CEPEL_DATA/BR2612PJ-CC-MIN-EQUIV.ana}, nas linhas 34 e 38,
+identifica os barramentos 9049 e 48461 como 138~kV. No caso SRPI de 100
+execuções, as linhas 392--395 de \texttt{case.atp} especificam a amplitude
+da fonte, enquanto as linhas 330--333 especificam a base estatística.
+O arquivo \texttt{case.lis}, linha 3095, declara explicitamente
+\texttt{V-base = 1.12677000E+05} para \texttt{T\_MANA}; as linhas 3262,
+3323 e 3383 declaram \texttt{195161} para os ramos entre fases.
+Os valores com sinal dos exemplos da Tabela~\ref{tab:pu-validation}
+estão impressos na linha 1789 do LIS, na simulação 1 desse caso.
+
+O arquivo de modelo \texttt{case.atp} do caso completo SRPI com 10.000
+simulações contém o comando \texttt{\$DEPOSIT, SIGMAX=3.0}. Esse registro
+pertence ao chaveamento estatístico do modelo de entrada e é preservado;
+não constitui critério de detecção para a tensão de saída.
 
 \section{Reprodução da auditoria de conversão em P.U.}
+\label{app:auditoria-pu}
+
+A auditoria dos dez arquivos foi realizada em 11 de setembro de 2026,
+com revisão das fontes e dos cálculos, sem aprovação independente por um
+engenheiro. Todas as 60 comparações individuais e as 90 comparações de
+médias do ATP foram aprovadas. Naquela execução, as verificações
+\texttt{task format}, \texttt{task lint}, 100 testes automatizados e o
+BasedPyright também foram aprovados, sem erros de tipagem ou avisos.
+
+A configuração anterior utilizava 100000~V e mapeava o limiar numérico de
+2,3~P.U. para 230000~V. Uma referência arbitrária dessa magnitude é
+matematicamente possível, mas exigiria interpretação explicitamente
+definida e limiares consistentemente reescalados; ela não reproduz as
+tabelas do ATP. As auditorias históricas com essa base permanecem como
+evidência da aritmética e da estrutura das observações, enquanto sua
+referência elétrica foi substituída pela base fase-terra de 112677~V.
+Os artefatos estatísticos anteriores exigiam regeneração e validação
+separada e foram substituídos pela regeneração atual.
 
 O código de produção avaliado corresponde à revisão
 \path{f3ee4f257950c2ef858810af6a78406ef7c3dca7}, com o script de auditoria e
@@ -2141,6 +2157,51 @@ de origem e do código encontram-se em \path{docs/research/evidence/}, nos arqui
 causas físicas dos extremos nem a completude de cenários fora da matriz de
 dez arquivos. Formatos ou convenções de janela temporal diferentes exigem
 nova validação.
+
+\section{Catálogo do pacote de evidências}
+\label{app:pacote-evidencias}
+
+A segunda versão do pacote foi gerada em 21 de outubro de 2026. O texto
+atual utiliza a versão v3, que substitui a interpretação de três desvios
+padrão como detector de tensão de saída, preservando os parâmetros do
+chaveamento e as evidências históricas. O registro detalhado dessa
+correção está em
+\path{docs/research/thesis_sigma_correction_validation.md}.
+
+O diretório do pacote atual é \path{results/defense-evidence/v3/}.
+Os caminhos a seguir são relativos a esse diretório e vinculam os
+resultados aos respectivos registros completos:
+\begin{description}
+\item[Probabilidade e normalidade:]
+\path{tables/probability.tex} apresenta as probabilidades;
+\path{sources/probability_reconciliation.csv} contém os 1.151 intervalos
+comparados com o ATP; \path{sources/distribution_adequacy.csv} registra os
+diagnósticos gaussianos; \path{sources/distribution_comparison.csv}
+contém os 270 ajustes exploratórios por família.
+\item[Clusterização e candidatos:]
+\path{sources/clustering_comparison.csv} preserva os 270 registros dos
+índices internos e sua aplicabilidade;
+\path{sources/method_comparison.csv} registra a comparação dos detectores.
+\item[Tamanhos amostrais:]
+\path{sources/convergence.csv} e \path{tables/convergence.tex} contêm
+os resultados detalhados e sua apresentação tabular.
+\item[Ensaio controlado e sensibilidade:]
+\path{sources/controlled_benchmark.csv} e
+\path{sources/sensitivity.csv} registram as condições e as métricas.
+\item[Estado e reprodução:]
+\path{package_status.json} declara o estado incompleto e a conclusão causal
+não resolvida; \path{reproducibility_manifest.json} identifica entradas,
+parâmetros e artefatos do pacote.
+\end{description}
+
+As figuras indicam os arquivos de dados utilizados, também relativos ao
+pacote: \path{sources/annotated_observations.csv},
+\path{sources/distribution_adequacy.csv},
+\path{sources/clustering_comparison.csv} e
+\path{sources/convergence.csv}. As cópias incluídas neste documento ficam
+em \path{doc/evidence/v3/}, permitindo sua compilação independente.
+O documento de GTPPLOT citado na discussão estatística é identificado no
+acervo pelo arquivo \texttt{2000-N4-Estati-1.pdf}.
 
 \end{apendicesenv}
 

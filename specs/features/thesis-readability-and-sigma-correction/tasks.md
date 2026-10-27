@@ -1,6 +1,6 @@
 # Thesis Readability and Sigma Correction Tasks
 
-**Status:** T1 and T7.1–T7.5 implemented and verified; other tasks planned
+**Status:** T1, T3 and T7.1–T7.5 implemented and verified; other tasks planned
 **Specification:** [spec.md](spec.md)
 **Scope:** One parent task per original proposal; T7 has five executable
 subtasks. Additional figure/table requests are grouped under T10 and T11,
@@ -93,13 +93,16 @@ T1 section; 79-page build and affected-page visual review pass.
 **Depends on:** T1
 **Reuses:** Existing technical-validation appendix and research reports.
 **Done when:**
-- [ ] Commands, detailed paths, file-line references, hashes, dates, and
+- [x] Commands, detailed paths, file-line references, hashes, dates, and
   correction history have appendix ownership rather than repeated prose.
-- [ ] Main text retains criteria, tolerances, results, limitations, and the
+- [x] Main text retains criteria, tolerances, results, limitations, and the
   electrical derivation of the voltage base.
-- [ ] Cross-references resolve and no reproduction evidence is lost.
+- [x] Cross-references resolve and no reproduction evidence is lost.
 **Tests:** Editorial relocation checklist; no Python layer changed.
 **Gate/verify:** E; compare original and relocated technical records.
+**Completion evidence:** `docs/research/thesis_readability_validation.md`,
+T3 section; relocation inventory, preserved citations/equations/assets and
+79-page build with affected-page visual review pass.
 
 ## T4 — Split dense theory paragraphs by purpose (proposal 4)
 
