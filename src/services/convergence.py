@@ -77,9 +77,6 @@ _METHOD_COLUMNS = (
     "terminal_position_km",
     "phase",
     "event_definition",
-    "sigma_flag",
-    "sigma_applicability",
-    "sigma_reason",
     "mad_flag",
     "mad_applicability",
     "mad_reason",
@@ -227,7 +224,7 @@ def build_method_comparison_matrix(
             "multiplicity_qualification"
         ),
         lit(
-            "sigma_3;mad_modified_z;kmeans_distance;dbscan_noise",
+            "mad_modified_z;kmeans_distance;dbscan_noise",
             dtype=String,
         ).alias("compared_methods"),
     )

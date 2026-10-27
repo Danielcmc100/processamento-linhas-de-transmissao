@@ -543,7 +543,7 @@ def _convergence_input(
             lit("scenario|source_lineage|terminal|phase").alias(
                 "grouping_policy"
             ),
-            lit("defense-v1-frozen").alias("method_policy"),
+            lit("defense-v3-three-methods").alias("method_policy"),
             lit("independence_not_established").alias("relationship_status"),
         )
         .select(
@@ -846,7 +846,7 @@ def _argument_parser() -> ArgumentParser:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("results/defense-evidence/v1"),
+        default=Path("results/defense-evidence/v3"),
     )
     parser.add_argument("--overwrite", action="store_true")
     return parser

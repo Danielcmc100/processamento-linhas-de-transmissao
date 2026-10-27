@@ -500,7 +500,6 @@ def _presentation_value(
 def _translate_value(value: str, column: str) -> str:
     """Translate controlled statuses while preserving technical identities."""
     method_names = {
-        "sigma_3": "3 sigma",
         "mad_modified_z": "MAD",
         "kmeans": "K-Means",
         "kmeans_distance": "distância ao centróide (K-Means)",

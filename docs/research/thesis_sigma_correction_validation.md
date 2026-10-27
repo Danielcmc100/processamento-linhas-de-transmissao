@@ -231,3 +231,61 @@ are excluded from this task's commit; tracking remains with the orchestrator.
 
 **SPEC_DEVIATION:** None. T7.2's owned contracts and gates pass; the known
 T7.3 integration failure remains explicit and unresolved.
+
+## T7.3 — Align evidence consumers and publication routing
+
+Date: 2026-10-26. Scope: READ-07, T7.3, following `661f791`.
+The existing local implementation and tests were inspected and verified;
+no additional production changes were required during this verification.
+
+- `convergence.py:build_method_comparison_matrix()` requires only MAD,
+  K-Means distance and DBSCAN noise evidence. Its declared method order
+  matches comparison reasons. Historical sigma display translation was
+  removed from `defense_reporting.py`.
+- `build_defense_evidence.py` defaults to the new v3 directory and declares
+  `defense-v3-three-methods` as the convergence method policy. The existing
+  nonempty-output guard still prevents accidental historical overwrite.
+  Existing schema/generator versions remain unchanged; the publication
+  directory and method policy identify this evidence revision.
+- `prepare_defense_document.py:main()` resolves each manuscript reference's
+  explicit version, rather than hardcoding v2. Tests verify mixed explicit
+  versions, preserved historical assets, and failure when a v3 source is
+  absent instead of silently substituting v2.
+- The integration fixture generates ten synthetic sources with 50 actual
+  runs each and nominal canonical size labels. It exercises real parsing,
+  pipeline analysis, consumers, benchmark, sensitivity, publication,
+  reproducibility and asset copying. It does not establish real-data counts.
+  Its 4,500 method rows reconcile exact applicability denominators, votes,
+  union, disagreement and deterministic reasons; all 90 convergence groups
+  reconcile candidate counts. Gaussian fit diagnostics remain available.
+  Generated CSV and LaTeX artifacts contain no retired detector contract.
+  Source/output hashes and output coverage match the reproducibility
+  manifest. Electrical review remains incomplete.
+
+| Command | Result |
+| --- | --- |
+| `uv run pytest -q tests/test_convergence.py tests/test_defense_reporting.py tests/test_build_defense_evidence.py tests/test_prepare_defense_document.py tests/test_reproducibility.py tests/test_technical_review.py` | 45 passed, 76.03 s |
+| `uv run task format` | Passed; 170 files unchanged |
+| `uv run task lint` | Passed |
+| `uv run pytest -q` | 327 passed, 88.53 s; fresh orchestrator baseline of this unchanged software state |
+| `uv run task typecheck` | 0 errors, 0 warnings, 0 notes outside sandbox |
+| `git diff --check` | Passed |
+
+The full suite has four additional cases relative to T7.2's 323 tests: a
+v3-default check, complete synthetic publication integration, and two asset
+copier checks. Existing convergence and technical-review fixtures now use
+three criteria; no unrelated tests were deleted, skipped or disabled.
+These tests were already present in the inherited local work; no new RED
+claim is made in this verification pass.
+
+Inside the sandbox, BasedPyright could not discover installed site-packages
+and reported 183 missing-import errors, including Polars and Pytest. An
+explicit interpreter did not repair that environment failure. The exact
+Taskipy typecheck command passed when rerun outside the sandbox; no project
+configuration or diagnostic suppression was added.
+
+The formerly failing pipeline-to-matrix boundary now passes through the
+complete fixture publication path. T7.4 owns real-data regeneration and
+reconciliation; T7.5 owns manuscript publication and active guidance.
+
+**SPEC_DEVIATION:** None.
