@@ -1,8 +1,12 @@
 # Project State
 
-**Updated:** 2026-10-26
+**Updated:** 2026-10-27
 
 ## Decisions
+
+- 2026-10-27: The author authorized the next four readability tasks in
+  canonical dependency order: T1, T3, T4 and T5. Each was implemented by a
+  distinct sequential sub-agent, using local filesystem/shell tools.
 
 - 2026-10-26: The author clarified that three sigma belongs to the modeled
   statistical circuit breaker, not to a voltage anomaly detector. T7.1–T7.5
@@ -36,6 +40,15 @@
   `specs/features/thesis-defense-evidence/validation.md`.
 
 ## Completed software capability
+
+- READ-01/03/04/05: consolidated limitations, relocated audit logistics to
+  the appendix, separated theory paragraph roles and standardized terms,
+  acronym first uses and source-lineage semantics. T1 `ac16319`, T3
+  `f0467e5`, T4 `1a13400`; T5 is recorded with the terminology commit.
+  The current manuscript builds to 80 pages with affected-page visual review;
+  citations, inclusions, graphics, equations and labels are preserved.
+  Taskipy format/lint pass and 327 tests pass. Detailed task evidence:
+  `docs/research/thesis_readability_validation.md`.
 
 - READ-07: comparison uses applicable MAD, K-Means distance and DBSCAN noise
   only. Sigma thresholds, votes and overlays are retired; descriptive and
@@ -82,9 +95,9 @@
 
 ## Next actions
 
-- T1–T6 and T8–T12 in the readability feature remain planned. T7 does not
-  claim final whole-document layout acceptance; existing figure/table
-  presentation issues remain assigned to T10–T12.
+- Continue readability tasks in canonical order: T6 → T9 → T2 → T8,
+  followed by T10–T12. T1, T3, T4, T5 and T7 are verified; final
+  whole-document layout acceptance remains assigned to T12.
 - Obtain waveform data, repeat-simulation evidence, and a qualified
   independent electrical reviewer to close the technical review and move
   the causal conclusion out of "unresolved" — this is now the only

@@ -1,6 +1,7 @@
 # Thesis Readability and Sigma Correction Specification
 
-**Status:** Partially implemented — READ-07 verified; other requirements planned
+**Status:** Partially implemented — READ-01, READ-03, READ-04, READ-05
+and READ-07 verified; remaining requirements planned
 **Created:** 2026-10-26
 **Tasks:** [tasks.md](tasks.md)
 **Scope:** Nine original editorial proposals, including the correction of the
@@ -111,7 +112,9 @@ references; T7.5 publishes v3 assets and keeps `doc/` independently compilable.
 
 - The original planning deliverable did not authorize implementation. The
   author subsequently authorized T7.1–T7.5 and confirmed local tools and
-  sequential delegation; other tasks remain outside this execution scope.
+  sequential delegation. On 2026-10-27, the author authorized the next four
+  tasks in canonical order (T1, T3, T4, T5), each in a distinct sub-agent;
+  remaining tasks are outside this execution scope.
 - Do not execute new ATP simulations, alter raw model inputs, or claim
   independent electrical review.
 - Do not add causal labels, automatic deletion of extremes, insulation
@@ -172,7 +175,12 @@ regenerated from ten unchanged sources, all 609 output hashes were checked,
 327 tests passed, and the 80-page manuscript compiled with affected-page
 visual review. Detailed reconciliation and sigma-reference classification:
 `docs/research/thesis_sigma_correction_validation.md`.
-Other requirements remain planned; this does not complete T1–T6 or T8–T12.
+READ-01, READ-03, READ-04 and READ-05 are implemented and verified through
+T1, T3, T4 and T5 in canonical order, each by a distinct sequential agent.
+The current manuscript builds to 80 pages; preservation checks and affected
+rendered-page review are recorded in
+`docs/research/thesis_readability_validation.md`. T2, T6 and T8–T12 remain
+planned; final whole-document layout acceptance belongs to T12.
 T7.1–T7.4 have atomic commits, most recently `3d3d3ce`; T7.5 and task
 tracking are recorded with the manuscript commit after the author authorized
 retrying the interrupted staging operation. The generated `results/` package is

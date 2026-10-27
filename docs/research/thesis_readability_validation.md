@@ -149,3 +149,78 @@ scientific claims or commands are added, removed or reordered.
 - Required pre-commit Taskipy checks: format and lint pass with no Python
   changes; `uv run task test` reports 327 passed in 73.54 seconds, no
   failures or skips.
+
+
+## T5 — Terminology and acronym consistency (READ-05)
+
+Executed on 2026-10-27 after T4 `1a13400`, by the fourth distinct sequential
+implementation agent. This task changes manuscript terminology and task/state
+tracking only; software, raw inputs and published evidence remain unchanged.
+
+### Term inventory and first-use review
+
+| Term | Definition or editorial rule | First substantive location |
+| --- | --- | --- |
+| SRPI / CRPI | Without / with pre-insertion resistor; preserve actual switching scenario names | Section 3.6, before the first SRPI model-specific claim; acronym list |
+| P.U. | Por unidade, from *per unit*; ratio to the declared voltage base | Methodology opening; normalization heading and acronym list |
+| MAD | Desvio absoluto mediano, from *median absolute deviation* | Theory section 2.3; explicit formula remains in 4.6.3; acronym list |
+| AIC | Critério de informação de Akaike, from *Akaike information criterion* | Exploratory distribution-family comparison in 5.5.1; acronym list |
+| Computational routine | Implemented extraction, processing and analysis sequence | Introduction/objective/conclusion aligned; explicit inventory in 4.6.1 |
+| Model | Electrical network representation, or qualified statistical/clustering fit | 4.6.1 distinguishes these from the routine |
+| Analysis group / clustering partition | Comparable observations under declared keys / algorithm-produced partition | 4.6.1; English cluster/cluster(s) prose replaced with agrupamento(s) |
+| Candidate / applicability | Observation flagged by at least one applicable criterion / minimum calculation conditions satisfied | 4.6.1; non-applicability remains distinct from no candidates |
+| Source lineage | Configured provenance identifier, scenario plus sample count in this package | 4.6.1; distinct from file path, content digest and observation identity |
+| Centroide(s) | Standard Portuguese spelling without accent | Theory prose, schematic node labels, captions, methodology and results |
+| Parser / outliers / seed / hash / pipeline | Define leitor estruturado and valores atípicos at first substantive use; explain pseudo-random seed; use resumo SHA-256 and fluxo computacional | Objective, theory and methodology; technical file/field/label identifiers preserved |
+
+Acronym and symbol lists were reviewed; new acronym entries are ordered and
+fit one readable page. Existing symbols and electrical equations are intact.
+The abstract remains self-contained and spells out the resistor scenarios.
+
+### CodeNavi source-lineage verification
+
+The following current owners establish metadata semantics, rather than an
+inferred genealogical or independence relationship:
+
+- `scripts/build_defense_evidence.py:_run_source_phases()` constructs each
+  source lineage from lowercase scenario and sample size and records the
+  manifest's content digest separately.
+- `src/services/config.py:AnalysisConfig` declares contextual grouping as
+  scenario, source lineage, terminal and phase.
+- `src/services/preprocessing.py:extract_maxima()` preserves source file,
+  simulation, terminal and phase separately; a missing lineage defaults to
+  the file identifier in the generic preprocessing helper.
+- `src/services/controlled_benchmark_runner.py:_split_by_source_run_block()`
+  partitions whole lineage/simulation keys, preserving terminal/phase peers.
+
+The manuscript defines the actual package policy and does not claim that
+lineage proves independence or nested simulations. Technical code-location
+pointers stay here; no reproduction commands were moved back into the main
+argument. Existing notebook flow pointers were consulted; no duplicate
+notebook note is needed because this report now owns the terminology audit.
+
+### Verification
+
+- Editorial gate: `just build` passes, 80 physical PDF pages. The added
+  definitions move the methods/results boundary by one page; they are not
+  hidden by shrinking fonts. The final LaTeX log has no actual warnings,
+  undefined references/citations, missing files or overfull boxes.
+- Preservation comparison with T4: all 44 citation commands, 6 input
+  inclusions, 13 graphics, 12 equation blocks and 39 labels are identical.
+  Existing raw values, table assets and bibliography keys are unchanged.
+- Searches confirm no accented centroide spelling, standalone English
+  cluster/cluster(s), pipeline or hashes remains in authored prose. Existing
+  technical label identifiers containing cluster remain unchanged.
+- Physical PDF pages 9, 23–24, 27, 35–36, 39–41, 53 and 72 were rendered
+  and inspected. The acronym list and lineage definition were also inspected
+  individually at readable size. Captions, schematic labels, acronym first
+  uses and definitions fit without clipping. P.U. wording was refined to
+  “por unidade”; the affected acronym/methodology pages were rebuilt and
+  rechecked (physical PDF pages 9, 36–37). Printed page numbers are one lower
+  after front matter.
+- Required pre-commit Taskipy format and lint checks pass without changing
+  Python files; `uv run task test` reports 327 passed in 74.19 seconds,
+  with no failures or skips.
+- No SPEC_DEVIATION. T6 owns verb-tense alignment; T8 owns conclusion
+  restructuring; T9–T12 retain numeric, figure/table and integrated-layout
+  work. This task does not close pending electrical review.

@@ -368,16 +368,21 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 % DEVE SER PREENCHIDA A MÃO LEMBRE-SE DE MANTER EM ORDEM ALFABETICA.
 \begin{siglas}
   \item[ABNT] Associação Brasileira de Normas Técnicas
+  \item[AIC] Critério de informação de Akaike
   \item[ANAFAS] Programa de Análise de Faltas Simultâneas
   \item[ANAREDE] Programa de Análise de Redes Elétricas
   \item[ATP] \textit{Alternative Transients Program}
   \item[ATPDraw] Interface gráfica para elaboração de modelos do ATP
+  \item[CRPI] Com resistor de pré-inserção
   \item[DBSCAN] \textit{Density-Based Spatial Clustering of Applications with Noise}
   \item[EMTP] \textit{Electromagnetic Transients Program}
   \item[IA] Inteligência Artificial
   \item[LT] Linha de transmissão
+  \item[MAD] Desvio absoluto mediano (\textit{median absolute deviation})
   \item[ONS] Operador Nacional do Sistema Elétrico
   \item[PAR/PEL] Plano da Operação Elétrica de Médio Prazo
+  \item[P.U.] Por unidade (\textit{per unit})
+  \item[SRPI] Sem resistor de pré-inserção
 \end{siglas}
 % ---
 
@@ -463,7 +468,7 @@ A contribuição deste trabalho consiste em desenvolver uma rotina computacional
 \subsection{Objetivo geral}
 
 
-Desenvolver um modelo computacional para automatizar a extração, o tratamento estatístico, a análise probabilística e a classificação de dados provenientes de simulações computacionais e estatísticas realizadas no ATP, com foco na identificação de anomalias e valores extremos em manobras de energização de linhas de transmissão.
+Desenvolver uma rotina computacional para automatizar a extração, o tratamento estatístico, a análise probabilística e a classificação de dados provenientes de simulações computacionais e estatísticas realizadas no ATP, com foco na identificação de anomalias e valores extremos em manobras de energização de linhas de transmissão.
 
 
 \subsection{Objetivos específicos}
@@ -473,7 +478,7 @@ Para alcançar o objetivo geral, são definidos os seguintes objetivos específi
 
 
 \begin{itemize}
-\item Implementar um \textit{parser} computacional para extração automática dos dados brutos presentes nos arquivos estatísticos gerados pelo ATP.
+\item Implementar um leitor estruturado (\textit{parser}) para extração automática dos dados brutos presentes nos arquivos estatísticos gerados pelo ATP.
 
 
 \item Organizar e estruturar os dados extraídos em formato adequado para análise computacional, possibilitando o tratamento das informações referentes às sobretensões máximas observadas nas fases do sistema.
@@ -602,7 +607,7 @@ A partir dos dados extraídos dos arquivos do ATP, a análise estatística permi
 
 Medidas como média, desvio padrão, mínimo, máximo, quartis e percentis são importantes para compreender o comportamento geral das tensões simuladas. A média fornece uma medida representativa do conjunto analisado, enquanto o desvio padrão expressa o grau de dispersão dos dados em relação a essa média.
 
-O ajuste de uma distribuição normal descreve uma referência probabilística cuja adequação deve ser examinada, pois máximos de tensão não são necessariamente gaussianos. A média e o desvio padrão descrevem posição e dispersão; a identificação de candidatos neste trabalho utiliza critérios explícitos de MAD, distância do K-Means e ruído do DBSCAN, apresentados na metodologia.
+O ajuste de uma distribuição normal descreve uma referência probabilística cuja adequação deve ser examinada, pois máximos de tensão não são necessariamente gaussianos. A média e o desvio padrão descrevem posição e dispersão; a identificação de candidatos neste trabalho utiliza critérios explícitos de desvio absoluto mediano (MAD, do inglês \textit{median absolute deviation}), distância do K-Means e ruído do DBSCAN, apresentados na metodologia.
 
 Como complemento, podem ser utilizados quartis, percentis e a amplitude interquartil, conhecida como IQR, definida por
 
@@ -628,7 +633,7 @@ IC_{\hat{p}} = \hat{p} \pm z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{N}},
 \end{equation}
 em que $\hat{p}$ representa a proporção estimada, $z_{\alpha/2}$ é o valor crítico da distribuição normal padrão e $N$ é o número total de observações.
 
-A identificação de \textit{outliers}, entretanto, deve ser conduzida com cautela, pois valores discrepantes podem ter diferentes origens e interpretações, não sendo necessariamente erros ou observações inválidas \cite{barnett1994}. Em aplicações de sistemas elétricos, um valor extremo pode representar um evento fisicamente relevante, uma condição operacional rara, um comportamento transitório específico ou, ainda, um desvio associado ao processo numérico da simulação. Portanto, a análise estatística e probabilística deve ser combinada com visualização de dados, interpretação física e métodos computacionais de identificação de padrões.
+A identificação de valores atípicos (\textit{outliers}), entretanto, deve ser conduzida com cautela, pois valores discrepantes podem ter diferentes origens e interpretações, não sendo necessariamente erros ou observações inválidas \cite{barnett1994}. Em aplicações de sistemas elétricos, um valor extremo pode representar um evento fisicamente relevante, uma condição operacional rara, um comportamento transitório específico ou, ainda, um desvio associado ao processo numérico da simulação. Portanto, a análise estatística e probabilística deve ser combinada com visualização de dados, interpretação física e métodos computacionais de identificação de padrões.
 
 \section{Visualização de dados e análise exploratória}
 
@@ -638,7 +643,7 @@ Entre as formas mais utilizadas de visualização está a nuvem de pontos, ou \t
 
 No contexto deste trabalho, cada ponto pode representar uma simulação, uma fase monitorada, um ponto de medição ou uma combinação de atributos extraídos dos arquivos do ATP. Essa representação permite observar concentrações de valores, regiões de dispersão, possíveis agrupamentos e pontos isolados.
 
-A Figura~\ref{fig:nuvem-clusters-anomalias} apresenta uma representação esquemática de uma nuvem de pontos com agrupamentos e possíveis observações anômalas. Os centróides representam os centros dos grupos, conceito associado a métodos particionais como o K-Means, enquanto os pontos afastados das regiões de maior concentração podem ser analisados como candidatos a valores atípicos.
+A Figura~\ref{fig:nuvem-clusters-anomalias} apresenta uma representação esquemática de uma nuvem de pontos com agrupamentos e possíveis observações anômalas. Os centroides representam os centros dos grupos, conceito associado a métodos particionais como o K-Means, enquanto os pontos afastados das regiões de maior concentração podem ser analisados como candidatos a valores atípicos.
 
 No presente trabalho, a visualização por nuvem de pontos será utilizada como ferramenta de apoio à análise das sobretensões máximas obtidas nas simulações. Antes da aplicação dos algoritmos, ela permite observar a distribuição geral dos dados e identificar visualmente concentrações ou valores extremos. Após a aplicação dos métodos estatísticos e de aprendizagem de máquina, contribui para interpretar os agrupamentos formados e a posição dos pontos classificados como possíveis anomalias.
 
@@ -678,9 +683,9 @@ No presente trabalho, a visualização por nuvem de pontos será utilizada como 
 \filldraw[black] (6.1,4.0) circle (3pt);
 \filldraw[black] (7.0,1.4) circle (3pt);
 
-\node[above left] at (2.1,1.95) {\small centróide};
-\node[above] at (6.1,4.0) {\small centróide};
-\node[below] at (7.0,1.4) {\small centróide};
+\node[above left] at (2.1,1.95) {\small centroide};
+\node[above] at (6.1,4.0) {\small centroide};
+\node[below] at (7.0,1.4) {\small centroide};
 
 % Possíveis anomalias
 \fill[red!80!black] (3.8,5.0) circle (2.5pt);
@@ -727,26 +732,26 @@ No caso das sobretensões obtidas em manobras de energização de linhas de tran
 
 O K-Means é um algoritmo clássico de clusterização não supervisionada. O método foi introduzido por MacQueen \cite{macqueen1967}, no contexto da classificação e análise de observações multivariadas, com o objetivo de particionar uma população ou amostra em $k$ conjuntos com baixa variabilidade interna. Posteriormente, o procedimento iterativo de atribuição de pontos aos representantes mais próximos e atualização desses representantes foi associado ao algoritmo de Lloyd, originalmente formulado no contexto de quantização por mínimos quadrados \cite{lloyd1982}.
 
-O K-Means divide um conjunto de dados em $k$ agrupamentos, sendo $k$ definido previamente pelo usuário. Cada agrupamento é representado por um centróide, calculado como a média das observações pertencentes ao grupo. O algoritmo alterna duas etapas principais: atribuição de cada ponto ao centróide mais próximo e atualização dos centróides com base na média dos pontos atribuídos a cada grupo. Esse processo se repete até a estabilização dos agrupamentos. Matematicamente, o K-Means procura minimizar a soma das distâncias quadráticas entre cada observação e o centróide do grupo ao qual ela pertence:
+O K-Means divide um conjunto de dados em $k$ agrupamentos, sendo $k$ definido previamente pelo usuário. Cada agrupamento é representado por um centroide, calculado como a média das observações pertencentes ao grupo. O algoritmo alterna duas etapas principais: atribuição de cada ponto ao centroide mais próximo e atualização dos centroides com base na média dos pontos atribuídos a cada grupo. Esse processo se repete até a estabilização dos agrupamentos. Matematicamente, o K-Means procura minimizar a soma das distâncias quadráticas entre cada observação e o centroide do grupo ao qual ela pertence:
 
 \begin{equation}
 J = \sum_{j=1}^{k} \sum_{x_i \in C_j} |x_i - \mu_j|^2,
 \end{equation}
-em que $C_j$ representa o $j$-ésimo agrupamento, $\mu_j$ é o centróide desse agrupamento e $x_i$ representa uma observação da base de dados \cite{bishop2006}.
+em que $C_j$ representa o $j$-ésimo agrupamento, $\mu_j$ é o centroide desse agrupamento e $x_i$ representa uma observação da base de dados \cite{bishop2006}.
 
 Mahon e Lapata \cite{mahon2025} destacam que, apesar de sua simplicidade, o K-Means permanece como um dos algoritmos de clusterização mais utilizados, devido à sua rapidez, à garantia de convergência, à existência de um parâmetro de fácil interpretação e ao desempenho competitivo em relação a métodos mais complexos.
 
-Entretanto, os autores também ressaltam como limitação a necessidade de definir previamente o número de clusters $k$. Essa limitação é relevante para este trabalho, pois, em bases de dados provenientes de simulações de transitórios eletromagnéticos, nem sempre se conhece previamente a quantidade ideal de padrões ou grupos de comportamento existentes.
+Entretanto, os autores também ressaltam como limitação a necessidade de definir previamente o número de agrupamentos $k$. Essa limitação é relevante para este trabalho, pois, em bases de dados provenientes de simulações de transitórios eletromagnéticos, nem sempre se conhece previamente a quantidade ideal de padrões ou grupos de comportamento existentes.
 
-Mahon e Lapata \cite{mahon2025} apresentam uma aplicação baseada em métodos de clusterização associados ao K-Means, observada na Figura~\ref{fig:kmeans-mahon}. A figura apresenta dados sintéticos com 20 agrupamentos em diferentes níveis de separação entre os centróides. À esquerda, os grupos estão mais sobrepostos; ao centro, apresentam separação intermediária; à direita, encontram-se mais bem definidos.
+Mahon e Lapata \cite{mahon2025} apresentam uma aplicação baseada em métodos de clusterização associados ao K-Means, observada na Figura~\ref{fig:kmeans-mahon}. A figura apresenta dados sintéticos com 20 agrupamentos em diferentes níveis de separação entre os centroides. À esquerda, os grupos estão mais sobrepostos; ao centro, apresentam separação intermediária; à direita, encontram-se mais bem definidos.
 
-Essa representação evidencia que o desempenho de métodos baseados em centróides depende da distribuição dos dados no espaço de atributos. Quando os grupos são compactos e bem separados, a identificação dos agrupamentos tende a ser mais clara. Entretanto, quando há sobreposição, dispersão elevada ou proximidade entre centróides, a clusterização torna-se mais sensível à escolha de $k$, à inicialização dos centróides e ao pré-processamento dos dados.
+Essa representação evidencia que o desempenho de métodos baseados em centroides depende da distribuição dos dados no espaço de atributos. Quando os grupos são compactos e bem separados, a identificação dos agrupamentos tende a ser mais clara. Entretanto, quando há sobreposição, dispersão elevada ou proximidade entre centroides, a clusterização torna-se mais sensível à escolha de $k$, à inicialização dos centroides e ao pré-processamento dos dados.
 
-No presente trabalho, o K-Means será utilizado como ferramenta exploratória para verificar se as sobretensões máximas obtidas nas simulações se organizam em grupos de comportamento semelhante. Pontos muito distantes dos centróides ou pertencentes a grupos pouco representativos podem ser analisados como possíveis candidatos a anomalias.
+No presente trabalho, o K-Means será utilizado como ferramenta exploratória para verificar se as sobretensões máximas obtidas nas simulações se organizam em grupos de comportamento semelhante. Pontos muito distantes dos centroides ou pertencentes a grupos pouco representativos podem ser analisados como possíveis candidatos a anomalias.
 
 \begin{figure}[htbp]
 \centering
-\caption{Aplicação de clusterização baseada em K-Means em dados sintéticos com 20 agrupamentos e diferentes níveis de separação entre centróides.}
+\caption{Aplicação de clusterização baseada em K-Means em dados sintéticos com 20 agrupamentos e diferentes níveis de separação entre centroides.}
 \label{fig:kmeans-mahon}
 \includegraphics[width=\textwidth]{kmeans.jpg}
 
@@ -755,7 +760,7 @@ No presente trabalho, o K-Means será utilizado como ferramenta exploratória pa
 
 \subsection{DBSCAN}
 
-O DBSCAN, sigla para \textit{Density-Based Spatial Clustering of Applications with Noise}, foi proposto por Ester et al. \cite{ester1996} para identificar agrupamentos em grandes bases de dados espaciais com presença de ruído. Diferentemente do K-Means, o DBSCAN não exige a definição prévia do número de grupos. O método baseia-se na densidade local dos pontos, permitindo identificar clusters com formatos arbitrários e classificar como ruído os pontos localizados em regiões pouco densas.
+O DBSCAN, sigla para \textit{Density-Based Spatial Clustering of Applications with Noise}, foi proposto por Ester et al. \cite{ester1996} para identificar agrupamentos em grandes bases de dados espaciais com presença de ruído. Diferentemente do K-Means, o DBSCAN não exige a definição prévia do número de grupos. O método baseia-se na densidade local dos pontos, permitindo identificar agrupamentos com formatos arbitrários e classificar como ruído os pontos localizados em regiões pouco densas.
 
 O algoritmo utiliza dois parâmetros principais: $\varepsilon$, que define o raio de vizinhança ao redor de um ponto, e \textit{MinPts}, que indica o número mínimo de pontos necessário para que uma região seja considerada densa. A vizinhança de raio $\varepsilon$ de um ponto $p$ é definida por
 
@@ -766,9 +771,9 @@ em que $D$ representa a base de dados e $dist(p,q)$ corresponde à função de d
 
 Com base nessa vizinhança, os pontos são classificados como centrais, de borda ou ruído. Um ponto central possui pelo menos \textit{MinPts} observações em sua vizinhança. Um ponto de borda não possui vizinhos suficientes para ser central, mas está localizado na vizinhança de um ponto central. Um ponto de ruído não é central e não pertence à vizinhança de nenhum ponto central.
 
-O funcionamento do DBSCAN ocorre pela expansão de agrupamentos: inicialmente, o algoritmo seleciona um ponto ainda não visitado e verifica sua vizinhança; se o ponto satisfaz a condição de ponto central, inicia-se um novo cluster, incorporando todos os pontos direta ou indiretamente alcançáveis por densidade; caso contrário, o ponto pode ser classificado como ruído. O processo é repetido até que todos os pontos da base tenham sido avaliados.
+O funcionamento do DBSCAN ocorre pela expansão de agrupamentos: inicialmente, o algoritmo seleciona um ponto ainda não visitado e verifica sua vizinhança; se o ponto satisfaz a condição de ponto central, inicia-se um novo agrupamento, incorporando todos os pontos direta ou indiretamente alcançáveis por densidade; caso contrário, o ponto pode ser classificado como ruído. O processo é repetido até que todos os pontos da base tenham sido avaliados.
 
-Mumtaz e Duraiswamy \cite{mumtaz2010} comparam o desempenho do DBSCAN, do K-Means e dos Mapas Auto-Organizáveis de Kohonen, conhecidos como SOM, em bases sintéticas espaciais. A comparação evidencia que o DBSCAN apresenta melhor desempenho em conjuntos de dados com formatos arbitrários, não convexos e estruturas espiraladas. Enquanto o K-Means tende a separar os dados em grupos influenciados pela proximidade aos centróides, o DBSCAN preserva melhor a forma natural dos agrupamentos, pois sua definição de cluster depende da densidade local dos pontos. A Figura~\ref{fig:dbscan-comparacao} apresenta uma comparação entre os resultados de clusterização obtidos por SOM, K-Means e DBSCAN em bases sintéticas bidimensionais.
+Mumtaz e Duraiswamy \cite{mumtaz2010} comparam o desempenho do DBSCAN, do K-Means e dos Mapas Auto-Organizáveis de Kohonen, conhecidos como SOM, em bases sintéticas espaciais. A comparação evidencia que o DBSCAN apresenta melhor desempenho em conjuntos de dados com formatos arbitrários, não convexos e estruturas espiraladas. Enquanto o K-Means tende a separar os dados em grupos influenciados pela proximidade aos centroides, o DBSCAN preserva melhor a forma natural dos agrupamentos, pois sua definição de agrupamento depende da densidade local dos pontos. A Figura~\ref{fig:dbscan-comparacao} apresenta uma comparação entre os resultados de clusterização obtidos por SOM, K-Means e DBSCAN em bases sintéticas bidimensionais.
 
 Essa característica é importante para a detecção de anomalias, pois o DBSCAN não força todos os pontos a pertencerem a algum grupo. Pontos situados em regiões de baixa densidade podem ser classificados como ruído, tornando o método adequado para identificar observações que não seguem o comportamento predominante da base de dados.
 
@@ -785,7 +790,7 @@ Entretanto, uma observação classificada como ruído não deve ser descartada a
 \legend{Fonte: adaptado de \citeauthoronline{mumtaz2010}, \citeyear{mumtaz2010}, reproduzido em documento da Biblioteca Digital Maxwell/PUC-Rio \citeauthoronline{maxwell2014}, \citeyear{maxwell2014}.}
 \end{figure}
 
-Apesar de suas vantagens, o DBSCAN apresenta limitações. A escolha inadequada de $\varepsilon$ ou de \textit{MinPts} pode levar à fragmentação excessiva dos agrupamentos ou à classificação indevida de muitos pontos como ruído. Além disso, quando os dados apresentam regiões com densidades muito diferentes, o uso de parâmetros globais pode dificultar a identificação correta dos clusters. Por isso, sua aplicação deve ser acompanhada de análise exploratória, visualização gráfica e validação técnica.
+Apesar de suas vantagens, o DBSCAN apresenta limitações. A escolha inadequada de $\varepsilon$ ou de \textit{MinPts} pode levar à fragmentação excessiva dos agrupamentos ou à classificação indevida de muitos pontos como ruído. Além disso, quando os dados apresentam regiões com densidades muito diferentes, o uso de parâmetros globais pode dificultar a identificação correta dos agrupamentos. Por isso, sua aplicação deve ser acompanhada de análise exploratória, visualização gráfica e validação técnica.
 
 Com base nos conceitos apresentados, observa-se que a análise de sobretensões transitórias em manobras de energização exige a integração entre conhecimento físico do sistema elétrico, simulação computacional, tratamento estatístico, análise probabilística e técnicas de reconhecimento de padrões. O ATP fornece os dados necessários para representar diferentes condições de operação, enquanto a estatística e a visualização auxiliam na compreensão da distribuição dos valores máximos obtidos. Os algoritmos de clusterização, por sua vez, podem apoiar a identificação de comportamentos predominantes e de observações discrepantes. Essa fundamentação sustenta a etapa metodológica do trabalho, na qual serão definidos os procedimentos de extração, organização, análise probabilística e classificação das sobretensões simuladas.
 
@@ -982,6 +987,9 @@ conjunto de valores máximos de tensão. O modelo também permite comparar
 configurações com e sem resistor de pré-inserção, além de diferentes
 representações da rede equivalente.
 
+Os cenários são denominados sem resistor de pré-inserção (SRPI) e com
+resistor de pré-inserção (CRPI).
+
 O caso completo SRPI com 10.000 simulações utiliza o parâmetro de três
 desvios padrão na configuração do chaveamento estatístico do modelo de entrada;
 não define um limiar para as tensões máximas de saída. A análise dos
@@ -1009,7 +1017,7 @@ simulações estatísticas, arquivos de saída e base tabular analisada em Pytho
 Este capítulo apresenta os procedimentos computacionais utilizados para
 transformar as saídas do ATP em uma base tabular rastreável. A sequência
 compreende a extração dos máximos, a definição da unidade de observação, a
-normalização em P.U. e a verificação da integridade e da limpeza dos dados.
+normalização por unidade (P.U., do inglês \textit{per unit}) e a verificação da integridade e da limpeza dos dados.
 São descritos os critérios de validação dessas etapas; os resultados das
 verificações são apresentados no Capítulo~\ref{chap:results}.
 
@@ -1053,7 +1061,7 @@ simulações, pois sua identidade permanece no caminho de origem. A inclusão de
 novos cenários exige conferir previamente quais terminais e fases são esperados
 nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 
-\section{Normalização em unidade por unidade}
+\section{Normalização por unidade}
 \label{sec:per-unit-validation}
 
 Para a referência nominal de 138~kV de tensão eficaz entre fases, as bases
@@ -1179,6 +1187,26 @@ calculada sobre todas as observações que passaram pela validação de
 integridade; uma indicação analítica de anomalia não remove automaticamente o
 registro nem altera os denominadores.
 
+Neste trabalho, rotina computacional designa a sequência implementada de
+extração, tratamento e análise. Modelo elétrico designa a representação da
+rede no ATP; modelo estatístico ou de agrupamento designa o ajuste usado
+na análise dos dados. Um grupo de análise reúne observações comparáveis
+segundo as chaves declaradas; um agrupamento é uma partição dessas
+observações produzida pelo algoritmo. Candidato a anomalia é uma observação
+sinalizada por pelo menos um critério aplicável. Aplicabilidade indica se
+as condições mínimas do cálculo foram satisfeitas; um resultado não
+aplicável não equivale à ausência de candidatos.
+
+A linhagem da fonte é o identificador de procedência configurado no campo
+\texttt{source\_lineage}. No pacote analisado, combina cenário em letras
+minúsculas e quantidade de simulações, como \texttt{srpi-10000}. Esse campo
+separa fontes na calibração dos detectores e na divisão dos ensaios
+controlados. Ele difere do nome do arquivo e do resumo SHA-256, que
+identificam a entrada e permitem conferir seu conteúdo; não comprova
+independência nem inclusão entre simulações de arquivos distintos. A
+identidade de cada observação continua definida por arquivo, simulação,
+terminal e fase.
+
 A validação é dividida em quatro camadas. A validade dos dados verifica
 extração, identidade, normalização e limpeza. A validade estatística examina
 medidas descritivas, probabilidades, incerteza e adequação de modelos. A
@@ -1232,7 +1260,7 @@ apenas como comparação qualificada, sem participar da votação de
 candidatos a anomalias.
 
 Como referência robusta, também se calcula o escore baseado na mediana e no
-desvio absoluto mediano, ou MAD:
+desvio absoluto mediano (MAD):
 \begin{equation}
 z_{MAD}=0{,}67448975\,
 \frac{x-\operatorname{mediana}(x)}
@@ -1245,23 +1273,25 @@ contribuem para concordância entre métodos.
 \subsection{Evidência contextual de K-Means e DBSCAN}
 \label{sec:metodo-anomalias}
 
-Os modelos operam separadamente por cenário, linhagem da fonte, terminal e
+Os modelos de agrupamento são ajustados separadamente por cenário,
+linhagem da fonte, terminal e
 fase. Essa separação evita que diferenças ordinárias de posição ao longo da
 linha ou assimetrias entre fases sejam convertidas em anomalias. O atributo
 numérico utilizado é $V_{pu}$. Nesta análise exploratória, todos os valores
 de cada grupo participam da calibração da escala e do ajuste dos modelos;
 não há conjunto independente de teste. As configurações e as sementes
-aleatórias são registradas para reprodução. A avaliação geométrica usa
+aleatórias, valores que controlam a inicialização dos procedimentos
+pseudoaleatórios, são registradas para reprodução. A avaliação geométrica usa
 o mesmo atributo em P.U.; em uma dimensão, a mudança linear de escala
 não altera os dois índices considerados.
 
 No K-Means, os rótulos identificam somente a pertença descritiva aos grupos.
-Nem o maior rótulo nem o agrupamento de maior centróide constitui, por si só,
+Nem o maior rótulo nem o agrupamento de maior centroide constitui, por si só,
 evidência de anomalia. Para cada observação, calcula-se a distância ao
-centróide atribuído no espaço padronizado. O critério explícito é a distância
+centroide atribuído no espaço padronizado. O critério explícito é a distância
 estritamente superior ao percentil 99 das distâncias do conjunto de
-calibração. O relatório preserva número de grupos, estado aleatório,
-centróides, escore, limiar, regra de escala, chave do grupo e identificador da
+calibração. O relatório preserva número de grupos, semente aleatória,
+centroides, escore, limiar, regra de escala, chave do grupo e identificador da
 configuração. Assim, um agrupamento denso de tensões elevadas pode permanecer
 inteiramente válido.
 
@@ -1287,8 +1317,8 @@ de Davies--Bouldin \cite{rousseeuw1987,davies1979}. O primeiro cresce quando as 
 coesas dentro de seus grupos e mais separadas dos demais; no segundo, valores
 menores indicam grupos mais compactos e afastados. No DBSCAN, os pontos
 rotulados como ruído são excluídos antes do cálculo, pois não pertencem a um
-cluster. As métricas são declaradas não aplicáveis quando há menos de dois
-clusters retidos ou quando algum cluster possui apenas uma observação. O
+agrupamento. As métricas são declaradas não aplicáveis quando há menos de dois
+agrupamentos retidos ou quando algum agrupamento possui apenas uma observação. O
 artefato \texttt{clustering\_comparison.csv} registra contagens, exclusões,
 escores, aplicabilidade e motivo. Esses índices descrevem a geometria da
 partição no atributo $V_{pu}$, conforme a separação das camadas de validade
@@ -1308,13 +1338,13 @@ Essa partição exploratória não equivale a um diagnóstico de anomalia e
 não participa da votação dos três critérios de detecção.
 
 Para cada observação, Silhouette compara a distância média ao próprio
-cluster, $a(i)$, com a menor distância média a outro cluster, $b(i)$:
+agrupamento, $a(i)$, com a menor distância média a outro agrupamento, $b(i)$:
 \begin{equation}
 s(i)=\frac{b(i)-a(i)}{\max\{a(i),b(i)\}}.
 \end{equation}
 O escore da partição é a média de $s(i)$, entre $-1$ e $1$.
-Davies--Bouldin mede, para cada cluster, a pior razão entre dispersões
-internas e distância entre centróides, calculando a média dessas razões.
+Davies--Bouldin mede, para cada agrupamento, a pior razão entre dispersões
+internas e distância entre centroides, calculando a média dessas razões.
 Silhouette maior e Davies--Bouldin menor favorecem separação geométrica.
 Nenhum deles estima probabilidade de erro numérico.
 
@@ -1323,7 +1353,7 @@ três fases e três métodos: 270 registros. No DBSCAN, o denominador dos
 índices exclui o ruído; nos demais métodos, inclui todos os pontos com
 rótulo. Logo, uma classificação direta dos métodos exige conferir também
 as contagens retidas e excluídas. A política adotada registra índices como
-não aplicáveis quando há um único cluster ou algum cluster unitário;
+não aplicáveis quando há um único agrupamento ou algum agrupamento unitário;
 essa política é mais restritiva que a definição usual de Silhouette.
 A síntese apresenta medianas entre grupos aplicáveis e a quantidade desses
 grupos, sem substituir valores ausentes por zero. O crescimento de $N$
@@ -1342,7 +1372,7 @@ alterado são registrados em manifesto próprio.
 
 A separação entre desenvolvimento e avaliação é feita conjuntamente por
 linhagem da fonte e identidade da simulação, mantendo fases e terminais da
-mesma execução no mesmo subconjunto. Escalas, centróides e limiares são
+mesma execução no mesmo subconjunto. Escalas, centroides e limiares são
 ajustados somente no desenvolvimento. Para cada família, intensidade e
 método, relatam-se primeiro verdadeiros positivos, falsos positivos,
 verdadeiros negativos e falsos negativos; em seguida, precisão, revocação,
@@ -1439,7 +1469,7 @@ cenário SRPI e CRPI, que
 produziram 204.300 observações escalares em dez arquivos. Cada simulação
 declarada continha todas as nove combinações esperadas de terminal e fase, com
 chaves compostas únicas, incluindo as três fases restauradas em
-\texttt{T\_OPO} no CRPI. Todos os hashes de entrada coincidiram. Os 60 pares
+\texttt{T\_OPO} no CRPI. Todos os resumos SHA-256 de entrada coincidiram. Os 60 pares
 de tensão/tempo da fase A, transcritos independentemente das primeiras e
 últimas execuções, coincidiram exatamente sob o mapeamento $|V|/112677$.
 A justificativa elétrica dessa base é apresentada na
@@ -1467,7 +1497,7 @@ resumos em P.U. do ATP, dentro de $10^{-7}$~P.U., sustentando a base e a
 convenção de módulo na precisão impressa. As comparações individuais utilizam
 a primeira e a última execução de cada arquivo, com pontos de verificação da
 fase A nos três terminais. As referências com sinal foram transcritas
-independentemente do LIS e seus hashes SHA-256 foram verificados antes do
+independentemente do LIS e seus resumos SHA-256 foram verificados antes do
 processamento. As razões esperadas foram calculadas com aritmética Decimal e
 comparadas com os valores relidos do CSV gerado. Todas as 204300 observações
 foram exportadas e relidas. Os três exemplos da Tabela~\ref{tab:pu-validation}
@@ -1645,7 +1675,9 @@ em $N=50$ não comprovam normalidade.
 
 Uma comparação exploratória adicional ajustou as famílias normal,
 gama e lognormal por máxima verossimilhança, com localização estimada,
-em cada grupo. No CRPI, o menor AIC selecionou gama em 27 grupos e
+em cada grupo. A seleção utiliza o critério de informação de Akaike
+(AIC, do inglês \textit{Akaike information criterion}). No CRPI, o menor
+AIC selecionou gama em 27 grupos e
 lognormal em 18; no SRPI, selecionou normal em 29, gama em 13 e
 lognormal em três. Os 270 ajustes e suas decisões relativas estão
 catalogados no Apêndice~\ref{app:pacote-evidencias}.
@@ -1670,7 +1702,7 @@ A versão v3 reúne os índices internos das partições efetivamente produzidas
 pelo fluxo, sem reajustar os modelos para maximizar os escores. A
 Tabela~\ref{tab:cluster-summary} sintetiza os resultados dos nove grupos
 terminal--fase de cada cenário e tamanho amostral. Os 270 registros
-individuais, incluindo número de clusters, quantidade de observações,
+individuais, incluindo número de agrupamentos, quantidade de observações,
 ruído excluído e motivos de não aplicabilidade, permanecem disponíveis no
 registro detalhado indicado no Apêndice~\ref{app:pacote-evidencias}.
 DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
@@ -1694,8 +1726,8 @@ separação obtida sob essa restrição: mesmo uma distribuição contínua sem
 duas populações físicas pode ser dividida em dois conjuntos. Assim,
 um Silhouette elevado e um Davies--Bouldin reduzido sustentam a coesão
 da partição no espaço de tensão, mas não comprovam duas classes de
-fenômenos elétricos nem identificam o cluster de maior centróide como erro.
-O detector por distância ao centróide é uma evidência distinta dos rótulos
+fenômenos elétricos nem identificam o agrupamento de maior centroide como erro.
+O detector por distância ao centroide é uma evidência distinta dos rótulos
 utilizados nos índices internos.
 
 No SRPI, a mediana de Silhouette dos nove grupos passa de 0,6491 em
@@ -1703,12 +1735,12 @@ $N=50$ para 0,6258 em $N=10\,000$, enquanto a mediana de
 Davies--Bouldin passa de 0,4499 para 0,5032. Em $N=100$, Silhouette
 atinge 0,6770, evidenciando comportamento não monotônico. O aumento
 amostral, portanto, não melhora automaticamente a separação interna
-produzida pelo mesmo número de centróides.
+produzida pelo mesmo número de centroides.
 
 \subsection{DBSCAN: densidade, ruído e aplicabilidade dos índices}
 
-O DBSCAN admite quantidade variável de clusters e pontos de ruído.
-Quando mantém apenas um cluster após excluir o ruído, o detector ainda
+O DBSCAN admite quantidade variável de agrupamentos e pontos de ruído.
+Quando mantém apenas um agrupamento após excluir o ruído, o detector ainda
 pode estar aplicável, embora Silhouette e Davies--Bouldin sejam não
 aplicáveis. Portanto, ausência de escore não equivale a falha de execução
 nem a desempenho inferior ao K-Means. Nos grupos com índices calculáveis,
@@ -1718,7 +1750,7 @@ Uma mediana calculada em poucos grupos também não representa os nove
 grupos de um cenário com a mesma abrangência da mediana do K-Means.
 
 No CRPI, terminal $T_{MAN}$, fase A, $N=50$, ambos os métodos produzem
-dois clusters. O K-Means apresenta Silhouette de 0,8063 e
+dois agrupamentos. O K-Means apresenta Silhouette de 0,8063 e
 Davies--Bouldin de 0,2893, utilizando os 50 valores. O DBSCAN apresenta
 0,8054 e 0,2616, respectivamente, mas utiliza 49 valores após excluir
 um ponto de ruído. O segundo índice é menor no DBSCAN, enquanto
@@ -1729,8 +1761,8 @@ superioridade geral de detecção.
 \subsection{Método hierárquico: cauda superior separada por lacuna}
 
 A regra hierárquica procura uma cauda superior pequena e afastada,
-conforme os limiares da metodologia. Um único cluster significa que não
-foi encontrada separação suficiente; dois clusters podem incluir apenas
+conforme os limiares da metodologia. Um único agrupamento significa que não
+foi encontrada separação suficiente; dois agrupamentos podem incluir apenas
 um ponto na cauda, situação excluída pela política de avaliação. Essa
 restrição evita tratar um extremo isolado como evidência geométrica
 robusta de uma população. O método tem finalidade distinta da divisão
@@ -1740,7 +1772,7 @@ não representa essa regra de seleção e não fundamenta sua avaliação.
 
 Uma comparação sobre a mesma população ilustra a divergência entre
 índices: no CRPI, terminal $T_{OPO}$, fase A, $N=200$, ambos os métodos
-hierárquico e K-Means utilizam as 200 observações e dois clusters.
+hierárquico e K-Means utilizam as 200 observações e dois agrupamentos.
 O hierárquico apresenta Silhouette de 0,5444 e Davies--Bouldin de
 0,3182; o K-Means apresenta 0,7127 e 0,4065. Silhouette favorece
 K-Means, enquanto Davies--Bouldin favorece a regra hierárquica.
@@ -1800,7 +1832,7 @@ da metodologia, e cobrem as 204.300 observações do pacote.
 No grupo de referência $T_{OPO}$, fase A, $N=10\,000$, o
 escore robusto MAD sinalizou 109 observações no CRPI (1,09\%) e 852 no SRPI
 (8,52\%). O K-Means, aplicável nos dois cenários, sinalizou 99 observações
-em cada um por distância ao centróide acima do percentil 99 da
+em cada um por distância ao centroide acima do percentil 99 da
 calibração; nesse mesmo grupo, todas as 99 observações sinalizadas pelo
 K-Means coincidem com observações também sinalizadas pelo MAD. O DBSCAN foi
 aplicável nos dois cenários, mas não classificou nenhuma observação como
@@ -1948,7 +1980,7 @@ literatura.
 O objetivo de desenvolver uma rotina computacional reprodutível que integre
 extração, tratamento, análise estatística, análise probabilística, detecção
 de anomalias e apresentação dos resultados é atendido no escopo computacional: o
-pipeline integrado, o manifesto de reprodutibilidade e as tabelas e figuras
+fluxo computacional integrado, o manifesto de reprodutibilidade e as tabelas e figuras
 deste capítulo foram gerados de forma automática e rastreável a partir dos
 dez arquivos declarados, conforme o manifesto de reprodutibilidade
 catalogado no Apêndice~\ref{app:pacote-evidencias}, incluindo o ensaio controlado com
@@ -2001,13 +2033,13 @@ nos limites de escopo da Seção~\ref{sec:escopo-limites}.
 \chapter{Conclusão}
 \label{chap:conclusao}
 
-Este trabalho desenvolveu e avaliou um modelo computacional para automatizar
+Este trabalho desenvolveu e avaliou uma rotina computacional para automatizar
 a extração, o tratamento estatístico, a análise probabilística e a geração de
 evidências analíticas a partir de dados de simulações estatísticas do ATP,
 com foco nas sobretensões máximas de manobras de energização de linhas de
 transmissão. Sua contribuição é identificar e organizar, com rastreabilidade,
 candidatos a observações discrepantes para investigação técnica posterior.
-Nos dez arquivos declarados, o modelo extrai, organiza, descreve
+Nos dez arquivos declarados, a rotina extrai, organiza, descreve
 estatisticamente e sinaliza observações segundo critérios explícitos, mantendo
 a ligação entre código, dados de origem e resultados apresentados, dentro
 do alcance definido na Seção~\ref{sec:alcance-limitacoes}.
@@ -2207,7 +2239,7 @@ com
 A aceitação desse escopo de apoio à validação da integridade dos dados foi
 registrada em \path{docs/research/data_cleaning_validation_report.md}. A reprodução utiliza
 \texttt{uv run python -m scripts.audit\_data\_cleaning}; os resultados por
-arquivo, os registros de falhas introduzidas e os hashes exatos dos arquivos
+arquivo, os registros de falhas introduzidas e os resumos SHA-256 exatos dos arquivos
 de origem e do código encontram-se em \path{docs/research/evidence/}, nos arquivos
 \path{cleaning_cases.csv}, \path{cleaning_corruptions.csv} e
 \path{cleaning_validation.sha256}. Essa aceitação não estabelece a adequação

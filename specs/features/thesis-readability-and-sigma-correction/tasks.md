@@ -1,6 +1,7 @@
 # Thesis Readability and Sigma Correction Tasks
 
-**Status:** T1, T3 and T7.1–T7.5 implemented and verified; other tasks planned
+**Status:** T1, T3, T4, T5 and T7.1–T7.5 implemented and verified;
+remaining tasks planned
 **Specification:** [spec.md](spec.md)
 **Scope:** One parent task per original proposal; T7 has five executable
 subtasks. Additional figure/table requests are grouped under T10 and T11,
@@ -129,13 +130,19 @@ T4 section; purpose inventory, whitespace-normalized source identity and
 **Depends on:** T4
 **Reuses:** Existing acronyms and symbol lists, actual grouping keys in code.
 **Done when:**
-- [ ] SRPI, CRPI, P.U., MAD, and AIC are defined appropriately.
-- [ ] Routine, model, candidate, grouping, applicability, and source lineage
+- [x] SRPI, CRPI, P.U., MAD, and AIC are defined appropriately.
+- [x] Routine, model, candidate, grouping, applicability, and source lineage
   are distinct where necessary and consistent elsewhere.
-- [ ] Source lineage is defined from actual metadata semantics, not guessed.
-- [ ] Technical jargon is replaced or defined; centroide spelling is fixed.
+- [x] Source lineage is defined from actual metadata semantics, not guessed.
+- [x] Technical jargon is replaced or defined; centroide spelling is fixed.
 **Tests:** Term search and first-use review; no Python layer changed.
 **Gate/verify:** E; check prose, captions, and acronym/symbol lists.
+
+**Completion evidence (2026-10-27):**
+`docs/research/thesis_readability_validation.md`, T5 section: terminology
+inventory, code-grounded lineage semantics, preserved citations/assets/
+equations/labels, clean 80-page build and affected-page visual review.
+Taskipy format/lint pass; 327 tests pass.
 
 ## T6 — Align verb tense with completion status (proposal 6)
 
