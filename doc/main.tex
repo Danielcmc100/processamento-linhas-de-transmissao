@@ -1662,19 +1662,17 @@ apresentou média de 1,1769~P.U. e desvio padrão de 0,1209~P.U., enquanto o
 SRPI apresentou média de 1,7006~P.U. e desvio padrão de 0,1317~P.U., valores
 consistentes com a definição de chaveamento de cada cenário.
 
-A Tabela~\ref{tab:defesa-probabilidade}, gerada automaticamente a partir
-do pacote de evidências identificado no Apêndice~\ref{app:pacote-evidencias}, apresenta a
-probabilidade empírica de excedência de 2,3~P.U. para as noventa
-combinações, com o número de eventos, o denominador, o intervalo de Wilson
-de 95\% e o estado de validação.
-
-\input{evidence/v7/tables/probability.tex}
-
 Nenhuma das 204.300 observações aceitas excedeu 2,3~P.U.; a probabilidade
-empírica é, portanto, zero em todos os noventa grupos, com o limite superior
-do intervalo de Wilson diminuindo de 0,0713 em $N=50$ para 0,0004 em
-$N=10.000$. O resultado é relatado como zero com sua incerteza, conforme a
-definição metodológica, e não como ausência de resultado. A reconciliação
+empírica é, portanto, zero em todos os noventa grupos. Em cada grupo, o
+denominador corresponde ao respectivo número de simulações, sem reunir
+cenários, terminais ou fases em uma única estimativa. O limite superior do
+intervalo de Wilson de 95\% diminui de 0,0713 em $N=50$ para 0,0004 em
+$N=10.000$, sem que a ausência de eventos observados estabeleça uma
+probabilidade subjacente nula. Os números de eventos, denominadores,
+intervalos e estados de validação de todas as combinações estão preservados
+na Tabela~\ref{tab:defesa-probabilidade}, na seção de probabilidades do
+Apêndice~\ref{app:probabilidades-detalhadas}, vinculada ao pacote de
+evidências identificado no Apêndice~\ref{app:pacote-evidencias}. A reconciliação
 entre as contagens diretas e as tabelas de frequência e de probabilidade
 impressas pelo ATP produziu 1.151 intervalos comparáveis, todos com estado
 de validação ``válido'' dentro da tolerância definida pela precisão impressa.
@@ -2353,6 +2351,17 @@ pacote: \path{sources/annotated_observations.csv},
 em \path{doc/evidence/v7/}, permitindo sua compilação independente.
 O documento de GTPPLOT citado na discussão estatística é identificado no
 acervo pelo arquivo \texttt{2000-N4-Estati-1.pdf}.
+
+\section{Probabilidades empíricas detalhadas por grupo}
+\label{app:probabilidades-detalhadas}
+
+A Tabela~\ref{tab:defesa-probabilidade} preserva as noventa combinações de
+cenário, tamanho amostral, terminal e fase, com denominadores próprios e
+intervalos de Wilson de 95\%. A fonte é o pacote catalogado no
+Apêndice~\ref{app:pacote-evidencias}; a tabela foi gerada automaticamente
+a partir dos resultados validados, sem agregação dos grupos.
+
+\input{evidence/v7/tables/probability.tex}
 
 \end{apendicesenv}
 
