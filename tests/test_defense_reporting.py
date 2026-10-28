@@ -110,7 +110,7 @@ def test_machine_csv_preserves_precision_while_latex_rounds(
     )
 
     assert "0.123456789012345" in source
-    assert "0.1235" in latex
+    assert "0,1235" in latex
     assert "0.123456789012345" not in latex
     assert policy == {
         "decimal_places": 4,
@@ -229,3 +229,22 @@ def test_tables_paginate_and_wrap_within_landscape_width(
         assert r"\endfirsthead" in latex
         assert r"\endhead" in latex
         assert r"\begin{table}" not in latex
+
+
+def test_localized_numbers_preserve_raw_values_and_source_identity(
+    tmp_path: Path,
+) -> None:
+    """Localize numeric measures without changing identifiers or CSVs."""
+    result = _generate(tmp_path)
+    convergence = result.latex_paths["convergence"].read_text()
+    review = result.latex_paths["technical_review"].read_text()
+
+    assert "10.000" in convergence
+    assert "1,8765" in convergence
+    assert "-245.000,1235" in review
+    assert r"caso\_1.lis" in review
+    assert "2026-09-21" in review
+    assert (
+        "-245000.123456" in result.source_paths["technical_review"].read_text()
+    )
+    assert "10000" in result.source_paths["convergence"].read_text()

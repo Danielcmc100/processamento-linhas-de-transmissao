@@ -12,7 +12,7 @@ def test_summary_preserves_unavailable_scores_and_noise(
 ) -> None:
     for scenario in ("crpi", "srpi"):
         for phase in ("a", "b", "c"):
-            run = tmp_path / "runs" / scenario / "50" / phase
+            run = tmp_path / "runs" / scenario / "10000" / phase
             run.mkdir(parents=True)
             records = []
             for terminal in ("T_MAN", "1_2LT", "T_OPO"):
@@ -40,7 +40,7 @@ def test_summary_preserves_unavailable_scores_and_noise(
     assert metrics.height == 54
     assert set(metrics["phase"]) == {"A", "B", "C"}
     assert set(metrics["terminal"]) == {"T_MAN", "1_2LT", "T_OPO"}
-    assert metrics["sample_size"].unique().to_list() == [50]
+    assert metrics["sample_size"].unique().to_list() == [10000]
     kmeans = summary.filter(col("method") == "kmeans")
     assert kmeans["applicable"].to_list() == [9, 9]
     assert kmeans["median_silhouette"].to_list() == [0.7, 0.7]
@@ -50,6 +50,8 @@ def test_summary_preserves_unavailable_scores_and_noise(
     assert dbscan["excluded_noise_count"].to_list() == [18, 18]
     latex = (tmp_path / "tables" / "clustering_summary.tex").read_text()
     assert "NA & NA" in latex
+    assert "10.000" in latex
+    assert "0,7000" in latex
     assert (tmp_path / "figures" / "clustering-crpi.png").is_file()
 
 

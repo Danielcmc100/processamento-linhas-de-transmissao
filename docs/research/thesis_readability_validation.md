@@ -264,3 +264,72 @@ Verification:
   `uv run task format` and `uv run task lint` passing;
   `uv run task test` reports 327 passed in 74.59 seconds. Root owns task
   tracking and commits. No SPEC_DEVIATION.
+
+## T9 — Numeric conventions and table presentation (2026-10-28)
+
+Status: complete. T6 was verified before this sequential delegated task.
+
+- Authored prose, equations and tables use decimal commas and periods for
+  thousands. Numeric source identifiers, bus numbers, paths, literal ATP
+  records and CSV serialization retain their technical representation.
+- The P.U. conversion table retains all three original signed peaks and
+  presents six-decimal P.U. maxima with absolute verification errors instead
+  of two nearly identical 18-digit columns. Decimal recomputation from the
+  original peaks and CSV strings gives errors 6.18626694e-17,
+  2.54408619e-17 and 1.50989998e-16 P.U.; displayed errors are rounded to
+  three significant digits, all below the unchanged 1e-12 tolerance.
+  Base derivations retain their electrical meaning and now explicitly mark
+  rounded results as approximations. No source values were rounded.
+- Mapping Table 1 remains in the main text, unchanged and readable. The
+  clustering table retains all 30 rows, applicability counts, NA entries and
+  nine-group medians. Added prose explains that each median includes only
+  applicable groups, sometimes just one, preventing an unqualified ranking.
+- Generated-table localization belongs to
+  `src/services/defense_reporting.py:_presentation_value()` and
+  `src/services/defense_clustering.py:export_clustering_comparison()`.
+  Numeric measures use decimal commas and grouped integers; simulation
+  identifiers, source filenames and dates remain unchanged. Co-located
+  regressions cover source precision, numeric presentation, source identity,
+  missing scores and applicability. RED: three failed/eight passed; GREEN:
+  eleven passed in 2.23 seconds.
+
+Publication and provenance:
+
+- `uv run python -m docs.research.replay_thesis_numeric_tables` creates a
+  fresh `results/defense-evidence/v4/` from immutable v3 results. It reuses
+  existing table generators and manifest APIs; it does not execute ATP,
+  detector fitting, benchmarks or sensitivity experiments. The original
+  experiment configuration, revision, command, generation date and source
+  manifest hash are explicitly inherited. Presentation implementation hashes
+  and the actual replay command have separate ownership in the v4 manifest.
+- Only five `tables/*.tex` files differ from v3; every scientific CSV,
+  figure and other inherited artifact is byte-identical. All 609 v4 output
+  hashes were checked, as were all 4,353 preserved raw-input and v1/v2/v3
+  file hashes. The ten raw sources and unresolved electrical-review status
+  are unchanged. Root independently repeated preservation and hash checks.
+- The existing asset copier published all eleven manuscript references from
+  v4, and each copied file matches its package counterpart. v3 assets remain
+  preserved. No mixed current evidence versions appear in the manuscript.
+- No detailed table was relocated or reduced; T11 retains that ownership.
+  Its known benchmark condition/source identity problems and trailing sparse
+  table pages remain explicitly assigned to T11 and final integration T12.
+
+Verification:
+
+- Fresh required root gates: `uv run task format` passes (172 files),
+  `uv run task lint` passes, `uv run task typecheck` reports zero errors,
+  warnings and notes; `uv run task test`: 328 passed in 76.23 seconds.
+- `just build` passes, producing 81 physical pages. Final LaTeX log has no
+  actual warnings, unresolved references/citations, missing assets or
+  overfull boxes; warning-counter declarations are internal package state.
+- All 44 citation commands and 39 label declarations are preserved exactly.
+  Six table inclusions and thirteen graphics remain; eleven evidence asset
+  paths now uniformly point to v4. No template asset was deleted.
+- Physical PDF pages 33, 36–37, 46, 48–51, 55, 60–63, 66–67, 69 and 80–81
+  were rendered and visually inspected. Mapping, conversion and clustering
+  tables fit; localized generated tables retain readable headers and row
+  continuations without clipping. The benchmark's two-row continuation and
+  sparse final appendix page remain future T11/T12 layout work.
+- No SPEC_DEVIATION. CodeNavi and dataframely guidance were applied; no new
+  schema dependency or publication framework was introduced. Discovery is
+  documented here rather than duplicated in a notebook entry.

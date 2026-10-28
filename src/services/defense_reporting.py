@@ -489,7 +489,11 @@ def _presentation_value(
     if isinstance(value, bool):
         return "sim" if value else "não"
     if isinstance(value, float):
-        return f"{value:.{rounding.decimal_places}f}"
+        return f"{value:,.{rounding.decimal_places}f}".translate(
+            str.maketrans({",": ".", ".": ","})
+        )
+    if isinstance(value, int) and column != "simulation":
+        return f"{value:,}".replace(",", ".")
     translated = _translate_value(str(_machine_value(value)), column)
     escaped = _latex_escape(translated)
     if column in {"method", "method_evidence", "intervention_family"}:

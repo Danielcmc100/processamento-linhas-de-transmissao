@@ -930,7 +930,7 @@ A linha de transmissão analisada possui tensão nominal de 138~kV e extensão
 total de 80~km. No ATPDraw, ela foi representada pelo modelo K.C. Lee não
 transposto, cujos parâmetros foram calculados a 60~Hz. A representação também
 considera a disposição geométrica dos condutores e a resistividade do solo de
-$1000~\Omega\cdot\text{m}$. Esses dados afetam a propagação e a reflexão das
+$1.000~\Omega\cdot\text{m}$. Esses dados afetam a propagação e a reflexão das
 ondas eletromagnéticas e, portanto, influenciam diretamente os valores máximos
 registrados durante a energização.
 
@@ -1003,6 +1003,12 @@ normalização por unidade (P.U., do inglês \textit{per unit}) e a verificaçã
 %São descritos os critérios de validação dessas etapas.
 %; os resultados dasverificações são apresentados no Capítulo~\ref{chap:results}.
 
+A prosa e as tabelas usam vírgula decimal e ponto para separar milhares.
+Identificadores de barras, simulações e arquivos preservam sua grafia
+original. Trechos literais do ATP e arquivos CSV mantêm a notação técnica
+da fonte; o arredondamento de apresentação não altera os valores usados
+nos cálculos.
+
 \section{Extração dos dados e validação do parser}
 
 O reconhecimento do arquivo estatístico utiliza os marcadores textuais
@@ -1050,34 +1056,34 @@ de pico senoidal fase-terra e fase-fase decorrem da referência trifásica
 equilibrada:
 \begin{equation}
 \begin{aligned}
-V_{\mathrm{phase,RMS}} &= \frac{138000}{\sqrt{3}}\ \mathrm{V}, \\
+V_{\mathrm{phase,RMS}} &= \frac{138.000}{\sqrt{3}}\ \mathrm{V}, \\
 V_{\mathrm{phase-ground,peak}} &= \sqrt{2}V_{\mathrm{phase,RMS}}, \\
-V_{\mathrm{phase-phase,peak}} &= \sqrt{2}\,138000.
+V_{\mathrm{phase-phase,peak}} &= \sqrt{2}\,138.000.
 \end{aligned}
 \end{equation}
 Portanto,
 \begin{equation}
-V_{\mathrm{base,phase-ground}} = 138000\sqrt{\frac{2}{3}}
-= 112676.528168\ \mathrm{V},
+V_{\mathrm{base,phase-ground}} = 138.000\sqrt{\frac{2}{3}}
+\approx 112.676{,}528\ \mathrm{V},
 \qquad
-V_{\mathrm{base,phase-phase}} = 195161.522\ \mathrm{V}.
+V_{\mathrm{base,phase-phase}} \approx 195.161{,}522\ \mathrm{V}.
 \end{equation}
-Uma fonte do ATP associada ao barramento 9049 utiliza 112676,528~V a 60~Hz.
-Os cartões estatísticos arredondam as bases para 112677~V, para nós
-fase-terra, e 195161~V, para ramos fase-fase. O LIS imprime explicitamente as
+Uma fonte do ATP associada ao barramento 9049 utiliza 112.676,528~V a 60~Hz.
+Os cartões estatísticos arredondam as bases para 112.677~V, para nós
+fase-terra, e 195.161~V, para ramos fase-fase. O LIS imprime explicitamente as
 duas bases nas distribuições dos picos monitorados.
 Os registros da rede equivalente e dos arquivos ATP e LIS conciliam a
 tensão nominal de 138~kV dos barramentos 9049 e 48461 com essas duas
 normalizações. A localização dos registros está no
 Apêndice~\ref{app:fontes-eletricas}. A base fase-terra arredondada difere do pico
-nominal calculado em apenas 0,471832~V, ou aproximadamente 4,1875 partes por
+nominal calculado em apenas 0,472~V, ou aproximadamente 4,19 partes por
 milhão. O algoritmo deste trabalho extrai exclusivamente máximos de nós
 fase-terra; portanto, sua conversão é
 \begin{equation}
-V_{\mathrm{pu}} = \frac{|V_{\mathrm{peak,signed}}|}{112677}.
+V_{\mathrm{pu}} = \frac{|V_{\mathrm{peak,signed}}|}{112.677}.
 \end{equation}
 Para uma futura extração de máximos fase-fase, a base correspondente é
-195161~V; as duas grandezas não devem ser misturadas na mesma análise em P.U.
+195.161~V; as duas grandezas não devem ser misturadas na mesma análise em P.U.
  A relação nominal senoidal entre tensão eficaz e pico define a referência, e
 não a tensão eficaz de um transitório distorcido. O valor com sinal é o pico da
 simulação informado pelo ATP, juntamente com seu instante de ocorrência. O uso
@@ -1106,7 +1112,7 @@ a convenção de módulo, mas não verifica independentemente cada observação.
 
 A integridade dos dados foi avaliada separadamente
 para os dez casos SRPI/CRPI de modelo completo, sem defeito, com 50, 100, 200,
-1000 e 10000 execuções, utilizando a base aceita de 112677~V. A chave de cada
+1.000 e 10.000 execuções, utilizando a base aceita de 112.677~V. A chave de cada
 observação é composta pelo arquivo de origem, pela execução, pelo terminal e
 pela fase. A unicidade das chaves e a igualdade entre seu conjunto e o produto
 cartesiano das execuções declaradas (de 1 a NENERG), dos três terminais e das
@@ -1115,7 +1121,7 @@ arquivos de origem são lidas independentemente da contagem de linhas extraídas
 Chaves duplicadas ou incompletas bloqueiam a análise, em vez de alterar
 silenciosamente a unidade amostral.
 
-Os instantes de ocorrência devem pertencer ao intervalo fechado $[0,0.3]$~s,
+Os instantes de ocorrência devem pertencer ao intervalo fechado $[0;0{,}3]$~s,
 conforme declarado na reprodução do cartão de parâmetros diversos no LIS e
 confirmado em cada arquivo de entrada ATP correspondente. Trata-se de uma
 verificação de consistência com a janela de simulação, e não de uma
@@ -1151,7 +1157,7 @@ A matriz final de análise compreendeu dez fontes: os cenários SRPI e CRPI,
 cada qual com 50, 100, 200, 1.000 e 10.000 simulações. Os cenários foram
 analisados separadamente antes de qualquer comparação, pois representam
 definições distintas de chaveamento. Todas as fontes comparáveis devem usar a
-base de 112677~V, a mesma janela temporal e a mesma definição de evento.
+base de 112.677~V, a mesma janela temporal e a mesma definição de evento.
 Configurações com base diferente ou sem procedência suficiente são excluídas
 da matriz comparável, com registro do motivo.
 
@@ -1448,7 +1454,7 @@ declarada continha todas as nove combinações esperadas de terminal e fase, com
 chaves compostas únicas, incluindo as três fases restauradas em
 \texttt{T\_OPO} no CRPI. Todos os resumos SHA-256 de entrada coincidiram. Os 60 pares
 de tensão/tempo da fase A, transcritos independentemente das primeiras e
-últimas execuções, coincidiram exatamente sob o mapeamento $|V|/112677$.
+últimas execuções, coincidiram exatamente sob o mapeamento $|V|/112.677$.
 A justificativa elétrica dessa base é apresentada na
 Seção~\ref{sec:per-unit-validation}.
 
@@ -1466,7 +1472,7 @@ fase A. A aceitação não estima uma taxa de erro nem valida outros leiautes.
 
 Dez arquivos de casos completos e sem defeito dos cenários SRPI e CRPI,
 com 50, 100, 200,
-1000 e 10000 execuções por cenário, foram auditados. Todos os 60 pontos de
+1.000 e 10.000 execuções por cenário, foram auditados. Todos os 60 pontos de
 verificação da fase A, transcritos independentemente, coincidiram com o CSV
 exportado, usando aritmética Decimal com tolerância de $10^{-12}$~P.U. Todas
 as 90 médias não agrupadas por terminal e fase coincidiram com os próprios
@@ -1476,32 +1482,36 @@ a primeira e a última execução de cada arquivo, com pontos de verificação d
 fase A nos três terminais. As referências com sinal foram transcritas
 independentemente do LIS e seus resumos SHA-256 foram verificados antes do
 processamento. As razões esperadas foram calculadas com aritmética Decimal e
-comparadas com os valores relidos do CSV gerado. Todas as 204300 observações
+comparadas com os valores relidos do CSV gerado. Todas as 204.300 observações
 foram exportadas e relidas. Os três exemplos da Tabela~\ref{tab:pu-validation}
 vêm da simulação 1 do caso SRPI de 100 execuções. A localização das
 referências e os registros de execução estão no
-Apêndice~\ref{app:auditoria-pu}.
+Apêndice~\ref{app:auditoria-pu}. Os máximos apresentados foram arredondados
+a seis casas decimais; os erros absolutos usam os valores completos e
+permanecem inferiores à tolerância de $10^{-12}$~P.U.
 
 \begin{table}[htbp]
 \centering
 \caption{Verificações independentes da conversão da fase A utilizando a base
-de 112677~V. Fonte: saída do ATP e cálculos realizados neste estudo.}
+de 112.677~V. O erro absoluto compara a razão independente com o valor
+relido do CSV, antes do arredondamento de apresentação.
+Fonte: saída do ATP e cálculos realizados neste estudo.}
 \label{tab:pu-validation}
 \small
 \begin{tabular}{lrrr}
 \hline
-Terminal & Pico com sinal (V) & P.U. independente & P.U. do CSV \\
+Terminal & Pico com sinal (V) & Máximo (P.U.) & Erro absoluto (P.U.) \\
 \hline
-$T_{MAN}$ & $-152178.51$ & 1.350572965201416438 & 1.3505729652014165 \\
-$1/2\,LT$ & $-211732.87$ & 1.879113483674574225 & 1.8791134836745742 \\
-$T_{OPO}$ & $-204404.45$ & 1.814074300877730149 & 1.8140743008777303 \\
+$T_{MAN}$ & $-152.178{,}51$ & $1{,}350573$ & $6{,}19\times10^{-17}$ \\
+$1/2\,LT$ & $-211.732{,}87$ & $1{,}879113$ & $2{,}54\times10^{-17}$ \\
+$T_{OPO}$ & $-204.404{,}45$ & $1{,}814074$ & $1{,}51\times10^{-16}$ \\
 \hline
 \end{tabular}
 \end{table}
 
-A referência arbitrária de 100000~V superestimaria os valores fase-terra
+A referência arbitrária de 100.000~V superestimaria os valores fase-terra
 em P.U. em 12,677\% e não reproduziria as tabelas do ATP. Com a base aceita,
-o limiar de 2,3~P.U. corresponde a 259157,1~V. O histórico de substituição
+o limiar de 2,3~P.U. corresponde a 259.157,1~V. O histórico de substituição
 da referência anterior está no Apêndice~\ref{app:auditoria-pu}.
 
 A decisão de aceitação é sustentada pela derivação da referência
@@ -1510,8 +1520,8 @@ independentes apresentadas neste capítulo.
 
 A conversão é, portanto, aceita para os dez casos SRPI/CRPI declarados como
 modelo completo e sem defeitos, em $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, nas fases
-A, B e C, utilizando 112677~V para máximos fase-terra. As declarações de
-195161~V para ramos fase-fase também foram verificadas no ATP e no LIS, mas
+A, B e C, utilizando 112.677~V para máximos fase-terra. As declarações de
+195.161~V para ramos fase-fase também foram verificadas no ATP e no LIS, mas
 esses ramos não integram a extração atual. A revisão das fontes e dos
 cálculos não constitui aprovação independente por um engenheiro.
 Fontes alteradas, outros cenários ou convenções de saída
@@ -1521,15 +1531,15 @@ separadamente na Seção~\ref{sec:resultados-estatisticos}.
 
 \section{Resultados da integridade e da limpeza}
 
-Todas as 204300 observações eram únicas, estavam completas e foram mantidas
-inalteradas: 102150 por cenário, sem exclusões. Todos os 60 pontos de
+Todas as 204.300 observações eram únicas, estavam completas e foram mantidas
+inalteradas: 102.150 por cenário, sem exclusões. Todos os 60 pontos de
 verificação de tensão e tempo transcritos de forma independente coincidiram.
-Os instantes observados variaram de 0.01870 a 0.09997~s. A independência da
+Os instantes observados variaram de 0,01870 a 0,09997~s. A independência da
 referência diz respeito ao método de extração; não implica a participação de
 um revisor humano independente nem uma auditoria numérica exaustiva.
 A introdução artificial de falhas no caso CRPI de 900 linhas bloqueou
 corretamente a análise diante de uma observação duplicada e de uma observação
-ausente. Um instante de 0.30001~s ou um valor de tensão NaN provocou, em cada
+ausente. Um instante de 0,30001~s ou um valor de tensão NaN provocou, em cada
 teste, exatamente uma exclusão registrada, restando 899 linhas. Verificações
 adicionais especificadas manualmente abrangem os limites do intervalo,
 instantes negativos e ausentes, identificações alteradas e combinações
@@ -1545,7 +1555,7 @@ Apêndice~\ref{app:validation-records}.
 \label{sec:resultados-estatisticos}
 
 O pacote de evidências utiliza os dez arquivos declarados, com a base de
-112677~V, o limiar de 2,3~P.U. e
+112.677~V, o limiar de 2,3~P.U. e
 os três terminais e as três fases já validados nas seções anteriores,
 totalizando noventa combinações de cenário, tamanho amostral, terminal e
 fase. Para cada combinação foram calculados contagem, contagem válida,
@@ -1563,12 +1573,12 @@ probabilidade empírica de excedência de 2,3~P.U. para as noventa
 combinações, com o número de eventos, o denominador, o intervalo de Wilson
 de 95\% e o estado de validação.
 
-\input{evidence/v3/tables/probability.tex}
+\input{evidence/v4/tables/probability.tex}
 
 Nenhuma das 204.300 observações aceitas excedeu 2,3~P.U.; a probabilidade
 empírica é, portanto, zero em todos os noventa grupos, com o limite superior
 do intervalo de Wilson diminuindo de 0,0713 em $N=50$ para 0,0004 em
-$N=10\,000$. O resultado é relatado como zero com sua incerteza, conforme a
+$N=10.000$. O resultado é relatado como zero com sua incerteza, conforme a
 definição metodológica, e não como ausência de resultado. A reconciliação
 entre as contagens diretas e as tabelas de frequência e de probabilidade
 impressas pelo ATP produziu 1.151 intervalos comparáveis, todos com estado
@@ -1579,7 +1589,7 @@ significância nos noventa grupos. A
 normalidade foi rejeitada em 88 dos 90 grupos; as duas exceções ocorrem em
 grupos do SRPI com apenas 50 simulações ($1/2\,LT$, fase B, e $T_{MAN}$, fase
 C), compatível com a menor potência do teste em amostras pequenas. No grupo
-de referência $T_{OPO}$, fase A, $N=10\,000$, a estatística de
+de referência $T_{OPO}$, fase A, $N=10.000$, a estatística de
 Anderson--Darling foi 397,77 no CRPI e 588,48 no SRPI ($p$ interpolado em
 0,01 para ambos), com assimetria de 0,7838 no CRPI contra $-1,6187$ no SRPI,
 excesso de curtose de $-0,4042$ no CRPI contra 2,2944 no SRPI e correlação
@@ -1591,12 +1601,12 @@ desse grupo de referência.
 \begin{figure}[htbp]
 \centering
 \caption{Histograma com densidade gaussiana ajustada e gráfico
-quantil--quantil para o CRPI, terminal $T_{OPO}$, fase A, $N=10\,000$. A
+quantil--quantil para o CRPI, terminal $T_{OPO}$, fase A, $N=10.000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
 empírica permanece principal.}
 \label{fig:defesa-distribuicao-crpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v3/figures/distribution-crpi-t_opo-a.png}
+{evidence/v4/figures/distribution-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1606,12 +1616,12 @@ empírica permanece principal.}
 \begin{figure}[htbp]
 \centering
 \caption{Histograma com densidade gaussiana ajustada e gráfico
-quantil--quantil para o SRPI, terminal $T_{OPO}$, fase A, $N=10\,000$. A
+quantil--quantil para o SRPI, terminal $T_{OPO}$, fase A, $N=10.000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
 empírica permanece principal.}
 \label{fig:defesa-distribuicao-srpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v3/figures/distribution-srpi-t_opo-a.png}
+{evidence/v4/figures/distribution-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1675,24 +1685,28 @@ causal de candidatos pela probabilidade do caso não foi alcançada.
 \section{Análise comparativa dos métodos de clusterização}
 \label{sec:comparacao-clusterizacao}
 
-A versão v3 reúne os índices internos das partições efetivamente produzidas
+A apresentação v4 reúne os índices internos das partições efetivamente produzidas
 pelo fluxo, sem reajustar os modelos para maximizar os escores. A
 Tabela~\ref{tab:cluster-summary} sintetiza os resultados dos nove grupos
 terminal--fase de cada cenário e tamanho amostral. Os 270 registros
 individuais, incluindo número de agrupamentos, quantidade de observações,
 ruído excluído e motivos de não aplicabilidade, permanecem disponíveis no
 registro detalhado indicado no Apêndice~\ref{app:pacote-evidencias}.
+Em cada linha, os índices são medianas calculadas somente entre os grupos
+aplicáveis dentre as nove combinações terminal--fase, e a coluna A/9
+informa quantos grupos contribuíram. Assim, uma mediana calculada em um
+único grupo não representa os outros oito.
 DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
 partição elegível para avaliação, sem atribuir artificialmente escore zero.
 
 \clearpage
-\input{evidence/v3/tables/clustering_summary.tex}
+\input{evidence/v4/tables/clustering_summary.tex}
 
 Os índices foram aplicáveis em 90 dos 90 grupos do K-Means, em quatro
 dos 90 grupos do DBSCAN e em seis dos 90 grupos do método hierárquico.
 Todos os quatro grupos avaliáveis do DBSCAN pertencem a $N=50$;
 para $N\geq100$, sua partição não atende aos critérios geométricos
-adotados. Em $N=10\,000$, apenas K-Means mantém índices calculáveis.
+adotados. Em $N=10.000$, apenas K-Means mantém índices calculáveis.
 Essas contagens qualificam a abrangência da comparação e dizem respeito
 às partições, não à aplicabilidade dos detectores de candidatos.
 
@@ -1708,7 +1722,7 @@ O detector por distância ao centroide é uma evidência distinta dos rótulos
 utilizados nos índices internos.
 
 No SRPI, a mediana de Silhouette dos nove grupos passa de 0,6491 em
-$N=50$ para 0,6258 em $N=10\,000$, enquanto a mediana de
+$N=50$ para 0,6258 em $N=10.000$, enquanto a mediana de
 Davies--Bouldin passa de 0,4499 para 0,5032. Em $N=100$, Silhouette
 atinge 0,6770, evidenciando comportamento não monotônico. O aumento
 amostral, portanto, não melhora automaticamente a separação interna
@@ -1775,7 +1789,7 @@ terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
 conforme o registro individual.}
 \label{fig:cluster-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v3/figures/clustering-crpi.png}
+{evidence/v4/figures/clustering-crpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1788,7 +1802,7 @@ terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
 conforme o registro individual.}
 \label{fig:cluster-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v3/figures/clustering-srpi.png}
+{evidence/v4/figures/clustering-srpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1806,7 +1820,7 @@ um vencedor universal.
 As evidências de anomalia foram calculadas separadamente por cenário,
 linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:metodo-anomalias}
 da metodologia, e cobrem as 204.300 observações do pacote.
-No grupo de referência $T_{OPO}$, fase A, $N=10\,000$, o
+No grupo de referência $T_{OPO}$, fase A, $N=10.000$, o
 escore robusto MAD sinalizou 109 observações no CRPI (1,09\%) e 852 no SRPI
 (8,52\%). O K-Means, aplicável nos dois cenários, sinalizou 99 observações
 em cada um por distância ao centroide acima do percentil 99 da
@@ -1838,18 +1852,18 @@ cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000 simulações) sob a
 mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
 método, para os noventa grupos de cenário, terminal e fase.
 
-\input{evidence/v3/tables/convergence.tex}
+\input{evidence/v4/tables/convergence.tex}
 
 A largura do intervalo de confiança da probabilidade empírica diminui de
 forma monotônica com o tamanho amostral em todos os grupos, de 0,0713 em
-$N=50$ para 0,0004 em $N=10\,000$. Com zero excedências, esse estreitamento
+$N=50$ para 0,0004 em $N=10.000$. Com zero excedências, esse estreitamento
 reflete a redução da incerteza da proporção sob o modelo do intervalo, e
 não comprova, por si só, convergência independente da estimativa. A taxa de
 candidatos analíticos varia entre tamanhos: no SRPI, terminal $T_{OPO}$, fase
 A, a taxa varia de 8,52\% a 12\% nos cinco tamanhos avaliados, enquanto no
 CRPI, mesmo terminal e fase,
 a taxa varia de 16\% em $N=50$ até valores inferiores a 2\% entre $N=200$ e
-$N=10\,000$. A referência de 10.000 simulações é tratada como referência
+$N=10.000$. A referência de 10.000 simulações é tratada como referência
 empírica de maior amostragem, não como verdade fundamental; a comparação
 descreve os conjuntos observados e não estabelece acurácia do detector, e as
 dez fontes não são presumidas independentes ou aninhadas entre si.
@@ -1861,7 +1875,7 @@ entre os cinco tamanhos amostrais, CRPI, terminal
 $T_{OPO}$, fase A.}
 \label{fig:defesa-convergencia-crpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v3/figures/convergence-crpi-t_opo-a.png}
+{evidence/v4/figures/convergence-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -1874,7 +1888,7 @@ entre os cinco tamanhos amostrais, SRPI, terminal
 $T_{OPO}$, fase A.}
 \label{fig:defesa-convergencia-srpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v3/figures/convergence-srpi-t_opo-a.png}
+{evidence/v4/figures/convergence-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -1910,7 +1924,7 @@ precisão superior à do DBSCAN em toda condição comparável, à custa de
 recuperar uma fração menor dos pontos intervencionados nas taxas mais
 baixas.
 
-\input{evidence/v3/tables/benchmark.tex}
+\input{evidence/v4/tables/benchmark.tex}
 
 A grade congelada de sensibilidade de parâmetros -- número de grupos e
 sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --
@@ -1930,7 +1944,7 @@ concordância entre métodos, discordância, escore elevado e controle sem
 sinalização, conforme a regra de amostragem declarada na metodologia. A
 Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
 
-\input{evidence/v3/tables/technical_review.tex}
+\input{evidence/v4/tables/technical_review.tex}
 
 Todos os cinco casos permanecem com conclusão ``não resolvido''. As
 evidências ausentes e suas consequências para a interpretação são
@@ -2174,13 +2188,13 @@ médias do ATP foram aprovadas. Naquela execução, as verificações
 \texttt{task format}, \texttt{task lint}, 100 testes automatizados e o
 BasedPyright também foram aprovados, sem erros de tipagem ou avisos.
 
-A configuração anterior utilizava 100000~V e mapeava o limiar numérico de
-2,3~P.U. para 230000~V. Uma referência arbitrária dessa magnitude é
+A configuração anterior utilizava 100.000~V e mapeava o limiar numérico de
+2,3~P.U. para 230.000~V. Uma referência arbitrária dessa magnitude é
 matematicamente possível, mas exigiria interpretação explicitamente
 definida e limiares consistentemente reescalados; ela não reproduz as
 tabelas do ATP. As auditorias históricas com essa base permanecem como
 evidência da aritmética e da estrutura das observações, enquanto sua
-referência elétrica foi substituída pela base fase-terra de 112677~V.
+referência elétrica foi substituída pela base fase-terra de 112.677~V.
 Os artefatos estatísticos anteriores exigiam regeneração e validação
 separada e foram substituídos pela regeneração atual.
 
@@ -2190,7 +2204,7 @@ a documentação da auditoria adicionados à árvore de
 trabalho naquele momento. A auditoria pode ser reproduzida a partir da raiz do repositório,
 com os arquivos de casos locais originais disponíveis, executando
 \texttt{uv run python -m scripts.audit\_per\_unit}. O script fixa a base em
-112677~V. As configurações locais existentes para 100, 1000 e 10000
+112.677~V. As configurações locais existentes para 100, 1.000 e 10.000
 simulações foram corrigidas para esse valor; a própria fórmula de conversão
 de produção não exigiu alteração.
 
@@ -2228,14 +2242,18 @@ nova validação.
 \section{Catálogo do pacote de evidências}
 \label{app:pacote-evidencias}
 
-A segunda versão do pacote foi gerada em 21 de outubro de 2026. O texto
-atual utiliza a versão v3, que substitui a interpretação de três desvios
-padrão como detector de tensão de saída, preservando os parâmetros do
-chaveamento e as evidências históricas. O registro detalhado dessa
-correção está em
+A segunda versão do pacote foi gerada em 21 de outubro de 2026. A versão
+v3 corrigiu a interpretação de três desvios padrão como detector de tensão
+de saída, preservando os parâmetros do chaveamento e as evidências
+históricas. O registro detalhado dessa correção está em
 \path{docs/research/thesis_sigma_correction_validation.md}.
+A apresentação v4 reutiliza integralmente os resultados da v3 e padroniza
+somente a notação numérica das tabelas; nenhum experimento foi repetido.
+Seu manifesto preserva a proveniência experimental herdada e identifica a
+reprodução da apresentação pelo comando
+\texttt{uv run python -m docs.research.replay\_thesis\_numeric\_tables}.
 
-O diretório do pacote atual é \path{results/defense-evidence/v3/}.
+O diretório do pacote atual é \path{results/defense-evidence/v4/}.
 Os caminhos a seguir são relativos a esse diretório e vinculam os
 resultados aos respectivos registros completos:
 \begin{description}
@@ -2266,7 +2284,7 @@ pacote: \path{sources/annotated_observations.csv},
 \path{sources/distribution_adequacy.csv},
 \path{sources/clustering_comparison.csv} e
 \path{sources/convergence.csv}. As cópias incluídas neste documento ficam
-em \path{doc/evidence/v3/}, permitindo sua compilação independente.
+em \path{doc/evidence/v4/}, permitindo sua compilação independente.
 O documento de GTPPLOT citado na discussão estatística é identificado no
 acervo pelo arquivo \texttt{2000-N4-Estati-1.pdf}.
 

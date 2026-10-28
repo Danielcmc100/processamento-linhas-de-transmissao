@@ -67,7 +67,9 @@ def export_clustering_comparison(output: Path) -> None:
         ]
         lines.append(
             f"{row['scenario']} & {names[row['method']]} & "
-            f"{row['sample_size']} & {row['applicable']} & "
+            f"{row['sample_size']:,} & {row['applicable']} & ".replace(
+                ",", "."
+            )
             + " & ".join(scores)
             + r" \\"
         )
