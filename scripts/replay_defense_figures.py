@@ -13,6 +13,7 @@ from scripts.build_defense_evidence import (
     _generate_distribution_figures,
     _git_revision,
 )
+from src.services.defense_clustering import export_clustering_figures
 from src.services.reproducibility import (
     build_reproducibility_manifest,
     validate_reproducibility_manifest,
@@ -20,7 +21,7 @@ from src.services.reproducibility import (
 
 
 def main() -> None:
-    """Publish distribution figures with inherited experiment provenance.
+    """Publish selected figures with inherited experiment provenance.
 
     Raises:
         ValueError: If scientific outputs change during presentation replay.
@@ -28,6 +29,11 @@ def main() -> None:
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--figures",
+        choices=("distribution", "clustering"),
+        default="distribution",
+    )
     arguments = parser.parse_args()
     original: Path = arguments.source
     output: Path = arguments.output
@@ -40,11 +46,17 @@ def main() -> None:
         ):
             raise ValueError("The source package has an invalid output hash.")
     copytree(original, output)
-    _generate_distribution_figures(
-        read_csv(original / "sources/annotated_observations.csv"),
-        read_csv(original / "sources/distribution_adequacy.csv"),
-        output / "figures",
-    )
+    if arguments.figures == "distribution":
+        _generate_distribution_figures(
+            read_csv(original / "sources/annotated_observations.csv"),
+            read_csv(original / "sources/distribution_adequacy.csv"),
+            output / "figures",
+        )
+    else:
+        export_clustering_figures(
+            read_csv(original / "sources/clustering_comparison.csv"),
+            output / "figures",
+        )
     changed = []
     for path in sorted(original.rglob("*")):
         if not path.is_file() or path.name == "reproducibility_manifest.json":
@@ -54,7 +66,7 @@ def main() -> None:
             changed.append(relative.as_posix())
             if not (
                 relative.parent == Path("figures")
-                and relative.name.startswith("distribution-")
+                and relative.name.startswith(f"{arguments.figures}-")
                 and relative.suffix in {".svg", ".png"}
             ):
                 message = f"Nonpresentation artifact changed: {relative}"
@@ -63,6 +75,7 @@ def main() -> None:
         path.as_posix(): sha256(path.read_bytes()).hexdigest()
         for path in (
             Path("src/services/defense_visualization.py"),
+            Path("src/services/defense_clustering.py"),
             Path("scripts/build_defense_evidence.py"),
             Path(__file__),
         )
@@ -90,7 +103,8 @@ def main() -> None:
         dependencies=inherited["dependencies"],
         commands=[
             f"uv run python -m scripts.replay_defense_figures "
-            f"--source {original} --output {output}"
+            f"--source {original} --output {output} "
+            f"--figures {arguments.figures}"
         ],
         output_files={
             path.relative_to(output).as_posix(): path

@@ -1,11 +1,15 @@
 """Aggregate fitted partitions without mixing phases or refitting labels."""
 
+from math import isfinite
 from pathlib import Path
 
 from matplotlib import pyplot
-from polars import col, concat, lit, read_csv
+from polars import DataFrame, col, concat, lit, read_csv
 
-from src.services.defense_visualization import export_publication_figure
+from src.services.defense_visualization import (
+    OKABE_ITO_PALETTE,
+    export_publication_figure,
+)
 
 
 def export_clustering_comparison(output: Path) -> None:
@@ -77,42 +81,89 @@ def export_clustering_comparison(output: Path) -> None:
     (output / "tables" / "clustering_summary.tex").write_text(
         "\n".join(lines) + "\n", encoding="utf-8"
     )
+    export_clustering_figures(metrics, output / "figures")
+
+
+def export_clustering_figures(metrics: DataFrame, output: Path) -> None:
+    """Plot saved reference-group indices on shared scenario scales."""
+    reference = metrics.filter(
+        (col("terminal") == "T_OPO") & (col("phase") == "A")
+    )
+    methods = (
+        ("kmeans", "K-Means", "o", "-", OKABE_ITO_PALETTE[4]),
+        ("dbscan", "DBSCAN", "s", "--", OKABE_ITO_PALETTE[0]),
+        ("hierarchical", "Hierárquico", "^", "-.", OKABE_ITO_PALETTE[2]),
+    )
+    specifications = (
+        ("silhouette_score", "Silhouette (maior é melhor)"),
+        ("davies_bouldin_score", "Davies–Bouldin (menor é melhor)"),
+    )
+    limits = []
+    for key, _ in specifications:
+        values = reference.filter(col("applicability") == "applicable")[key]
+        finite = [float(v) for v in values if v is not None and isfinite(v)]
+        low, high = (min(finite), max(finite)) if finite else (0.0, 1.0)
+        margin = max((high - low) * 0.1, 0.025)
+        limits.append((low - margin, high + margin))
+    sizes = sorted(reference["sample_size"].unique().to_list())
     for scenario in ("SRPI", "CRPI"):
-        figure, axes = pyplot.subplots(1, 2, figsize=(10, 4))
-        for method, name in names.items():
-            selected = metrics.filter(
-                (col("scenario") == scenario)
-                & (col("terminal") == "T_OPO")
-                & (col("phase") == "A")
-                & (col("method") == method)
-            ).sort("sample_size")
-            for axis, key, title in zip(
-                axes,
-                ("silhouette_score", "davies_bouldin_score"),
-                (
-                    "Silhouette (maior é melhor)",
-                    "Davies–Bouldin (menor é melhor)",
-                ),
-                strict=True,
-            ):
-                axis.plot(
-                    selected["sample_size"],
-                    [float("nan") if v is None else v for v in selected[key]],
-                    marker="o",
-                    label=name,
-                )
-                axis.set_xscale("log")
-                axis.set_xlabel("Número de simulações")
-                axis.set_title(title)
-                axis.grid(alpha=0.3)
-        axes[0].legend()
-        figure.suptitle(
-            f"{scenario} — T_OPO, fase A — máximos em p.u.\n"
-            "Ausência de ponto: métrica não aplicável"
-        )
-        figure.tight_layout()
+        figure, axes = pyplot.subplots(1, 2, figsize=(9, 4.6))
+        for axis, (key, title), limit in zip(
+            axes, specifications, limits, strict=True
+        ):
+            unavailable = []
+            for method, name, marker, style, color in methods:
+                selected = reference.filter(
+                    (col("scenario") == scenario) & (col("method") == method)
+                ).sort("sample_size")
+                scores = [
+                    float(value)
+                    if applicable == "applicable"
+                    and value is not None
+                    and isfinite(value)
+                    else float("nan")
+                    for value, applicable in zip(
+                        selected[key], selected["applicability"], strict=True
+                    )
+                ]
+                missing = sum(not isfinite(value) for value in scores)
+                if any(isfinite(value) for value in scores):
+                    axis.plot(
+                        selected["sample_size"],
+                        scores,
+                        marker=marker,
+                        linestyle=style,
+                        color=color,
+                        label=name,
+                    )
+                if missing:
+                    unavailable.append(
+                        f"{name}: não aplicável em {missing}/{len(scores)} N"
+                    )
+            axis.set_xscale("log")
+            axis.set_xticks(
+                sizes, [f"{size:,}".replace(",", ".") for size in sizes]
+            )
+            axis.set_xlim(min(sizes) / 1.2, max(sizes) * 1.2)
+            axis.set_ylim(limit)
+            axis.set_xlabel("Número de simulações (N)", fontsize=11)
+            axis.tick_params(labelsize=10)
+            axis.set_title(title, fontsize=11)
+            axis.grid(alpha=0.3)
+            if axis.lines:
+                axis.legend(fontsize=10)
+            axis.text(
+                0.0,
+                -0.27,
+                "\n".join(unavailable),
+                transform=axis.transAxes,
+                fontsize=10,
+                va="top",
+            )
+        figure.suptitle(f"{scenario} — T_OPO, fase A")
+        figure.tight_layout(rect=(0, 0.11, 1, 0.95))
         export_publication_figure(
-            figure, output / "figures" / f"clustering-{scenario.lower()}"
+            figure, output / f"clustering-{scenario.lower()}"
         )
         pyplot.close(figure)
 

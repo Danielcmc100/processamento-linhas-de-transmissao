@@ -153,3 +153,75 @@ No specification deviation. Reproduction:
 results/defense-evidence/v4 --output results/defense-evidence/v5`
 (requires a fresh destination), followed by the existing document copier and
 `just build`.
+
+
+## T10.3 — Comparable geometric-index figures (2026-10-28)
+
+Status: complete. Assumption: saved v5 clustering metrics remain authoritative;
+only their presentation changes. `export_clustering_comparison()` retains CSV
+and table ownership and now calls `export_clustering_figures()`. This extracted
+owner accepts saved metrics directly, so presentation replay does not rerun
+clustering, regenerate tables, or repeat any experiment. The manuscript owns
+captions and explicit distinction from the nine-group summary table.
+
+### Acceptance and regression proof
+
+- Both reference figures select only T_OPO, phase A, across the five sample
+  sizes. Each corresponding metric shares its y limits across SRPI and CRPI;
+  both x axes use the same logarithmic scale, limits and explicit N ticks.
+  Fixed color, marker and line styles preserve method identity across panels.
+- Non-applicable or missing/non-finite scores become gaps, never zeroes.
+  Only methods with at least one valid score enter the legend. Per-panel
+  notes name methods with unavailable scores and report affected N counts.
+  In the actual reference group DBSCAN has no geometric score at all five
+  sizes in either scenario and therefore has no plotted curve or legend key.
+  Hierarchical scores are absent at all five SRPI sizes and at three CRPI
+  sizes; the two valid CRPI points remain visible. These are geometric-score
+  applicability statements, not claims about candidate-detector execution.
+- Both captions explain shared axes/styles, unavailable points, valid-only
+  legends and the restricted terminal/phase scope, explicitly contrasting it
+  with Table `tab:cluster-summary`'s medians across nine terminal-phase groups.
+- RED: new reference-plot regression failed before the extracted owner existed
+  (1 failed, 2 passed). GREEN: three focused tests pass. Assertions cover shared
+  axes, styles, reference-group filtering, a missing middle score retained as
+  a gap, missing-method notes, no fictitious DBSCAN legend key and scope.
+  Existing export integration still verifies saved records, nine-group
+  applicability counts, null metrics, retained noise counts and generated PNG.
+  No test was removed, weakened or skipped; final type adaptation uses dynamic
+  access to Figure text because installed Matplotlib stubs omit that member.
+
+### Software, publication and editorial gates
+
+- `uv run task format`, `uv run task lint` and `uv run task typecheck`: pass;
+  typecheck has zero errors, warnings or notes. Full `uv run task test`:
+  331 passed in 81.05 seconds, versus the latest 330-test baseline.
+  Final font-sizing and stub-access adjustment: focused suite rerun,
+  3 passed in 2.44 seconds; format/lint/typecheck pass.
+- Extended `scripts/replay_defense_figures.py` with an explicit `--figures`
+  choice, retaining distribution as its default. Clustering replay invokes
+  only the extracted figure owner and records its implementation hash.
+  Presentation-only v6 derives from immutable v5. Exactly four files change:
+  clustering PNG/SVG for CRPI/SRPI. All 290 CSV files preserve exact bytes,
+  schemas and row counts; tables and every non-clustering figure are unchanged.
+  All 609 current output hashes and ten raw-source hashes pass verification.
+  Historical v1–v5 and current v6 manifests were checked: 3,505 unique
+  manifest-referenced source/output paths pass. This uses the same counting
+  scope as T10.2, not the broader arbitrary-file snapshot used in T9.
+- All eleven manuscript references now use v6; copied assets match package
+  bytes. Historical manuscript assets and raw/template files remain preserved.
+  Package technical review stays incomplete, with no new causal conclusion.
+- `just build`: pass, 81 pages; no actual undefined references/citations,
+  duplicate-label warnings, missing assets or overfull boxes. Final physical
+  pages 58–59 (printed 57–58) rendered at 1,600 pixels and visually inspected.
+  Enlarged text after initial printed-size inspection; final panels show all
+  five N ticks, shared metric ranges, separated notes and readable legends,
+  without clipping or overlap. Whole-document float integration remains T12.
+- `git diff --check`: pass. Existing TODOS.md and staged/unstaged task-list
+  edits remain outside this commit. No specification deviation. No notebook
+  entry added: this report already records the reusable replay/plot ownership.
+
+Reproduction (fresh destination):
+`uv run python -m scripts.replay_defense_figures --source
+results/defense-evidence/v5 --output results/defense-evidence/v6
+--figures clustering`, then `uv run python -m
+scripts.prepare_defense_document` and `just build`.

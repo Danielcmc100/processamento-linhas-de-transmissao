@@ -2,7 +2,9 @@
 
 from pathlib import Path
 
+from matplotlib.figure import Figure
 from polars import DataFrame, col, read_csv
+from pytest import MonkeyPatch
 
 from src.services.defense_clustering import export_clustering_comparison
 
@@ -81,3 +83,60 @@ def test_distribution_export_does_not_repeat_three_phase_fits(
     counts = read_csv(tmp_path / "tables" / "distribution_selection.csv")
     assert exported.height == 3
     assert counts["len"].sum() == 3
+
+
+def test_reference_figures_share_scales_and_show_missing_scores(
+    tmp_path: Path, monkeypatch: MonkeyPatch
+) -> None:
+    from src.services.defense_clustering import export_clustering_figures
+
+    records = []
+    for scenario, offset in (("SRPI", 0.0), ("CRPI", 0.3)):
+        for method in ("kmeans", "dbscan", "hierarchical"):
+            for size in (50, 100, 200):
+                available = method == "kmeans" and size != 100
+                records.append({
+                    "scenario": scenario,
+                    "terminal": "T_OPO",
+                    "phase": "A",
+                    "method": method,
+                    "sample_size": size,
+                    "applicability": (
+                        "applicable" if available else "non_applicable"
+                    ),
+                    "silhouette_score": 0.4 + offset if available else None,
+                    "davies_bouldin_score": (
+                        0.2 + offset if available else None
+                    ),
+                })
+    # A different group must not affect reference scales or plotted series.
+    records.append({
+        **records[0],
+        "terminal": "T_MAN",
+        "silhouette_score": 99.0,
+        "davies_bouldin_score": 99.0,
+    })
+    figures: dict[str, Figure] = {}
+
+    def capture(figure: Figure, output: Path) -> None:
+        figures[output.name] = figure
+
+    monkeypatch.setattr(
+        "src.services.defense_clustering.export_publication_figure", capture
+    )
+    export_clustering_figures(DataFrame(records), tmp_path)
+    first = figures["clustering-srpi"]
+    second = figures["clustering-crpi"]
+    for left, right in zip(first.axes, second.axes, strict=True):
+        assert left.get_ylim() == right.get_ylim()
+        assert left.get_xlim() == right.get_xlim()
+        assert left.get_ylim()[1] < 2.0
+        assert [line.get_label() for line in left.lines] == ["K-Means"]
+        assert left.lines[0].get_color() == right.lines[0].get_color()
+        assert left.lines[0].get_marker() == right.lines[0].get_marker()
+        assert str(left.lines[0].get_ydata()[1]) == "nan"
+        assert "DBSCAN" not in left.get_legend_handles_labels()[1]
+        assert "DBSCAN" in " ".join(t.get_text() for t in left.texts)
+        assert "não aplicável" in " ".join(t.get_text() for t in left.texts)
+    assert "T_OPO" in getattr(first, "texts")[0].get_text()
+    assert "fase A" in getattr(first, "texts")[0].get_text()
