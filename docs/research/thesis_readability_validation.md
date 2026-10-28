@@ -381,3 +381,79 @@ Verification:
   in 76.23 seconds, with format/lint/typecheck passing; this prose-only task
   does not require repeating unchanged software tests.
 - No SPEC_DEVIATION. Root owns task tracking and commits.
+
+
+## T8 — Four-block conclusion (2026-10-28)
+
+Status: complete. T2 was verified and committed before this sequential
+sub-agent task. Files changed: `doc/main.tex` and this research record only.
+
+The conclusion now consists of four connected paragraphs, in order:
+contribution, principal findings, limitations, and future work. Its 345
+words replace the objective checklist and seven repeated success
+judgments. No subsection or isolated bold title substitutes for prose.
+
+Claim-preservation review:
+
+- Contribution: the implemented end-to-end extraction, statistical and
+  probabilistic analysis, candidate generation, source identity and
+  reproducible tables/figures/manifest remain explicit for the ten sources.
+- Findings: 204,300 observations, 90 groups and zero exclusions; zero strict
+  exceedances of 2.3 P.U. with per-group Wilson uncertainty; 88 normality
+  rejections; and geometric-index applicability counts 90/4/6 match the
+  current v4 source reconciliation recorded under T2 above. No pooled
+  denominator or zero-underlying-probability claim was introduced.
+- Detector criteria remain MAD, K-Means distance and DBSCAN noise under
+  explicit criteria. Index applicability is distinguished from detector
+  applicability, and hierarchical labels remain descriptive/non-voting.
+  The results chapter retains the detailed MAD counts, comparison outcomes
+  and 1,151 reconciled ATP intervals; the conclusion refers to that chapter
+  rather than repeating its whole inventory.
+- Completed synthetic evaluation and parameter sensitivity remain distinct
+  from pending electrical validation. Synthetic performance and selection
+  stability establish no electrical cause. Source/layout/checkpoint scope,
+  unresolved causal status, absent waveforms/repeats/independent reviewer,
+  and the excluded insulation/expert-system decision layer remain explicit.
+- Future work retains qualified electrical review, waveform inspection,
+  switching-condition checks, smaller-step repeat simulations, expanded
+  controlled evaluations, and group-specific distribution/tail assessment.
+  No pending experiment is described as completed and no retired detector
+  is reintroduced.
+
+Review of the nine original editorial requirements:
+
+| Requirement | Existing proof reviewed and retained |
+| --- | --- |
+| READ-01 | T1 ownership inventory in this report; the conclusion summarizes the causal boundary and refers to canonical scope/limitations rather than restoring the objective checklist. |
+| READ-02 | T2 source-to-prose reconciliation and opening synthesis remain unchanged; conclusion findings agree with them. |
+| READ-03 | T3 appendix inventory remains unchanged; no commands, hashes, full paths or correction history returned to the conclusion. |
+| READ-04 | T4 theory paragraph-purpose review remains unchanged; the four conclusion paragraphs each have one role. |
+| READ-05 | T5 term/first-use inventory remains unchanged; detector, partition and applicability terms retain their distinct meanings. |
+| READ-06 | T6 execution-status review remains unchanged; completed evaluation uses past tense and electrical validation remains future work. |
+| READ-07 | `docs/research/thesis_sigma_correction_validation.md` and T7 evidence remain authoritative; only the three candidate criteria appear, hierarchical labels do not vote, and Gaussian adequacy remains separate. |
+| READ-08 | This task: exactly four prose blocks, zero objective-success declarations, findings reconciled against T2/current evidence. |
+| READ-09 | T9 numeric/presentation review remains unchanged; Brazilian numeric display and raw evidence precision are preserved. |
+
+This is the original nine-requirement editorial review, not final acceptance
+of figure coherence, table relocation or whole-document layout. Pending
+T10/T11 and final T12 integration retain ownership of those changes and
+known sparse/trailing table pages.
+
+Verification:
+
+- `just build` passes, producing 80 physical PDF pages (one fewer than the
+  preceding T2 build). The conclusion fits on physical page 72, printed
+  page 71. Physical pages 71–73 were rendered and visually inspected;
+  conclusion paragraphs and cross-references are legible, no clipping or
+  orphan continuation appears, and bibliography starts on the next page.
+- Final LaTeX log has no actual warnings, undefined references/citations,
+  missing assets, multiply defined labels or overfull boxes. Internal
+  silence-package warning counters are not warnings.
+- Before/after comparison preserves all 44 citation commands, 39 labels,
+  six input inclusions, thirteen graphics commands and twelve equation
+  blocks exactly. All non-conclusion manuscript text remains unchanged.
+- No Python, tests, evidence assets, raw inputs or experiment outputs were
+  changed. Root's preceding software gates remain format/lint/typecheck
+  passing and 328 tests passed in 76.23 seconds; unchanged software tests
+  were not repeated for this prose-only task.
+- No SPEC_DEVIATION. Root owns task tracking and commits.

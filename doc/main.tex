@@ -2043,91 +2043,46 @@ nos limites de escopo da Seção~\ref{sec:escopo-limites}.
 \chapter{Conclusão}
 \label{chap:conclusao}
 
-Este trabalho desenvolveu e avaliou uma rotina computacional para automatizar
-a extração, o tratamento estatístico, a análise probabilística e a geração de
-evidências analíticas a partir de dados de simulações estatísticas do ATP,
-com foco nas sobretensões máximas de manobras de energização de linhas de
-transmissão. Sua contribuição é identificar e organizar, com rastreabilidade,
-candidatos a observações discrepantes para investigação técnica posterior.
-Nos dez arquivos declarados, a rotina extrai, organiza, descreve
-estatisticamente e sinaliza observações segundo critérios explícitos, mantendo
-a ligação entre código, dados de origem e resultados apresentados, dentro
-do alcance definido na Seção~\ref{sec:alcance-limitacoes}.
+Este trabalho desenvolveu e avaliou uma rotina computacional para extrair,
+organizar e analisar máximos de tensão de simulações de energização de linhas
+de transmissão no ATP. A integração entre tratamento estatístico, análise
+probabilística e geração de candidatos preserva a identidade de cada
+observação até sua fonte. O fluxo foi executado de ponta a ponta nos dez
+arquivos declarados, produzindo tabelas, figuras e manifesto de
+reprodutibilidade para investigação técnica posterior, dentro do alcance da
+Seção~\ref{sec:alcance-limitacoes}.
 
-Quanto aos objetivos específicos, os resultados apresentados sustentam as
-seguintes conclusões:
+A base validada reuniu 204.300 observações em noventa grupos, sem exclusões.
+Nenhuma observação excedeu 2,3~P.U.; os intervalos de Wilson por grupo
+preservam a incerteza, sem interpretar a ausência de eventos como
+probabilidade subjacente nula. A normalidade foi rejeitada em 88 dos noventa
+grupos, impedindo adotar uma referência gaussiana comum sem verificar sua
+adequação. Os índices Silhouette e Davies--Bouldin foram aplicáveis a noventa
+grupos do K-Means, quatro do DBSCAN e seis do método hierárquico. Essas
+contagens descrevem partições e não a aplicabilidade dos detectores. MAD,
+distância ao centroide do K-Means e ruído do DBSCAN forneceram evidências de
+candidatos sob critérios explícitos, com concordâncias e discordâncias
+preservadas; os rótulos hierárquicos permaneceram descritivos e não votantes.
+Os resultados detalhados encontram-se no Capítulo~\ref{chap:results}.
 
-\begin{itemize}
-\item O \textit{parser} para extração dos dados brutos do ATP foi
-implementado e validado para o escopo declarado dos dez arquivos SRPI e
-CRPI, com concordância exata nos pontos de verificação auditados
-(Seções~\ref{chap:results}, itens de fidelidade da extração). Esse objetivo
-é considerado atendido.
+A aceitação computacional permanece restrita aos arquivos, leiautes e pontos
+de verificação declarados. Os ensaios controlados e a análise de sensibilidade
+foram concluídos no grupo de referência avaliado
+(Seção~\ref{sec:avaliacao-controlada}); seu desempenho em condições
+sintéticas e a estabilidade da seleção não demonstram a causa dos extremos
+reais. A conclusão causal continua não resolvida pela ausência de formas de
+onda, repetições comparáveis e revisão elétrica independente qualificada
+(Seção~\ref{sec:lacunas-pacote}). A recomendação de nível de isolamento e a
+lógica de sistema especialista permanecem fora do escopo acadêmico e sob
+responsabilidade da empresa parceira, conforme a
+Seção~\ref{sec:escopo-limites}.
 
-\item Os dados extraídos foram organizados em 204.300 observações
-escalares, com identidade completa de simulação, terminal, fase e cenário,
-e sem exclusões na base aceita. Esse objetivo é considerado atendido.
-
-\item O pré-processamento e o tratamento estatístico, incluindo média,
-desvio padrão, medidas de dispersão e o escore robusto MAD,
-foram implementados e aplicados às noventa combinações de cenário, tamanho
-amostral, terminal e fase. No grupo de referência analisado em detalhe, o
-MAD sinalizou 109 observações no CRPI e 852 no SRPI. Esses resultados
-descrevem candidatos analíticos segundo o critério declarado, sem
-estabelecer causa elétrica. Esse objetivo é considerado atendido.
-
-\item A análise probabilística das sobretensões máximas foi realizada com
-estimativa empírica de excedência, intervalo de confiança de Wilson e
-reconciliação com as tabelas de frequência do ATP. Nenhuma das 204.300
-observações aceitas excedeu 2,3~P.U.; a probabilidade empírica é zero nos
-noventa grupos, com incerteza explícita, e os 1.151 intervalos reconciliados
-com o ATP foram todos válidos. Esse objetivo é considerado atendido.
-
-\item Os algoritmos K-Means, DBSCAN e o método hierárquico foram comparados
-por Silhouette e Davies--Bouldin nas cinco quantidades de simulações,
-com estados de aplicabilidade preservados. K-Means e DBSCAN também foram
-aplicados para identificar
-agrupamentos de comportamento e observações atípicas, com escore, limiar e
-aplicabilidade explícitos por grupo comparável. Esse objetivo é considerado
-atendido: além do nível descritivo e de geração de candidatos, a validação
-desses candidatos sob perturbações controladas e sob variação sistemática
-de parâmetros, prevista na metodologia, foi concluída sobre o grupo de
-referência do conjunto de dados-alvo, com desempenho e estabilidade de
-identidade reportados na Seção~\ref{sec:avaliacao-controlada}. Essa
-validação permanece restrita ao grupo de referência sintético testado e não
-constitui, por si só, evidência elétrica de causa (Seção~\ref{sec:lacunas-pacote}).
-
-\item A comparação entre os resultados das técnicas estatísticas e dos
-algoritmos de clusterização foi realizada de forma explícita, preservando
-concordâncias e discordâncias -- incluindo as diferenças entre MAD e
-distância do K-Means, e o resultado de zero sinalizações do DBSCAN
-no grupo de referência. Esse objetivo é considerado atendido.
-
-\item A rotina computacional reprodutível que integra extração, tratamento,
-análise estatística, análise probabilística, detecção de anomalias e
-apresentação dos resultados foi implementada e executada de ponta a ponta
-para os dez arquivos declarados, com manifesto de reprodutibilidade,
-tabelas e figuras geradas automaticamente, incluindo o ensaio controlado e
-a sensibilidade de parâmetros sobre o grupo de referência do conjunto de
-dados-alvo. Esse objetivo é considerado atendido no escopo computacional. O estado
-incompleto do pacote refere-se à revisão elétrica independente, mantida
-como trabalho futuro, e não à execução do fluxo comparativo.
-
-\end{itemize}
-
-A conclusão causal permanece não resolvida pelas lacunas descritas na
-Seção~\ref{sec:lacunas-pacote}. A recomendação de nível de isolamento e a
-lógica de sistema especialista permanecem sob responsabilidade técnica da
-empresa parceira, preservando sua propriedade intelectual conforme o
-escopo da Seção~\ref{sec:escopo-limites}.
-
-Como próximo passo, propõe-se a validação dos candidatos por especialista
-em transitórios eletromagnéticos, com inspeção das formas de onda,
-conferência das condições de chaveamento e repetição das simulações com
-passos de integração menores. Também se recomenda
-ampliar os ensaios controlados e avaliar outras famílias de distribuição
-separadamente por grupo, com verificação de ajuste e das caudas, antes de
-usar probabilidades paramétricas como evidência complementar.
+Como trabalho futuro, propõe-se validar os candidatos com especialista em
+transitórios eletromagnéticos, inspeção das formas de onda, conferência das
+condições de chaveamento e repetição das simulações com passos de integração
+menores. Recomenda-se também ampliar os ensaios controlados e avaliar outras
+famílias de distribuição por grupo, com verificação do ajuste e das caudas,
+antes de utilizar probabilidades paramétricas como evidência complementar.
 
 % ----------------------------------------------------------
 % ELEMENTOS PÓS-TEXTUAIS

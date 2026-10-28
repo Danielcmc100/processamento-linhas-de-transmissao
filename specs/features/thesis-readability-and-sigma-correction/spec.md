@@ -1,7 +1,7 @@
 # Thesis Readability and Sigma Correction Specification
 
-**Status:** Partially implemented — READ-01, READ-03, READ-04, READ-05
-and READ-07 verified; remaining requirements planned
+**Status:** Partially implemented — READ-01–READ-09 verified;
+READ-10–READ-12 remain planned
 **Created:** 2026-10-26
 **Tasks:** [tasks.md](tasks.md)
 **Scope:** Nine original editorial proposals, including the correction of the
@@ -113,8 +113,10 @@ references; T7.5 publishes v3 assets and keeps `doc/` independently compilable.
 - The original planning deliverable did not authorize implementation. The
   author subsequently authorized T7.1–T7.5 and confirmed local tools and
   sequential delegation. On 2026-10-27, the author authorized the next four
-  tasks in canonical order (T1, T3, T4, T5), each in a distinct sub-agent;
-  remaining tasks are outside this execution scope.
+  tasks in canonical order (T1, T3, T4, T5), each in a distinct sub-agent.
+  On 2026-10-28, the author authorized the next four tasks in canonical
+  order (T6, T9, T2, T8), each delegated sequentially to a distinct agent.
+  Remaining tasks are outside this execution scope.
 - Do not execute new ATP simulations, alter raw model inputs, or claim
   independent electrical review.
 - Do not add causal labels, automatic deletion of extremes, insulation
@@ -179,9 +181,22 @@ READ-01, READ-03, READ-04 and READ-05 are implemented and verified through
 T1, T3, T4 and T5 in canonical order, each by a distinct sequential agent.
 The current manuscript builds to 80 pages; preservation checks and affected
 rendered-page review are recorded in
-`docs/research/thesis_readability_validation.md`. T2, T6 and T8–T12 remain
-planned; final whole-document layout acceptance belongs to T12.
+`docs/research/thesis_readability_validation.md`. At that stage, T2, T6
+and T8–T12 remained planned; final whole-document layout acceptance
+belongs to T12.
 T7.1–T7.4 have atomic commits, most recently `3d3d3ce`; T7.5 and task
 tracking are recorded with the manuscript commit after the author authorized
 retrying the interrupted staging operation. The generated `results/` package is
 Git-ignored; referenced v3 manuscript assets are present in `doc/evidence/`.
+
+READ-02, READ-06, READ-08 and READ-09 were implemented and verified on
+2026-10-28 through T6 → T9 → T2 → T8. The current manuscript builds to
+80 pages. T9 published presentation-only v4 from immutable v3 scientific
+outputs: five LaTeX tables changed, with no experiments rerun. All 609 output
+hashes, 4,353 preserved input/historical hashes and eleven copied manuscript
+assets were verified. Fresh format/lint/typecheck gates pass; 328 tests pass.
+Task-specific reconciliation, the READ-01–READ-09 editorial review and
+rendered-page inspections are recorded in
+`docs/research/thesis_readability_validation.md`. T10.1 is next; final
+whole-document layout acceptance remains assigned to T12. Historical v3
+verification above is preserved; the manuscript now references v4 only.

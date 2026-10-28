@@ -1,8 +1,13 @@
 # Project State
 
-**Updated:** 2026-10-27
+**Updated:** 2026-10-28
 
 ## Decisions
+
+- 2026-10-28: The author authorized T6 → T9 → T2 → T8 with sub-agents.
+  Four distinct agents executed sequentially. READ-01–READ-09 are verified;
+  T10.1 is next. T9 published v4 numeric presentation from inherited v3
+  experiments without rerunning them; historical evidence remains intact.
 
 - 2026-10-27: The author authorized the next four readability tasks in
   canonical dependency order: T1, T3, T4 and T5. Each was implemented by a
@@ -40,6 +45,16 @@
   `specs/features/thesis-defense-evidence/validation.md`.
 
 ## Completed software capability
+
+- READ-02/06/08/09: aligned completed/pending procedure tenses, localized
+  numeric presentation through owning generators, introduced verified
+  findings before result audits and shortened the conclusion to four blocks.
+  Final manuscript: 80 pages, resolved references/citations and affected-page
+  visual inspection. Fresh software gates pass, with 328 tests and zero
+  typecheck errors/warnings. Presentation-only v4: 609 verified output hashes,
+  4,353 preserved input/historical hashes and eleven matching manuscript
+  assets; scientific CSVs and figures are unchanged. Evidence:
+  `docs/research/thesis_readability_validation.md`.
 
 - READ-01/03/04/05: consolidated limitations, relocated audit logistics to
   the appendix, separated theory paragraph roles and standardized terms,
@@ -95,8 +110,8 @@
 
 ## Next actions
 
-- Continue readability tasks in canonical order: T6 → T9 → T2 → T8,
-  followed by T10–T12. T1, T3, T4, T5 and T7 are verified; final
+- Continue readability tasks in canonical order: T10.1–T10.4 →
+  T11.1–T11.4 → T13 → T14 → T12. T1–T9 are verified; final
   whole-document layout acceptance remains assigned to T12.
 - Obtain waveform data, repeat-simulation evidence, and a qualified
   independent electrical reviewer to close the technical review and move
