@@ -1542,7 +1542,8 @@ aceitação e de execução estão no Apêndice~\ref{app:historico-parser}.
 
 \section{Completude e identidade das observações}
 
-A estrutura das observações foi revalidada para os cinco tamanhos de cada
+A verificação da extração foi complementada pela revalidação da estrutura
+das observações para os cinco tamanhos de cada
 cenário SRPI e CRPI, que
 produziram 204.300 observações escalares em dez arquivos. Cada simulação
 declarada continha todas as nove combinações esperadas de terminal e fase, com
@@ -1565,9 +1566,10 @@ fase A. A aceitação não estima uma taxa de erro nem valida outros leiautes.
 
 \section{Validação da conversão em P.U.}
 
-Dez arquivos de casos completos e sem defeito dos cenários SRPI e CRPI,
-com 50, 100, 200,
-1.000 e 10.000 execuções por cenário, foram auditados. Todos os 60 pontos de
+Com a identidade e a completude das observações verificadas, a conversão
+em P.U. foi auditada em dez arquivos de casos completos e sem defeito dos
+cenários SRPI e CRPI, com 50, 100, 200,
+1.000 e 10.000 execuções por cenário. Todos os 60 pontos de
 verificação da fase A, transcritos independentemente, coincidiram com o CSV
 exportado, usando aritmética Decimal com tolerância de $10^{-12}$~P.U. Todas
 as 90 médias não agrupadas por terminal e fase coincidiram com os próprios
@@ -1626,7 +1628,9 @@ separadamente na Seção~\ref{sec:resultados-estatisticos}.
 
 \section{Resultados da integridade e da limpeza}
 
-Todas as 204.300 observações eram únicas, estavam completas e foram mantidas
+Após a validação da conversão, as regras de integridade e limpeza foram
+aplicadas à base. Todas as 204.300 observações eram únicas, estavam
+completas e foram mantidas
 inalteradas: 102.150 por cenário, sem exclusões. Todos os 60 pontos de
 verificação de tensão e tempo transcritos de forma independente coincidiram.
 Os instantes observados variaram de 0,01870 a 0,09997~s. A independência da
@@ -1649,7 +1653,9 @@ Apêndice~\ref{app:validation-records}.
 \section{Resultados estatísticos e probabilísticos}
 \label{sec:resultados-estatisticos}
 
-O pacote de evidências utiliza os dez arquivos declarados, com a base de
+A base aceita pelas verificações anteriores fundamenta a análise
+estatística e probabilística. O pacote de evidências utiliza os dez
+arquivos declarados, com a base de
 112.677~V, o limiar de 2,3~P.U. e
 os três terminais e as três fases já validados nas seções anteriores,
 totalizando noventa combinações de cenário, tamanho amostral, terminal e
@@ -1736,9 +1742,8 @@ decisão de adequação permanece ``rejeitado'' e a inferência gaussiana é
 apresentada apenas como comparação qualificada, nunca como substituta da
 probabilidade empírica, conforme a política declarada na metodologia.
 
-\subsection{Referência do GTPPLOT e limite da validação por probabilidade}
-
-O documento \textit{Gráficos estadísticos con el GTPPLOT}, de
+Para interpretar essas probabilidades e seus limites, o documento
+\textit{Gráficos estadísticos con el GTPPLOT}, de
 \citeonline{hevia2000gtpplot}, descreve a obtenção de histogramas e curvas
 de excedência a partir das tabulações estatísticas do ATP. Cada simulação
 contribui com um pico absoluto por variável; uma tabela agrupada utiliza
@@ -1784,6 +1789,8 @@ causal de candidatos pela probabilidade do caso não foi alcançada.
 \section{Análise comparativa dos métodos de clusterização}
 \label{sec:comparacao-clusterizacao}
 
+Em complemento à descrição das distribuições, a comparação geométrica
+examina as partições produzidas pelos métodos de clusterização.
 A apresentação v4 reúne os índices internos das partições efetivamente produzidas
 pelo fluxo, sem reajustar os modelos para maximizar os escores. A
 Tabela~\ref{tab:cluster-summary} sintetiza os resultados dos nove grupos
@@ -1809,9 +1816,8 @@ adotados. Em $N=10.000$, apenas K-Means mantém índices calculáveis.
 Essas contagens qualificam a abrangência da comparação e dizem respeito
 às partições, não à aplicabilidade dos detectores de candidatos.
 
-\subsection{K-Means: separação geométrica com número de grupos fixado}
-
-O K-Means utiliza $k=2$ em todos os grupos. Seus índices descrevem a
+Nessa comparação, o K-Means utiliza $k=2$ em todos os grupos. Seus índices
+descrevem a
 separação obtida sob essa restrição: mesmo uma distribuição contínua sem
 duas populações físicas pode ser dividida em dois conjuntos. Assim,
 um Silhouette elevado e um Davies--Bouldin reduzido sustentam a coesão
@@ -1827,9 +1833,8 @@ atinge 0,6770, evidenciando comportamento não monotônico. O aumento
 amostral, portanto, não melhora automaticamente a separação interna
 produzida pelo mesmo número de centroides.
 
-\subsection{DBSCAN: densidade, ruído e aplicabilidade dos índices}
-
-O DBSCAN admite quantidade variável de agrupamentos e pontos de ruído.
+Enquanto o K-Means fixa o número de grupos, o DBSCAN admite quantidade
+variável de agrupamentos e pontos de ruído.
 Quando mantém apenas um agrupamento após excluir o ruído, o detector ainda
 pode estar aplicável, embora Silhouette e Davies--Bouldin sejam não
 aplicáveis. Portanto, ausência de escore não equivale a falha de execução
@@ -1848,9 +1853,8 @@ Silhouette é ligeiramente maior no K-Means; além disso, os denominadores
 são distintos. Esse exemplo impede equiparar o menor índice a uma
 superioridade geral de detecção.
 
-\subsection{Método hierárquico: cauda superior separada por lacuna}
-
-A regra hierárquica procura uma cauda superior pequena e afastada,
+Com finalidade distinta desses dois métodos, a regra hierárquica procura
+uma cauda superior pequena e afastada,
 conforme os limiares da metodologia. Um único agrupamento significa que não
 foi encontrada separação suficiente; dois agrupamentos podem incluir apenas
 um ponto na cauda, situação excluída pela política de avaliação. Essa
@@ -1869,9 +1873,9 @@ K-Means, enquanto Davies--Bouldin favorece a regra hierárquica.
 Logo, os critérios medem aspectos diferentes da geometria e não
 produzem necessariamente a mesma ordenação dos métodos.
 
-\subsection{Influência da quantidade de casos e limites da comparação}
-
-As Figuras~\ref{fig:cluster-crpi} e~\ref{fig:cluster-srpi} mantêm terminal
+Além das diferenças entre métodos, a quantidade de casos condiciona a
+comparação das partições. As Figuras~\ref{fig:cluster-crpi}
+e~\ref{fig:cluster-srpi} mantêm terminal
 $T_{OPO}$ e fase A fixos e mostram a evolução dos índices com $N$.
 A quantidade de casos afeta a ocupação das caudas, as distâncias entre
 vizinhos, as lacunas e os parâmetros calibrados nos próprios grupos.
@@ -1922,7 +1926,9 @@ um vencedor universal.
 \section{Evidências analíticas de anomalia}
 \label{sec:evidencias-anomalia}
 
-As evidências de anomalia foram calculadas separadamente por cenário,
+A avaliação geométrica das partições é complementada pelas evidências
+de candidatos, que seguem critérios próprios. As evidências de anomalia
+foram calculadas separadamente por cenário,
 linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:metodo-anomalias}
 da metodologia, e cobrem as 204.300 observações do pacote.
 No grupo de referência $T_{OPO}$, fase A, $N=10.000$, o
@@ -1951,7 +1957,8 @@ artefato (\texttt{analysis\_mode=exploratory}).
 \section{Comparação entre tamanhos amostrais}
 \label{sec:convergencia-amostral}
 
-A comparação dos cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000
+Para examinar como essas evidências variam entre os conjuntos disponíveis,
+a comparação dos cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000
 simulações) foi realizada sob a
 mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
 método, para os noventa grupos de cenário, terminal e fase. Os resultados

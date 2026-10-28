@@ -69,3 +69,67 @@ substantive caveat was removed.
   not a newly forced float/page break. Whole-document layout remains T12.
 
 No SPEC_DEVIATION. Tracking and commits belong to the orchestrating agent.
+
+## T14 — Connected results prose (2026-10-28)
+
+Status: complete. Editorial-only change following T13; no software, saved
+experiment, generated asset, raw input or template changed. Only
+`doc/main.tex` and this report were edited.
+
+### Heading and reference inventory
+
+Five active subsections were removed: the GTPPLOT interpretation, K-Means,
+DBSCAN, the hierarchical rule, and sample-size influence. None owned a label.
+The eight main results sections remain unchanged, including the exact final
+discussion title introduced by T13. There is no active subsection,
+subsubsection, paragraph or subparagraph heading in the results chapter,
+and no isolated bold replacement title. Headings and all source outside
+the results chapter remain byte-identical to the T13 snapshot.
+
+Transitions now connect extraction to completeness, completeness to P.U.
+validation, conversion to integrity/cleaning, accepted data to statistics,
+probabilities to GTPPLOT interpretation, distribution descriptions to
+geometric comparison, and geometric comparison to candidate evidence and
+sample-size comparison. Method paragraphs connect the fixed K-Means
+partition, variable DBSCAN partition, and distinct hierarchical tail rule.
+GTPPLOT definitions, relative AIC selection versus absolute adequacy,
+applicability distinctions, non-causal interpretation and unresolved
+electrical validation remain explicit.
+
+A comparison with `/tmp/t14-before.tex` confirms unchanged ordered lists of:
+
+- Eight main section headings and sixteen labels.
+- All 222 numeric tokens, including the accepted P.U. base, empirical
+  exceedance, Wilson limits, Gaussian diagnostics and candidate counts.
+- Forty-one reference commands, one citation command
+  (`hevia2000gtpplot`), one table inclusion and six graphics inclusions.
+
+No removed heading had a reference target, so retargeting was unnecessary.
+A whole-source search found no hard-coded numbered section references.
+Outside-chapter byte equality also preserves the methodology, conclusion
+and appendix references. No numerical claim, definition, citation, figure,
+table or substantive limitation was removed.
+
+### Editorial gate and rendered review
+
+`rtk just build` passes: 84 physical PDF pages. The final log contains no
+undefined references/citations, multiply defined labels, missing assets,
+overfull boxes or underfull boxes. The final contents lists sections
+5.1–5.8 with no results subsections.
+
+All results pages, physical PDF 47–62 (printed 46–61), were rendered with
+`pdftoppm -f 46 -l 62 -scale-to 1300 -png doc/build/main.pdf
+/tmp/t14-result` and visually inspected individually. The analytical
+sequence reads continuously, method paragraphs retain coherent transitions,
+references resolve, and the preserved P.U./clustering tables and six figures
+remain readable without clipping or overlapping text. The final discussion
+retains its unresolved causal conclusions and readable chapter boundary.
+Existing float-only pages and the forced break before the clustering table
+are left for T12's explicit whole-document layout reassessment.
+
+Parent verification for this editorial sequence reports 342 tests passing,
+scoped Ruff check/fix/format passing (176 files unchanged), and
+`basedpyright src tests scripts` with zero errors/warnings. Broad commands
+traverse the unrelated untracked `rip_atpdraw/` repository and fail there;
+that limitation does not change this task's passing editorial gate.
+No software gate rerun was needed for T14. No SPEC_DEVIATION.
