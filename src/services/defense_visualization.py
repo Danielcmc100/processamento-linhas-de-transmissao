@@ -294,53 +294,141 @@ def plot_probability_comparison(
 def plot_convergence(
     source: DataFrame,
     context: FigureContext,
-) -> tuple[Figure, Axes]:
-    """Plot probability and candidate-rate convergence on one scale.
+    *,
+    comparison_source: DataFrame | None = None,
+) -> tuple[Figure, tuple[Axes, Axes, Axes]]:
+    """Compare saved descriptive, candidate and probability evidence by N.
 
     Returns:
-        Figure and logarithmic sample-size axis.
+        Figure and three axes with corresponding cross-scenario scales.
+
+    Raises:
+        ValueError: If required columns or present sample sizes are absent.
     """
-    _require_columns(
-        source,
-        (
-            "sample_size",
-            "empirical_probability",
-            "candidate_rate",
-            "coverage_status",
-            "independence_limitation",
-        ),
+    required = (
+        "sample_size",
+        "mean",
+        "percentile_95",
+        "candidate_rate",
+        "empirical_probability",
+        "confidence_interval_lower",
+        "confidence_interval_upper",
+        "coverage_status",
+        "independence_limitation",
     )
+    _require_columns(source, required)
+    comparison = source if comparison_source is None else comparison_source
+    _require_columns(comparison, required)
     present = source.filter(source["coverage_status"] == "present").sort(
         "sample_size"
     )
-    if present.is_empty():
+    pooled = comparison.filter(comparison["coverage_status"] == "present")
+    if present.is_empty() or pooled.is_empty():
         raise ValueError("Convergence source has no present sample sizes.")
-    limitation = _constant_text(source, "independence_limitation")
-    figure, axis = pyplot.subplots(figsize=(7.5, 4.8))
-    axis.plot(
-        present["sample_size"],
-        present["empirical_probability"],
-        color=OKABE_ITO_PALETTE[4],
-        marker="o",
-        linestyle="-",
-        label="Probabilidade empírica",
-    )
-    axis.plot(
-        present["sample_size"],
-        present["candidate_rate"],
+    figure, raw_axes = pyplot.subplots(3, 1, figsize=(9.5, 8.0), sharex=True)
+    descriptive, candidates, probability = raw_axes
+    sizes = present["sample_size"].to_list()
+    for column, label, color, marker, style in (
+        ("mean", "Média", OKABE_ITO_PALETTE[4], "o", "-"),
+        ("percentile_95", "Percentil 95", OKABE_ITO_PALETTE[5], "s", "--"),
+    ):
+        descriptive.plot(
+            sizes,
+            present[column].to_list(),
+            label=label,
+            color=color,
+            marker=marker,
+            linestyle=style,
+        )
+    descriptive.set_ylabel(f"Tensão ({context.unit})", fontsize=12)
+    descriptive.set_title("Medidas descritivas", fontsize=13)
+    candidates.plot(
+        sizes,
+        present["candidate_rate"].to_list(),
         color=OKABE_ITO_PALETTE[5],
         marker="s",
-        linestyle="--",
-        label="Taxa de candidatos",
+        label="União dos critérios",
     )
-    axis.set_xscale("log")
-    axis.set_ylim(0.0, 1.0)
-    axis.set_xlabel("Número de simulações")
-    axis.set_ylabel("Proporção (escala comum)")
-    axis.set_title(f"Convergência em escala comum | {limitation}")
-    axis.legend(fontsize=8)
-    _finish(figure, (axis,), context)
-    return figure, axis
+    for size, rate in zip(sizes, present["candidate_rate"], strict=True):
+        candidates.annotate(
+            f"{float(rate):.2%}".replace(".", ","),
+            (size, rate),
+            xytext=(0, 8),
+            textcoords="offset points",
+            ha="center",
+            fontsize=10,
+        )
+    candidates.set_ylabel("Taxa de candidatos", fontsize=12)
+    candidates.set_title("Candidatos analíticos", fontsize=13)
+    empirical = asarray(present["empirical_probability"], dtype=float)
+    lower = asarray(present["confidence_interval_lower"], dtype=float)
+    upper = asarray(present["confidence_interval_upper"], dtype=float)
+    probability.errorbar(
+        sizes,
+        empirical,
+        yerr=asarray([empirical - lower, upper - empirical]),
+        color=OKABE_ITO_PALETTE[4],
+        marker="o",
+        capsize=5,
+        label="Empírica e IC de Wilson de 95%",
+    )
+    threshold = (
+        f"{context.threshold:g}".replace(".", ",")
+        if context.threshold is not None
+        else "declarado"
+    )
+    probability.set_title(
+        f"Excedência do limiar {threshold} {context.unit}", fontsize=13
+    )
+    probability.set_ylabel("Probabilidade", fontsize=12)
+    voltage_values = [
+        float(value)
+        for column in ("mean", "percentile_95")
+        for value in pooled[column].drop_nulls()
+    ]
+    voltage_min, voltage_max = min(voltage_values), max(voltage_values)
+    margin = max((voltage_max - voltage_min) * 0.12, 0.01)
+    descriptive.set_ylim(voltage_min - margin, voltage_max + margin)
+    candidate_max = max(float(value) for value in pooled["candidate_rate"])
+    candidates.set_ylim(0.0, max(candidate_max * 1.15, 0.01))
+    probability_max = max(
+        float(value) for value in pooled["confidence_interval_upper"]
+    )
+    probability.set_ylim(
+        -max(probability_max * 0.06, 0.0001),
+        max(probability_max * 1.15, 0.001),
+    )
+    for axis in raw_axes:
+        axis.set_xscale("log")
+        axis.set_xticks(sizes)
+        axis.set_xticklabels([f"{size:,}".replace(",", ".") for size in sizes])
+        axis.tick_params(labelsize=11)
+        axis.grid(visible=True, linestyle=":", alpha=0.35)
+        axis.legend(fontsize=11, loc="upper right")
+    legend_location = (
+        "lower right"
+        if min(float(value) for value in present["mean"])
+        > (voltage_min + voltage_max) / 2
+        else "upper right"
+    )
+    descriptive.legend(fontsize=11, loc=legend_location)
+    probability.set_xlabel("Número de simulações (N)", fontsize=12)
+    scope = f"{min(sizes):,}–{max(sizes):,}".replace(",", ".")
+    figure.suptitle(
+        f"{context.scenario} | {context.terminal}, fase {context.phase} | "
+        f"N = {scope}",
+        fontsize=13,
+    )
+    figure.text(
+        0.5,
+        0.015,
+        "Comparação descritiva; independência e aninhamento "
+        "não estabelecidos.",
+        ha="center",
+        fontsize=11,
+    )
+    figure.tight_layout(rect=(0.0, 0.045, 1.0, 0.96))
+    return figure, (descriptive, candidates, probability)
 
 
 def plot_cluster_anomalies(

@@ -225,3 +225,85 @@ Reproduction (fresh destination):
 results/defense-evidence/v5 --output results/defense-evidence/v6
 --figures clustering`, then `uv run python -m
 scripts.prepare_defense_document` and `just build`.
+
+
+## T10.4 — Sample-size comparison figures (2026-10-28)
+
+Status: complete. Dependency T10.3 committed as `ce4f399`. Sequential
+sub-agent execution used the authorized local filesystem/shell tools.
+
+### Ownership, scope and source reconciliation
+
+`plot_convergence()` retains its existing public name and now presents three
+panels: mean and percentile 95 in P.U.; candidate-union rate; empirical
+exceedance probability with its saved Wilson 95% interval. The extracted
+`build_defense_evidence._generate_sample_size_figures()` filters T_OPO/phase A
+and supplies both scenarios as the common scale reference. Every plotted
+series comes directly from `sources/convergence.csv`, without recomputation
+of experiments or pooling of groups. Matching panels share corresponding
+limits and method styles. Candidate-rate limits use the observed range rather
+than 0–1; direct percentage labels expose small differences at printed size.
+Axes use logarithmic N spacing with all five sample-size ticks. The title
+states the actual N range, 50–10.000; no across-N figure is labeled n=10000.
+Portuguese captions name all three actual panels and the shared scales.
+The footnote preserves the lack of established independence and nesting.
+The largest sample remains an empirical reference, not ground truth.
+
+The reference-group candidate rates reconcile with the unchanged comparison
+table and full-precision source:
+
+| Scenario | N=50 | N=100 | N=200 | N=1,000 | N=10,000 |
+| --- | --- | --- | --- | --- | --- |
+| CRPI | 16% | 12% | 1% | 1% | 1.09% |
+| SRPI | 12% | 12% | 11% | 8.60% | 8.52% |
+
+CRPI means run from 1.141219 to 1.176943 P.U., with percentile 95 from
+1.350297 to 1.394753 P.U.; SRPI means are 1.682411–1.721619 P.U. and its
+percentile 95 is 1.821116–1.835295 P.U. Both scenarios have zero empirical
+exceedance of 2.3 P.U. at all five N. Saved Wilson upper bounds are
+approximately 0.0713476, 0.0369935, 0.0188453, 0.00382676 and 0.0003840.
+Error bars retain their positive upper bounds. Zero observed events are not
+presented as certainty about the underlying probability. Figure language is
+descriptive comparison, with no unsupported convergence claim.
+
+### Regression and gates
+
+- RED: the new multi-panel contract failed before implementation (one
+  failure, nine passes); the builder scope test failed because the extracted
+  owner did not exist. Its final RED fixture is synthetic and self-contained.
+  A further RED regression proved small candidate-rate labels were absent.
+- GREEN: tests verify actual mean/P95 and candidate series, exact interval
+  endpoints, cross-scenario corresponding limits, restricted reference scope,
+  actual N range, and 1.00% versus 1.09% labels. No test is skipped or deleted.
+  The former one-panel test was updated to the authorized three-panel behavior.
+- Full `uv run task test`: 333 passed in 81.89 seconds, versus the latest
+  331-test baseline. Earlier implementation gate: 332 passed in 84.81 seconds.
+  Final legend-placement styling: focused 12 passed in 3.25 seconds.
+  `uv run task format`, `uv run task lint`, `uv run task typecheck`: pass;
+  typecheck reports zero errors, warnings or notes.
+- Presentation-only replay v7 derives from immutable v6 through the existing
+  replay owner, extended with `--figures convergence`. Only four target files
+  change: both scenarios' convergence PNG/SVG. All 290 CSVs retain exact bytes,
+  schemas and row counts; generated tables and all other figures are unchanged.
+  All 609 current output hashes and ten raw-source hashes pass. Historical
+  v1–v7 manifests verify 4,114 unique source/output paths, using the same
+  path-counting scope as T10.2/T10.3. No experiments were rerun, and electrical
+  review remains incomplete with its causal conclusion unresolved.
+- Eleven manuscript references use v7 exclusively; every copied asset matches
+  its package counterpart. Historical packages, manuscript assets, raw model
+  inputs and template assets remain intact.
+- `just build`: pass, 83 pages. No actual unresolved references/citations,
+  missing assets, duplicate labels or overfull boxes. Final physical pages
+  66–67 (printed 65–66) rendered at 1,600 pixels and inspected. Labels, axes,
+  percentages, captions, Wilson bars and source text remain readable without
+  clipping. Legends were moved away from scenario data after visual review.
+  The two added pages allow the expanded panels to remain readable; final
+  whole-document layout and table relocation remain T11/T12 work.
+- `git diff --check`: pass. Pre-existing TODOS.md and staged/unstaged tasks.md
+  edits are preserved outside this task commit. No specification deviation.
+  No notebook duplication: this report records the extracted replay ownership.
+
+Reproduction (fresh destination): `uv run python -m
+scripts.replay_defense_figures --source results/defense-evidence/v6 --output
+results/defense-evidence/v7 --figures convergence`, then `uv run python -m
+scripts.prepare_defense_document` and `just build`.

@@ -600,30 +600,37 @@ def _generate_figures(
     output: Path,
 ) -> None:
     """Generate source-backed representative publication figures."""
+    _generate_sample_size_figures(convergence, output)
+    _generate_distribution_figures(annotated, adequacy, output)
+
+
+def _generate_sample_size_figures(
+    convergence: DataFrame,
+    output: Path,
+) -> None:
+    """Render reference-group sample comparisons with shared panel scales."""
+    comparison = convergence.filter(
+        (col("terminal") == "T_OPO") & (col("phase") == "A")
+    )
     for scenario in ("SRPI", "CRPI"):
+        source = comparison.filter(col("scenario") == scenario)
         context = FigureContext(
             scenario=scenario,
-            sample_size=10_000,
+            sample_size=int(str(source["sample_size"].max())),
             terminal="T_OPO",
             phase="A",
-            method="comparação de métodos",
+            method="comparação amostral",
             unit="p.u.",
             threshold=THRESHOLD_PU,
             status="evidência analítica",
         )
-        convergence_source = convergence.filter(
-            (col("scenario") == scenario)
-            & (col("terminal") == "T_OPO")
-            & (col("phase") == "A")
+        figure, _ = plot_convergence(
+            source, context, comparison_source=comparison
         )
-        figure, _ = plot_convergence(convergence_source, context)
         export_publication_figure(
-            figure,
-            output / f"convergence-{scenario.lower()}-t_opo-a",
+            figure, output / f"convergence-{scenario.lower()}-t_opo-a"
         )
         pyplot.close(figure)
-
-    _generate_distribution_figures(annotated, adequacy, output)
 
 
 def _generate_distribution_figures(

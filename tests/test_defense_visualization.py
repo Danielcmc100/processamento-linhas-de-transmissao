@@ -91,21 +91,52 @@ def test_convergence_uses_common_scale_and_distinct_metrics(
 ) -> None:
     source = polars.DataFrame({
         "sample_size": [50, 100, 200, 1_000, 10_000],
-        "empirical_probability": [0.12, 0.10, 0.09, 0.08, 0.075],
+        "mean": [1.1, 1.11, 1.12, 1.115, 1.113],
+        "percentile_95": [1.3, 1.31, 1.32, 1.315, 1.313],
+        "empirical_probability": [0.0] * 5,
+        "confidence_interval_lower": [0.0] * 5,
+        "confidence_interval_upper": [0.0713, 0.037, 0.019, 0.0038, 0.0004],
         "candidate_rate": [0.08, 0.07, 0.06, 0.055, 0.05],
         "coverage_status": ["present"] * 5,
         "independence_limitation": ["independência não estabelecida"] * 5,
     })
-
-    figure, axis = plot_convergence(source, context)
+    comparison = source.with_columns(
+        (polars.col("candidate_rate") * 2).alias("candidate_rate")
+    )
+    figure, axes = plot_convergence(
+        source, context, comparison_source=polars.concat([source, comparison])
+    )
+    other, other_axes = plot_convergence(
+        comparison,
+        context,
+        comparison_source=polars.concat([source, comparison]),
+    )
     try:
-        assert len(axis.lines) == 2
-        assert {line.get_marker() for line in axis.lines} == {"o", "s"}
-        assert "escala comum" in axis.get_title().lower()
-        assert "independência não estabelecida" in axis.get_title()
-        assert axis.get_xscale() == "log"
+        assert len(axes) == 3
+        assert [line.get_ydata().tolist() for line in axes[0].lines] == [
+            source["mean"].to_list(),
+            source["percentile_95"].to_list(),
+        ]
+        assert axes[1].lines[0].get_ydata().tolist() == (
+            source["candidate_rate"].to_list()
+        )
+        assert axes[1].get_ylim()[1] < 0.2
+        assert axes[2].get_ylim()[1] > 0.0713
+        segments = axes[2].collections[0].get_segments()
+        assert [segment[:, 1].tolist() for segment in segments] == [
+            [0.0, value] for value in source["confidence_interval_upper"]
+        ]
+        assert [axis.get_ylim() for axis in axes] == [
+            axis.get_ylim() for axis in other_axes
+        ]
+        assert all(axis.get_xscale() == "log" for axis in axes)
+        title = str(getattr(figure, "_suptitle").get_text())
+        assert "50–10.000" in title
+        assert "n=10000" not in title
+        assert "convergência" not in title.lower()
     finally:
         pyplot.close(figure)
+        pyplot.close(other)
 
 
 def test_cluster_colors_remain_separate_from_anomaly_marker(
@@ -276,3 +307,28 @@ def test_distribution_scenarios_share_bins_and_scales(
     finally:
         pyplot.close(first)
         pyplot.close(second)
+
+
+def test_sample_size_candidate_labels_expose_small_rate_differences(
+    context: FigureContext,
+) -> None:
+    source = polars.DataFrame({
+        "sample_size": [200, 1_000, 10_000],
+        "mean": [1.1] * 3,
+        "percentile_95": [1.3] * 3,
+        "candidate_rate": [0.01, 0.01, 0.0109],
+        "empirical_probability": [0.0] * 3,
+        "confidence_interval_lower": [0.0] * 3,
+        "confidence_interval_upper": [0.0188, 0.0038, 0.000384],
+        "coverage_status": ["present"] * 3,
+        "independence_limitation": ["not established"] * 3,
+    })
+    figure, axes = plot_convergence(source, context)
+    try:
+        assert [text.get_text() for text in axes[1].texts] == [
+            "1,00%",
+            "1,00%",
+            "1,09%",
+        ]
+    finally:
+        pyplot.close(figure)

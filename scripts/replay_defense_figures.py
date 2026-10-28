@@ -11,6 +11,7 @@ from polars import read_csv
 
 from scripts.build_defense_evidence import (
     _generate_distribution_figures,
+    _generate_sample_size_figures,
     _git_revision,
 )
 from src.services.defense_clustering import export_clustering_figures
@@ -31,7 +32,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
         "--figures",
-        choices=("distribution", "clustering"),
+        choices=("distribution", "clustering", "convergence"),
         default="distribution",
     )
     arguments = parser.parse_args()
@@ -51,6 +52,10 @@ def main() -> None:
             read_csv(original / "sources/annotated_observations.csv"),
             read_csv(original / "sources/distribution_adequacy.csv"),
             output / "figures",
+        )
+    elif arguments.figures == "convergence":
+        _generate_sample_size_figures(
+            read_csv(original / "sources/convergence.csv"), output / "figures"
         )
     else:
         export_clustering_figures(

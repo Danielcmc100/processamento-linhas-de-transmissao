@@ -295,3 +295,44 @@ def test_distribution_exports_use_shared_scenario_scope(
         "distribution-crpi-t_opo-a",
     ]
     assert exports[0][1] == exports[1][1]
+
+
+def test_sample_size_exports_share_axes_and_reference_scope(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from matplotlib.figure import Figure
+
+    from scripts.build_defense_evidence import _generate_sample_size_figures
+
+    source = DataFrame({
+        "scenario": ["SRPI"] * 2 + ["CRPI"] * 2,
+        "terminal": ["T_OPO"] * 4,
+        "phase": ["A"] * 4,
+        "sample_size": [50, 10_000] * 2,
+        "mean": [1.1, 1.12, 1.2, 1.23],
+        "percentile_95": [1.3, 1.32, 1.4, 1.43],
+        "empirical_probability": [0.0] * 4,
+        "candidate_rate": [0.1, 0.09, 0.16, 0.02],
+        "confidence_interval_lower": [0.0] * 4,
+        "confidence_interval_upper": [0.0713, 0.0004] * 2,
+        "coverage_status": ["present"] * 4,
+        "independence_limitation": ["not established"] * 4,
+    })
+    exports: list[tuple[str, list[tuple[float, float]], str]] = []
+
+    def capture(figure: Figure, output: Path) -> None:
+        exports.append((
+            output.name,
+            [axis.get_ylim() for axis in figure.axes],
+            str(getattr(figure, "_suptitle").get_text()),
+        ))
+
+    monkeypatch.setattr(
+        "scripts.build_defense_evidence.export_publication_figure", capture
+    )
+    _generate_sample_size_figures(source, tmp_path)
+    assert len(exports) == 2
+    assert exports[0][1] == exports[1][1]
+    assert all("T_OPO, fase A" in title for _, _, title in exports)
+    assert all("50–10.000" in title for _, _, title in exports)
