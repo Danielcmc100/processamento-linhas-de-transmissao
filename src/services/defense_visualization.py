@@ -8,7 +8,14 @@ from matplotlib import pyplot
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.markers import MarkerStyle
-from numpy import arange, asarray, linspace, sort
+from numpy import (
+    arange,
+    asarray,
+    histogram,
+    histogram_bin_edges,
+    linspace,
+    sort,
+)
 from polars import DataFrame
 from scipy.stats import norm
 
@@ -70,6 +77,8 @@ class ExportedFigure:
 def plot_distribution_qq(
     source: DataFrame,
     context: FigureContext,
+    *,
+    comparison_source: DataFrame | None = None,
 ) -> tuple[Figure, tuple[Axes, Axes]]:
     """Plot histogram, fitted Gaussian density, and normal Q-Q evidence.
 
@@ -98,17 +107,38 @@ def plot_distribution_qq(
             "fitted_standard_deviation must be greater than zero."
         )
     adequacy = _constant_text(source, "adequacy_status")
+    adequacy = {
+        "rejected": "rejeitada",
+        "not_rejected": "não rejeitada",
+        "undersized": "amostra insuficiente",
+        "degenerate": "distribuição degenerada",
+    }.get(adequacy, adequacy)
+    comparison = source if comparison_source is None else comparison_source
+    all_values = comparison["value_pu"].to_numpy()
+    bins = histogram_bin_edges(all_values, bins="auto")
+    lower, upper = float(bins[0]), float(bins[-1])
+    margin = (upper - lower) * 0.04
+    density_max = 0.0
+    for group in comparison.partition_by(
+        "fitted_mean", "fitted_standard_deviation", "adequacy_status"
+    ):
+        density, _ = histogram(
+            group["value_pu"].to_numpy(), bins=bins, density=True
+        )
+        standard_deviation = float(group["fitted_standard_deviation"][0])
+        peak = float(norm.pdf(0.0, scale=standard_deviation))
+        density_max = max(density_max, float(density.max()), peak)
 
-    figure, raw_axes = pyplot.subplots(1, 2, figsize=(11.0, 4.5))
+    figure, raw_axes = pyplot.subplots(1, 2, figsize=(7.2, 3.5))
     histogram_axis, qq_axis = raw_axes
     histogram_axis.hist(
         values,
-        bins="auto",
+        bins=bins,
         density=True,
         color=OKABE_ITO_PALETTE[1],
         edgecolor="#000000",
         alpha=0.55,
-        label="Distribuição empírica",
+        label="Empírica",
     )
     density_x = linspace(float(values.min()), float(values.max()), 240)
     histogram_axis.plot(
@@ -117,13 +147,25 @@ def plot_distribution_qq(
         color=OKABE_ITO_PALETTE[5],
         linestyle="--",
         linewidth=2.0,
-        label="Densidade gaussiana ajustada",
+        label="Ajuste gaussiano",
     )
     _draw_context_threshold(histogram_axis, context)
     histogram_axis.set_xlabel(f"Sobretensão ({context.unit})")
     histogram_axis.set_ylabel("Densidade")
-    histogram_axis.set_title("Distribuição e ajuste gaussiano")
-    histogram_axis.legend(fontsize=8)
+    histogram_axis.set_title("Distribuição e ajuste gaussiano", fontsize=10)
+    if (
+        context.threshold is not None
+        and not lower <= context.threshold <= upper
+    ):
+        histogram_axis.lines[-1].set_label("_nolegend_")
+    histogram_axis.legend(
+        fontsize=9,
+        loc=(
+            "upper left"
+            if fitted_mean > (lower + upper) / 2
+            else "upper right"
+        ),
+    )
 
     probabilities = (arange(len(values), dtype=float) + 0.5) / len(values)
     theoretical = norm.ppf(probabilities)
@@ -144,9 +186,40 @@ def plot_distribution_qq(
     )
     qq_axis.set_xlabel("Quantis teóricos normais")
     qq_axis.set_ylabel(f"Quantis observados ({context.unit})")
-    qq_axis.set_title(f"Gráfico Q-Q | Adequação: {adequacy}")
-    qq_axis.legend(fontsize=8)
-    _finish(figure, (histogram_axis, qq_axis), context)
+    qq_axis.set_title(f"Gráfico Q-Q | Adequação: {adequacy}", fontsize=10)
+    qq_axis.legend(fontsize=9)
+    histogram_axis.set_xlim(lower - margin, upper + margin)
+    histogram_axis.set_ylim(0.0, density_max * 1.12)
+    qq_axis.set_ylim(lower - margin, upper + margin)
+    # Reference quantiles and fitted lines share the same comparison window.
+    max_count = max(
+        group.height
+        for group in comparison.partition_by(
+            "fitted_mean", "fitted_standard_deviation", "adequacy_status"
+        )
+    )
+    quantile_limit = float(norm.ppf(1.0 - 0.5 / max_count)) * 1.05
+    qq_axis.set_xlim(-quantile_limit, quantile_limit)
+    threshold_note = ""
+    if context.threshold is not None:
+        exceedances = int((values > context.threshold).sum())
+        threshold = f"{context.threshold:g}".replace(".", ",")
+        outside = not lower - margin <= context.threshold <= upper + margin
+        location = "; fora da janela" if outside else ""
+        denominator = f"{len(values):,}".replace(",", ".")
+        threshold_note = (
+            f"Limiar {threshold} {context.unit}{location}: "
+            f"{exceedances}/{denominator} excedências (>)."
+        )
+    figure.suptitle(
+        f"{context.scenario} | {context.terminal}, fase {context.phase} | "
+        + f"N = {len(values):,}".replace(",", "."),
+        fontsize=12,
+    )
+    figure.text(0.5, 0.015, threshold_note, ha="center", fontsize=11)
+    for axis in (histogram_axis, qq_axis):
+        axis.grid(visible=True, linestyle=":", alpha=0.35)
+    figure.tight_layout(rect=(0.0, 0.065, 1.0, 0.94))
     return figure, (histogram_axis, qq_axis)
 
 

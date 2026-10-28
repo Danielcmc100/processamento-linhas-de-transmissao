@@ -86,3 +86,70 @@ Whole-document float integration and residual paragraph splits remain T12.
 In particular, the existing floating line-model figure can interrupt the
 following model-description paragraph. This task does not claim final layout
 acceptance, nor change the pending T10.2–T10.4 statistical figures.
+
+
+## T10.2 — Comparable distribution and Q-Q figures (2026-10-28)
+
+Assumptions and ownership: current v4 scientific evidence remains authoritative;
+no simulation or analysis experiment is repeated. `plot_distribution_qq()`
+owns histogram/Q-Q presentation; the builder's extracted
+`_generate_distribution_figures()` supplies the two-scenario reference scope.
+The manuscript owns interpretation and captions. No task-list or TODOS edit
+belongs to this implementation.
+
+- Both scenarios retain all 10,000 observations for T_OPO, phase A, their
+  saved Gaussian parameters and saved Anderson-Darling decisions. Shared
+  histogram edges derive from the combined observed range solely for display;
+  empirical densities and fitted parameters remain scenario-specific. Histogram
+  x/y and Q-Q x/y limits match across scenarios. No scientific groups are pooled.
+- The distant 2.3 P.U. threshold does not expand the histogram axis. Its note
+  explicitly says it lies outside the window and reports 0/10,000 strict
+  exceedances for each scenario. Portuguese adequacy, concise headings, scope
+  and labels replace mixed-language decisions and duplicated method/status
+  metadata. Captions explain shared bins/scales and the off-window threshold.
+- Printed-size visual review initially found the histogram legend covering
+  a peak. Short labels and placement opposite the fitted mean expose both
+  peaks. Final physical PDF pages 53–54 (printed 52–53) were rendered at
+  1,600 pixels and inspected: both panels, legends, notes, units and captions
+  are readable, without clipping or overlap. Both figures use full text width.
+
+### Regression and publication proof
+
+- Parent's fresh pre-change baseline: 328 tests passed in 76.72 seconds.
+  New comparison regression failed before implementation (1 failed/9 passed),
+  then passed. Unit assertions cover bins, four corresponding axis limits,
+  Portuguese adequacy, units and the explicit off-window exceedance note.
+  A builder integration test confirms matching scenario export scope/limits.
+- `uv run task format` and `uv run task lint` pass; typecheck reports zero
+  errors/warnings/notes. Full `uv run task test`: 330 passed in 77.45 seconds.
+  After final legend/number styling, focused tests were rerun: 11 passed in
+  2.77 seconds; format and typecheck pass. No test was removed or skipped.
+- `scripts/replay_defense_figures.py` publishes presentation-only v5 from
+  immutable v4. It refuses an existing destination through `copytree`, verifies
+  inherited output hashes, uses saved observations/adequacy and checks that
+  only distribution PNG/SVG presentation files change. Manifest records the
+  replay command, inherited provenance, implementation hashes, changed paths
+  and `experiments_rerun: false`. Intermediate unpublished v5 attempts were
+  discarded while correcting visual details; final v5 is the validated result.
+- Exactly four artifacts differ from v4: distribution PNG and SVG for each
+  scenario. All 290 scientific CSV files retain identical bytes, schemas and
+  rows; all tables and non-distribution figures retain identical bytes.
+  All 609 v5 output hashes and ten source hashes pass. Package status remains
+  incomplete with electrical review unresolved.
+- Historical v1–v4 output records and current v5 records were each rechecked
+  against their manifests, including raw-source hashes: 2,896 unique referenced
+  paths pass (2,886 non-manifest package outputs plus ten raw source paths).
+  The five package trees contain 2,891 files including five manifests. This
+  differs from T9's 4,353-file preservation snapshot because this check counts
+  manifest-referenced paths, not every additional historical/audit file.
+- All eleven manuscript evidence references now use v5 and match package
+  bytes. Old manuscript assets and original input/template files remain.
+  `just build` passes, 81 pages, with no actual LaTeX warnings, missing assets,
+  unresolved references/citations or overfull boxes. Whole-document placement
+  remains T12; T10.3 and T10.4 retain ownership of their figures.
+
+No specification deviation. Reproduction:
+`uv run python -m scripts.replay_defense_figures --source
+results/defense-evidence/v4 --output results/defense-evidence/v5`
+(requires a fresh destination), followed by the existing document copier and
+`just build`.

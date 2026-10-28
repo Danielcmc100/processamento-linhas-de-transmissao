@@ -13,7 +13,6 @@ from matplotlib import pyplot
 from polars import (
     DataFrame,
     Int64,
-    String,
     col,
     concat,
     lit,
@@ -624,26 +623,44 @@ def _generate_figures(
         )
         pyplot.close(figure)
 
-        observations = annotated.filter(
-            (col("scenario") == scenario)
-            & (col("sample_size") == 10_000)
-            & (col("terminal") == "T_OPO")
-            & (col("phase") == "A")
+    _generate_distribution_figures(annotated, adequacy, output)
+
+
+def _generate_distribution_figures(
+    annotated: DataFrame,
+    adequacy: DataFrame,
+    output: Path,
+) -> None:
+    """Render both reference distributions using pooled presentation limits."""
+    scope = (
+        (col("sample_size") == 10_000)
+        & (col("terminal") == "T_OPO")
+        & (col("phase") == "A")
+    )
+    observations = annotated.filter(scope).select("scenario", "value_pu")
+    fits = adequacy.filter(scope).select(
+        "scenario",
+        "fitted_mean",
+        "fitted_standard_deviation",
+        col("decision").alias("adequacy_status"),
+    )
+    comparison = observations.join(fits, on="scenario", how="left")
+    for scenario in ("SRPI", "CRPI"):
+        context = FigureContext(
+            scenario=scenario,
+            sample_size=10_000,
+            terminal="T_OPO",
+            phase="A",
+            method="adequação gaussiana",
+            unit="p.u.",
+            threshold=THRESHOLD_PU,
+            status="evidência analítica",
         )
-        fit = adequacy.filter(
-            (col("scenario") == scenario)
-            & (col("sample_size") == 10_000)
-            & (col("terminal") == "T_OPO")
-            & (col("phase") == "A")
-        ).row(0, named=True)
-        distribution_source = observations.select("value_pu").with_columns(
-            lit(fit["fitted_mean"]).alias("fitted_mean"),
-            lit(fit["fitted_standard_deviation"]).alias(
-                "fitted_standard_deviation"
-            ),
-            lit(str(fit["decision"]), dtype=String).alias("adequacy_status"),
+        figure, _ = plot_distribution_qq(
+            comparison.filter(col("scenario") == scenario),
+            context,
+            comparison_source=comparison,
         )
-        figure, _ = plot_distribution_qq(distribution_source, context)
         export_publication_figure(
             figure,
             output / f"distribution-{scenario.lower()}-t_opo-a",

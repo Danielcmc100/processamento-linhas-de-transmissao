@@ -6,11 +6,12 @@ from pathlib import Path
 
 import pytest
 from numpy.random import default_rng
-from polars import col, read_csv
+from polars import DataFrame, col, read_csv
 
 from scripts.build_defense_evidence import (
     _argument_parser,
     _dataset_manifest_frame,
+    _generate_distribution_figures,
     build_defense_evidence,
 )
 from scripts.prepare_defense_document import main
@@ -253,3 +254,44 @@ def test_fixture_package_consumes_pipeline_contract_and_copies_assets(
         ).read_bytes()
     for path in historical:
         assert path.read_bytes() == path.parent.name.encode()
+
+
+def test_distribution_exports_use_shared_scenario_scope(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from matplotlib.figure import Figure
+
+    observations = DataFrame({
+        "scenario": ["SRPI"] * 4 + ["CRPI"] * 4,
+        "sample_size": [10_000] * 8,
+        "terminal": ["T_OPO"] * 8,
+        "phase": ["A"] * 8,
+        "value_pu": [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5],
+    })
+    adequacy = DataFrame({
+        "scenario": ["SRPI", "CRPI"],
+        "sample_size": [10_000] * 2,
+        "terminal": ["T_OPO"] * 2,
+        "phase": ["A"] * 2,
+        "fitted_mean": [0.95, 1.35],
+        "fitted_standard_deviation": [0.13] * 2,
+        "decision": ["rejected", "not_rejected"],
+    })
+    exports: list[tuple[str, list[tuple[float, float]]]] = []
+
+    def capture(figure: Figure, output: Path) -> None:
+        exports.append((
+            output.name,
+            [axis.get_xlim() for axis in figure.axes],
+        ))
+
+    monkeypatch.setattr(
+        "scripts.build_defense_evidence.export_publication_figure", capture
+    )
+    _generate_distribution_figures(observations, adequacy, tmp_path)
+    assert [name for name, _ in exports] == [
+        "distribution-srpi-t_opo-a",
+        "distribution-crpi-t_opo-a",
+    ]
+    assert exports[0][1] == exports[1][1]

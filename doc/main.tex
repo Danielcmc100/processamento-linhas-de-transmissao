@@ -1668,7 +1668,7 @@ probabilidade empírica de excedência de 2,3~P.U. para as noventa
 combinações, com o número de eventos, o denominador, o intervalo de Wilson
 de 95\% e o estado de validação.
 
-\input{evidence/v4/tables/probability.tex}
+\input{evidence/v5/tables/probability.tex}
 
 Nenhuma das 204.300 observações aceitas excedeu 2,3~P.U.; a probabilidade
 empírica é, portanto, zero em todos os noventa grupos, com o limite superior
@@ -1691,17 +1691,22 @@ excesso de curtose de $-0,4042$ no CRPI contra 2,2944 no SRPI e correlação
 quantil--quantil de 0,9460 no CRPI contra 0,9081 no SRPI. As
 Figuras~\ref{fig:defesa-distribuicao-crpi} e~\ref{fig:defesa-distribuicao-srpi}
 apresentam o histograma com densidade ajustada e o gráfico quantil--quantil
-desse grupo de referência.
+desse grupo de referência. Os dois cenários compartilham as classes do
+histograma e os limites dos eixos correspondentes, permitindo comparar
+forma e dispersão. O limiar de 2,3~P.U., distante dos valores observados,
+é informado em nota com a contagem de excedências, sem comprimir a janela
+de visualização.
 
 \begin{figure}[htbp]
 \centering
 \caption{Histograma com densidade gaussiana ajustada e gráfico
 quantil--quantil para o CRPI, terminal $T_{OPO}$, fase A, $N=10.000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
-empírica permanece principal.}
+empírica permanece principal. Classes e escalas são comuns aos dois
+cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-crpi}
-\includegraphics[width=0.85\textwidth]
-{evidence/v4/figures/distribution-crpi-t_opo-a.png}
+\includegraphics[width=\textwidth]
+{evidence/v5/figures/distribution-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1713,10 +1718,11 @@ empírica permanece principal.}
 \caption{Histograma com densidade gaussiana ajustada e gráfico
 quantil--quantil para o SRPI, terminal $T_{OPO}$, fase A, $N=10.000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
-empírica permanece principal.}
+empírica permanece principal. Classes e escalas são comuns aos dois
+cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-srpi}
-\includegraphics[width=0.85\textwidth]
-{evidence/v4/figures/distribution-srpi-t_opo-a.png}
+\includegraphics[width=\textwidth]
+{evidence/v5/figures/distribution-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1795,7 +1801,7 @@ DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
 partição elegível para avaliação, sem atribuir artificialmente escore zero.
 
 \clearpage
-\input{evidence/v4/tables/clustering_summary.tex}
+\input{evidence/v5/tables/clustering_summary.tex}
 
 Os índices foram aplicáveis em 90 dos 90 grupos do K-Means, em quatro
 dos 90 grupos do DBSCAN e em seis dos 90 grupos do método hierárquico.
@@ -1884,7 +1890,7 @@ terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
 conforme o registro individual.}
 \label{fig:cluster-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v4/figures/clustering-crpi.png}
+{evidence/v5/figures/clustering-crpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1897,7 +1903,7 @@ terminal $T_{OPO}$, fase A. Ausência de ponto indica não aplicabilidade,
 conforme o registro individual.}
 \label{fig:cluster-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v4/figures/clustering-srpi.png}
+{evidence/v5/figures/clustering-srpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1947,7 +1953,7 @@ cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000 simulações) sob a
 mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
 método, para os noventa grupos de cenário, terminal e fase.
 
-\input{evidence/v4/tables/convergence.tex}
+\input{evidence/v5/tables/convergence.tex}
 
 A largura do intervalo de confiança da probabilidade empírica diminui de
 forma monotônica com o tamanho amostral em todos os grupos, de 0,0713 em
@@ -1970,7 +1976,7 @@ entre os cinco tamanhos amostrais, CRPI, terminal
 $T_{OPO}$, fase A.}
 \label{fig:defesa-convergencia-crpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v4/figures/convergence-crpi-t_opo-a.png}
+{evidence/v5/figures/convergence-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -1983,7 +1989,7 @@ entre os cinco tamanhos amostrais, SRPI, terminal
 $T_{OPO}$, fase A.}
 \label{fig:defesa-convergencia-srpi}
 \includegraphics[width=0.85\textwidth]
-{evidence/v4/figures/convergence-srpi-t_opo-a.png}
+{evidence/v5/figures/convergence-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -2019,7 +2025,7 @@ precisão superior à do DBSCAN em toda condição comparável, à custa de
 recuperar uma fração menor dos pontos intervencionados nas taxas mais
 baixas.
 
-\input{evidence/v4/tables/benchmark.tex}
+\input{evidence/v5/tables/benchmark.tex}
 
 A grade congelada de sensibilidade de parâmetros -- número de grupos e
 sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --
@@ -2039,7 +2045,7 @@ concordância entre métodos, discordância, escore elevado e controle sem
 sinalização, conforme a regra de amostragem declarada na metodologia. A
 Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
 
-\input{evidence/v4/tables/technical_review.tex}
+\input{evidence/v5/tables/technical_review.tex}
 
 Todos os cinco casos permanecem com conclusão ``não resolvido''. As
 evidências ausentes e suas consequências para a interpretação são
@@ -2303,7 +2309,7 @@ Seu manifesto preserva a proveniência experimental herdada e identifica a
 reprodução da apresentação pelo comando
 \texttt{uv run python -m docs.research.replay\_thesis\_numeric\_tables}.
 
-O diretório do pacote atual é \path{results/defense-evidence/v4/}.
+O diretório do pacote atual é \path{results/defense-evidence/v5/}.
 Os caminhos a seguir são relativos a esse diretório e vinculam os
 resultados aos respectivos registros completos:
 \begin{description}
@@ -2334,7 +2340,7 @@ pacote: \path{sources/annotated_observations.csv},
 \path{sources/distribution_adequacy.csv},
 \path{sources/clustering_comparison.csv} e
 \path{sources/convergence.csv}. As cópias incluídas neste documento ficam
-em \path{doc/evidence/v4/}, permitindo sua compilação independente.
+em \path{doc/evidence/v5/}, permitindo sua compilação independente.
 O documento de GTPPLOT citado na discussão estatística é identificado no
 acervo pelo arquivo \texttt{2000-N4-Estati-1.pdf}.
 

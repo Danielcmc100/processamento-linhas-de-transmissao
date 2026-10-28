@@ -234,3 +234,45 @@ def test_palette_is_colorblind_safe_okabe_ito() -> None:
         "#009E73",
         "#F0E442",
     )
+
+
+def test_distribution_scenarios_share_bins_and_scales(
+    context: FigureContext,
+) -> None:
+    source = polars.DataFrame({
+        "value_pu": [0.8, 0.9, 1.0, 1.1],
+        "fitted_mean": [0.95] * 4,
+        "fitted_standard_deviation": [0.13] * 4,
+        "adequacy_status": ["rejected"] * 4,
+    })
+    other = polars.DataFrame({
+        "value_pu": [1.2, 1.3, 1.4, 1.5],
+        "fitted_mean": [1.35] * 4,
+        "fitted_standard_deviation": [0.13] * 4,
+        "adequacy_status": ["not_rejected"] * 4,
+    })
+    comparison = polars.concat([source, other])
+    first, axes = plot_distribution_qq(
+        source, context, comparison_source=comparison
+    )
+    second, other_axes = plot_distribution_qq(
+        other, context, comparison_source=comparison
+    )
+    try:
+        assert [patch.get_x() for patch in axes[0].patches] == [
+            patch.get_x() for patch in other_axes[0].patches
+        ]
+        for axis, other_axis in zip(axes, other_axes, strict=True):
+            assert axis.get_xlim() == other_axis.get_xlim()
+            assert axis.get_ylim() == other_axis.get_ylim()
+        assert context.threshold is not None
+        assert axes[0].get_xlim()[1] < context.threshold
+        notes = " ".join(text.get_text() for text in getattr(first, "texts"))
+        assert "2,3" in notes and "0/4" in notes
+        assert "fora da janela" in notes
+        assert "Adequação: rejeitada" in axes[1].get_title()
+        assert "Adequação: não rejeitada" in other_axes[1].get_title()
+        assert "Sobretensão (p.u.)" == axes[0].get_xlabel()
+    finally:
+        pyplot.close(first)
+        pyplot.close(second)
