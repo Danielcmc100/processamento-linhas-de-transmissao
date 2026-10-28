@@ -102,6 +102,9 @@ _DEFINITIONS = (
         source_filename="benchmark.csv",
         latex_filename="benchmark.tex",
         required_columns=(
+            "requested_contamination_rate",
+            "effective_contamination_rate",
+            "row_count",
             "intervention_family",
             "intervention_intensity",
             "method",
@@ -120,8 +123,11 @@ _DEFINITIONS = (
         ),
         display_columns=(
             ("intervention_family", "Intervenção"),
+            ("requested_contamination_rate", "Contaminação solicitada"),
+            ("effective_contamination_rate", "Contaminação efetiva"),
             ("intervention_intensity", "Intensidade"),
             ("method", "Método"),
+            ("row_count", "N aval."),
             ("true_positive", "VP"),
             ("false_positive", "FP"),
             ("true_negative", "VN"),
@@ -134,7 +140,10 @@ _DEFINITIONS = (
         key_columns=(
             "intervention_family",
             "intervention_intensity",
+            "requested_contamination_rate",
+            "effective_contamination_rate",
             "method",
+            "row_count",
         ),
         sort_columns=(
             "intervention_family",
@@ -425,7 +434,22 @@ def _render_latex(
     """Render one deterministic Brazilian Portuguese LaTeX table."""
     columns = definition.display_columns
     weights = [
-        3
+        0.65
+        if definition.name == "benchmark"
+        and name
+        in {
+            "true_positive",
+            "false_positive",
+            "true_negative",
+            "false_negative",
+            "row_count",
+        }
+        else 1.2
+        if definition.name == "benchmark"
+        and name in {"method", "intervention_family"}
+        else 1.4
+        if definition.name == "benchmark" and "contamination" in name
+        else 3
         if name == "rationale"
         else 1.5
         if name in {"source_value", "method_evidence"}
@@ -488,6 +512,12 @@ def _presentation_value(
         return "não definido"
     if isinstance(value, bool):
         return "sim" if value else "não"
+    if column in {
+        "requested_contamination_rate",
+        "effective_contamination_rate",
+    } and isinstance(value, (int, float)):
+        percentage = f"{100 * value:.4f}".rstrip("0").rstrip(".")
+        return percentage.replace(".", ",") + r"\%"
     if isinstance(value, float):
         return f"{value:,.{rounding.decimal_places}f}".translate(
             str.maketrans({",": ".", ".": ","})
@@ -508,8 +538,15 @@ def _translate_value(value: str, column: str) -> str:
         "kmeans": "K-Means",
         "kmeans_distance": "distância ao centróide (K-Means)",
         "dbscan_noise": "ruído (DBSCAN)",
-        "dbscan_density_novelty": "DBSCAN (novidade)",
+        "dbscan_density_novelty": "DBSCAN",
     }
+    if column == "intervention_family":
+        return {
+            "clean": "limpa",
+            "point": "pontual",
+            "contextual": "contextual",
+            "collective": "coletiva",
+        }.get(value, value)
     if column == "method":
         return method_names.get(value, value)
     if column == "method_evidence":

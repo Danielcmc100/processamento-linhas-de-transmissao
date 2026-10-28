@@ -145,3 +145,63 @@ Transient previews: `/tmp/t11-2-pages/`. Replay rendering with
 with no failures or skips.
 No software/publication gate is required for unchanged generated content.
 No specification deviation. Whole-document integration remains T12.
+
+
+## T11.3 — Identifiable controlled benchmark (2026-10-28)
+
+### Implementation and source reconciliation
+
+- Relocated the full benchmark exactly once to appendix section
+  `app:benchmark-detalhado`; retained caption and `tab:defesa-benchmark`.
+  Main-text prose references both labels and retains clean-baseline false
+  positives, family-specific recall/F1 tradeoffs, tested contamination rates,
+  restricted reference-group scope, and the synthetic/causal boundary.
+- The generator now requires and displays requested/effective contamination
+  percentages separately from perturbation intensity and evaluation count.
+  Row keys include both rates and evaluation count: all 20 saved conditions
+  have unique traceability keys. Intervention families use Portuguese labels.
+  DBSCAN's density-novelty meaning is shared in the appendix scope statement.
+- Compared every rendered confusion count and metric against saved full-
+  precision `v7/tables/benchmark.csv`: all 20 rows and 160 cells agree after
+  four-place presentation rounding, including undefined clean-baseline recall.
+  Requested/effective rates are 0% for the clean baseline and 1%, 5%, 10%
+  for each intervention family/method, at fixed family-specific intensities.
+- Shared scope explicitly identifies aggregation over CRPI and SRPI,
+  T_OPO/phase A, sources with 10,000 simulations, and 5,400 evaluation
+  observations per row. No other terminal/phase or causal accuracy is implied.
+
+### Regression and software gates
+
+- RED: the new fixed-intensity/three-contamination regression failed because
+  the prior formatter emitted one unique key instead of three.
+- GREEN: ten reporting tests pass; the regression asserts percentages,
+  translated intervention, all confusion counts/metrics, unique trace keys,
+  and unchanged scientific values in generated CSVs.
+- `uv run task format`, `uv run task lint`, and `uv run task typecheck`
+  pass; typecheck reports zero errors, warnings or notes.
+- Fresh `uv run task test`: 334 passed in 98.16 seconds, no failures/skips.
+
+### Publication and document gates
+
+- `uv run python -m docs.research.replay_thesis_benchmark_table` creates v8
+  from immutable v7 saved evidence, without running experiments. Only
+  `tables/benchmark.tex` and `tables/table_traceability.csv` change.
+  The manifest records inherited experiment provenance, replay command,
+  implementation hashes and `experiments_rerun: false`.
+- All 289 scientific CSVs retain bytes (the 290th CSV is presentation
+  traceability, intentionally corrected). All v1–v8 manifests verify:
+  4,723 unique referenced paths, including ten raw inputs; v8 has 609 output
+  hashes. Historical packages and raw inputs remain unchanged.
+- Eleven manuscript assets exclusively reference v8 and match package bytes.
+  Preparation command: `uv run python -m scripts.prepare_defense_document`.
+- `just build` passes: 84 PDF pages; final log has no undefined references,
+  citations, duplicate labels, missing assets or overfull boxes.
+- Rendered physical PDF pages 60, 83 and 84 inspected at final-size scale:
+  main synthesis, appendix scope/provenance and full table. All twenty rows
+  fit one landscape page (PDF 84, printed 83), with readable 10pt type,
+  all detailed metric columns, intact caption and explicit percentages.
+  No trailing-row landscape continuation remains. Source contains one
+  benchmark inclusion, in the appendix only.
+- Whole-document reflow remains T12; no T13/T14 work performed. No spec
+  deviations. No new notebook entry: generator/replay ownership is recorded
+  here and existing scope notes already cover the scientific boundary.

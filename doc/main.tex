@@ -1704,7 +1704,7 @@ empírica permanece principal. Classes e escalas são comuns aos dois
 cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v7/figures/distribution-crpi-t_opo-a.png}
+{evidence/v8/figures/distribution-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1720,7 +1720,7 @@ empírica permanece principal. Classes e escalas são comuns aos dois
 cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v7/figures/distribution-srpi-t_opo-a.png}
+{evidence/v8/figures/distribution-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1799,7 +1799,7 @@ DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
 partição elegível para avaliação, sem atribuir artificialmente escore zero.
 
 \clearpage
-\input{evidence/v7/tables/clustering_summary.tex}
+\input{evidence/v8/tables/clustering_summary.tex}
 
 Os índices foram aplicáveis em 90 dos 90 grupos do K-Means, em quatro
 dos 90 grupos do DBSCAN e em seis dos 90 grupos do método hierárquico.
@@ -1891,7 +1891,7 @@ métodos com pontos válidos. Este recorte difere das medianas dos nove
 grupos terminal--fase da Tabela~\ref{tab:cluster-summary}.}
 \label{fig:cluster-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v7/figures/clustering-crpi.png}
+{evidence/v8/figures/clustering-crpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1907,7 +1907,7 @@ métodos com pontos válidos. Este recorte difere das medianas dos nove
 grupos terminal--fase da Tabela~\ref{tab:cluster-summary}.}
 \label{fig:cluster-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v7/figures/clustering-srpi.png}
+{evidence/v8/figures/clustering-srpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1987,7 +1987,7 @@ de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do SRPI;
 zero eventos não implica probabilidade subjacente nula.}
 \label{fig:defesa-convergencia-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v7/figures/convergence-crpi-t_opo-a.png}
+{evidence/v8/figures/convergence-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -2002,7 +2002,7 @@ de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do CRPI;
 fontes não presumidas independentes ou aninhadas.}
 \label{fig:defesa-convergencia-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v7/figures/convergence-srpi-t_opo-a.png}
+{evidence/v8/figures/convergence-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -2020,8 +2020,9 @@ grupo de referência CRPI/SRPI, terminal T\_OPO, fase A, no maior tamanho
 amostral (10.000 simulações), usando a divisão de desenvolvimento/avaliação
 por bloco de execução descrita na metodologia.
 
-A Tabela~\ref{tab:defesa-benchmark} reproduz as contagens de confusão e as
-métricas derivadas do ensaio controlado, para as três famílias de
+As contagens de confusão e as métricas derivadas do ensaio controlado,
+preservadas na Tabela~\ref{tab:defesa-benchmark}, na seção dedicada do
+Apêndice~\ref{app:benchmark-detalhado}, foram calculadas para as três famílias de
 intervenção (pontual, contextual e coletiva) nas taxas de contaminação de
 1\%, 5\% e 10\%, mais a condição limpa de referência. Na
 condição limpa, o K-Means produziu 42 falsos positivos sobre 5.400
@@ -2038,7 +2039,12 @@ precisão superior à do DBSCAN em toda condição comparável, à custa de
 recuperar uma fração menor dos pontos intervencionados nas taxas mais
 baixas.
 
-\input{evidence/v7/tables/benchmark.tex}
+As taxas de contaminação indicam a proporção de observações alteradas;
+a intensidade indica a magnitude da perturbação aplicada em cada família.
+As contagens da tabela agregam os dois cenários no grupo de referência
+indicado, sem estender os resultados a outros terminais ou fases. Esses
+resultados quantificam o desempenho nas condições sintéticas testadas,
+sem estimar a acurácia de identificação de erros numéricos reais do ATP.
 
 A grade congelada de sensibilidade de parâmetros -- número de grupos e
 sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --
@@ -2058,7 +2064,7 @@ concordância entre métodos, discordância, escore elevado e controle sem
 sinalização, conforme a regra de amostragem declarada na metodologia. A
 Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
 
-\input{evidence/v7/tables/technical_review.tex}
+\input{evidence/v8/tables/technical_review.tex}
 
 Todos os cinco casos permanecem com conclusão ``não resolvido''. As
 evidências ausentes e suas consequências para a interpretação são
@@ -2322,7 +2328,7 @@ Seu manifesto preserva a proveniência experimental herdada e identifica a
 reprodução da apresentação pelo comando
 \texttt{uv run python -m docs.research.replay\_thesis\_numeric\_tables}.
 
-O diretório do pacote atual é \path{results/defense-evidence/v7/}.
+O diretório do pacote atual é \path{results/defense-evidence/v8/}.
 Os caminhos a seguir são relativos a esse diretório e vinculam os
 resultados aos respectivos registros completos:
 \begin{description}
@@ -2353,7 +2359,7 @@ pacote: \path{sources/annotated_observations.csv},
 \path{sources/distribution_adequacy.csv},
 \path{sources/clustering_comparison.csv} e
 \path{sources/convergence.csv}. As cópias incluídas neste documento ficam
-em \path{doc/evidence/v7/}, permitindo sua compilação independente.
+em \path{doc/evidence/v8/}, permitindo sua compilação independente.
 O documento de GTPPLOT citado na discussão estatística é identificado no
 acervo pelo arquivo \texttt{2000-N4-Estati-1.pdf}.
 
@@ -2366,7 +2372,7 @@ intervalos de Wilson de 95\%. A fonte é o pacote catalogado no
 Apêndice~\ref{app:pacote-evidencias}; a tabela foi gerada automaticamente
 a partir dos resultados validados, sem agregação dos grupos.
 
-\input{evidence/v7/tables/probability.tex}
+\input{evidence/v8/tables/probability.tex}
 
 \section{Comparação detalhada entre tamanhos amostrais}
 \label{app:comparacao-amostral-detalhada}
@@ -2379,7 +2385,27 @@ Apêndice~\ref{app:pacote-evidencias}. A maior amostra permanece uma
 referência empírica, sem estabelecer verdade fundamental, independência
 ou aninhamento entre as fontes.
 
-\input{evidence/v7/tables/convergence.tex}
+\input{evidence/v8/tables/convergence.tex}
+
+\section{Ensaio controlado detalhado por condição}
+\label{app:benchmark-detalhado}
+
+A Tabela~\ref{tab:defesa-benchmark} preserva as vinte combinações de
+família de intervenção, contaminação e método do pacote identificado no
+Apêndice~\ref{app:pacote-evidencias}. Cada linha agrega CRPI e SRPI no
+terminal T\_OPO, fase A, para as fontes de 10.000 simulações, com 5.400
+observações de avaliação após a divisão por blocos de execução. As taxas
+solicitada e efetiva de contaminação são apresentadas separadamente da
+intensidade. VP, FP, VN e FN indicam, respectivamente, verdadeiros positivos,
+falsos positivos, verdadeiros negativos e falsos negativos. Na condição
+limpa, a revocação não é definida por não haver positivos controlados;
+as demais métricas seguem as definições metodológicas. O DBSCAN foi
+avaliado por novidade de densidade, conforme a definição do ensaio.
+A origem permanece
+em \path{sources/controlled_benchmark.csv} e
+\path{tables/benchmark.csv}, sem nova execução dos ensaios.
+
+\input{evidence/v8/tables/benchmark.tex}
 
 \end{apendicesenv}
 

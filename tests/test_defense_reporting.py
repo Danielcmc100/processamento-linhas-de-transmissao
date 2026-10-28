@@ -32,7 +32,10 @@ def _probability() -> polars.DataFrame:
 
 def _benchmark() -> polars.DataFrame:
     return polars.DataFrame({
-        "intervention_family": ["point_10%"],
+        "intervention_family": ["point"],
+        "requested_contamination_rate": [0.1],
+        "effective_contamination_rate": [0.1],
+        "row_count": [17],
         "intervention_intensity": [1.5],
         "method": ["kmeans_distance"],
         "true_positive": [4],
@@ -248,3 +251,49 @@ def test_localized_numbers_preserve_raw_values_and_source_identity(
         "-245000.123456" in result.source_paths["technical_review"].read_text()
     )
     assert "10000" in result.source_paths["convergence"].read_text()
+
+
+def test_benchmark_condition_identity_and_metrics_survive_rendering(
+    tmp_path: Path,
+) -> None:
+    """Distinguish contamination at fixed intensity and preserve metrics."""
+    benchmark = polars.concat([
+        _benchmark().with_columns(
+            polars.lit(rate).alias("requested_contamination_rate"),
+            polars.lit(rate).alias("effective_contamination_rate"),
+        )
+        for rate in (0.01, 0.05, 0.1)
+    ])
+    result = generate_defense_tables(
+        tmp_path,
+        probability=_probability(),
+        benchmark=benchmark,
+        convergence=_convergence(),
+        review=_review(),
+        rounding=RoundingPolicy(decimal_places=4),
+    )
+    latex = result.latex_paths["benchmark"].read_text()
+    trace = polars.read_csv(result.traceability_path).filter(
+        polars.col("table_name") == "benchmark"
+    )
+    assert trace["row_key"].n_unique() == 3
+    assert "Contaminação solicitada" in latex
+    assert "Contaminação efetiva" in latex
+    assert "N aval." in latex
+    for percentage in ("1", "5", "10"):
+        assert f"{percentage}\\%" in latex
+    rows = [line for line in latex.splitlines() if "pontual &" in line]
+    assert len(rows) == 3
+    for row in rows:
+        assert " & 1,5000 & " in row
+        assert " & 17 & 4 & 1 & 10 & 2 & " in row
+        assert "0,8000 & 0,6667 & 0,7273 & 0,0909" in row
+    assert "point" not in latex
+    saved = polars.read_csv(result.source_paths["benchmark"])
+    assert saved.equals(
+        benchmark.sort([
+            "intervention_family",
+            "intervention_intensity",
+            "method",
+        ])
+    )
