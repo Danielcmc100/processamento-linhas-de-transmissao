@@ -584,9 +584,7 @@ De forma complementar, Leão \cite{leao2022} apresenta uma aplicação do ATP na
 
 Apesar de sua utilidade, a análise dos arquivos gerados pelo ATP pode ser trabalhosa quando há grande volume de simulações, pois os resultados podem estar distribuídos em arquivos extensos, contendo valores numéricos, identificação de fases, pontos de medição e informações de cada execução. Nesse contexto, a automatização da leitura dos arquivos por meio de um \textit{parser} contribui para reduzir o esforço manual, padronizar a extração dos dados e diminuir a possibilidade de erros na organização das informações. Além disso, como as múltiplas simulações produzem um conjunto de valores máximos de tensão, torna-se necessário aplicar procedimentos estatísticos e visuais que permitam compreender a distribuição dos dados, identificar valores extremos e apoiar a interpretação técnica dos resultados.
 
-O código-fonte desenvolvido para o processamento dos dados das linhas de transmissão está disponível em repositório público no GitHub \cite{viana2026repositorio}.
-
-A automatização de estudos envolvendo o ATP também é discutida por Guidi-Venerdini e Pérez-Yauli \cite{guidi2013}, que desenvolveram uma rotina em MATLAB para manipular arquivos-base do ATP e executar simulações sistemáticas em uma linha de transmissão. Embora o foco dos autores esteja na simulação de faltas, o trabalho evidencia a relevância de procedimentos automatizados para a construção de bases de dados, redução do esforço manual e diminuição de erros no tratamento de grandes volumes de resultados.
+O código-fonte desenvolvido para o processamento dos dados das linhas de transmissão está disponível em repositório público no GitHub \cite{viana2026repositorio}. A automatização de estudos envolvendo o ATP também é discutida por Guidi-Venerdini e Pérez-Yauli \cite{guidi2013}, que desenvolveram uma rotina em MATLAB para manipular arquivos-base do ATP e executar simulações sistemáticas em uma linha de transmissão. Embora o foco dos autores esteja na simulação de faltas, o trabalho evidencia a relevância de procedimentos automatizados para a construção de bases de dados, redução do esforço manual e diminuição de erros no tratamento de grandes volumes de resultados.
 
 De forma complementar, Colqui et al. \cite{colqui2022} discutem a implementação de modelos de linhas de transmissão no ATP-EMTP para estudos de transitórios eletromagnéticos, comparando diferentes abordagens de representação, como o modelo JMarti, o \textit{Universal Line Model} e uma implementação modificada do \textit{Folded Line Equivalent}. Os autores avaliam esses modelos em condições de circuito aberto, energização e ocorrência de faltas, evidenciando a importância da escolha adequada da representação da linha para a obtenção de respostas transitórias coerentes. A Figura~\ref{fig:linha_colqui} apresenta um exemplo de sistema de linha de transmissão utilizado nesse tipo de simulação, ilustrando a configuração empregada pelos autores para analisar o comportamento transitório do sistema.
 
@@ -637,14 +635,9 @@ A identificação de valores atípicos (\textit{outliers}), entretanto, deve ser
 
 \section{Visualização de dados e análise exploratória}
 
-A visualização de dados constitui uma etapa importante da análise exploratória, pois permite observar padrões, agrupamentos, dispersões e valores discrepantes que nem sempre são identificados apenas por medidas numéricas. Tukey \cite{tukey1977} destaca a análise exploratória como parte essencial da compreensão dos dados. Cleveland \cite{cleveland1993} ressalta que a visualização permite investigar a estrutura dos dados e revelar comportamentos relevantes para a análise. De forma complementar, Tufte \cite{tufte2001} enfatiza que bons gráficos devem comunicar informações quantitativas com clareza, precisão e eficiência.
-
-Entre as formas mais utilizadas de visualização está a nuvem de pontos, ou \textit{scatter plot}. Nesse tipo de gráfico, cada ponto representa uma observação posicionada de acordo com duas variáveis de interesse.
-
-No contexto deste trabalho, cada ponto pode representar uma simulação, uma fase monitorada, um ponto de medição ou uma combinação de atributos extraídos dos arquivos do ATP. Essa representação permite observar concentrações de valores, regiões de dispersão, possíveis agrupamentos e pontos isolados.
+A visualização de dados constitui uma etapa importante da análise exploratória, pois permite observar padrões, agrupamentos, dispersões e valores discrepantes que nem sempre são identificados apenas por medidas numéricas. Tukey \cite{tukey1977} destaca a análise exploratória como parte essencial da compreensão dos dados. Cleveland \cite{cleveland1993} ressalta que a visualização permite investigar a estrutura dos dados e revelar comportamentos relevantes para a análise. De forma complementar, Tufte \cite{tufte2001} enfatiza que bons gráficos devem comunicar informações quantitativas com clareza, precisão e eficiência. Entre as formas mais utilizadas de visualização está a nuvem de pontos, ou \textit{scatter plot}. Nesse tipo de gráfico, cada ponto representa uma observação posicionada de acordo com duas variáveis de interesse. No contexto deste trabalho, cada ponto pode representar uma simulação, uma fase monitorada, um ponto de medição ou uma combinação de atributos extraídos dos arquivos do ATP. Essa representação permite observar concentrações de valores, regiões de dispersão, possíveis agrupamentos e pontos isolados.
 
 A Figura~\ref{fig:nuvem-clusters-anomalias} apresenta uma representação esquemática de uma nuvem de pontos com agrupamentos e possíveis observações anômalas. Os centroides representam os centros dos grupos, conceito associado a métodos particionais como o K-Means, enquanto os pontos afastados das regiões de maior concentração podem ser analisados como candidatos a valores atípicos.
-
 No presente trabalho, a visualização por nuvem de pontos será utilizada como ferramenta de apoio à análise das sobretensões máximas obtidas nas simulações. Antes da aplicação dos algoritmos, ela permite observar a distribuição geral dos dados e identificar visualmente concentrações ou valores extremos. Após a aplicação dos métodos estatísticos e de aprendizagem de máquina, contribui para interpretar os agrupamentos formados e a posição dos pontos classificados como possíveis anomalias.
 
 \begin{figure}[htbp]
@@ -700,7 +693,7 @@ No presente trabalho, a visualização por nuvem de pontos será utilizada como 
 
 \end{tikzpicture}
 
-\legend{Fonte: elaboração própria.}
+\legend{Fonte: O Autor, 2026.}
 \end{figure}
 
 
@@ -724,9 +717,7 @@ Embora esses estudos não estejam diretamente voltados à análise de sobretens�
 
 \section{Aprendizagem de máquina não supervisionada e clusterização}
 
-Entre os métodos de aprendizagem não supervisionada, os algoritmos de clusterização ocupam posição de destaque. A clusterização tem como objetivo organizar observações em grupos, de modo que elementos pertencentes ao mesmo grupo apresentem maior similaridade entre si do que em relação a elementos de outros grupos \cite{bishop2006}.
-
-No caso das sobretensões obtidas em manobras de energização de linhas de transmissão, os algoritmos de clusterização podem auxiliar na identificação de faixas de comportamento recorrentes e na separação de valores discrepantes. Cada observação pode representar uma simulação, uma fase monitorada, um ponto de medição ou um valor máximo de tensão. A partir desses atributos, torna-se possível analisar se as sobretensões se organizam em grupos coerentes ou se existem valores isolados que devem ser investigados como possíveis anomalias.
+Entre os métodos de aprendizagem não supervisionada, os algoritmos de clusterização ocupam posição de destaque. A clusterização tem como objetivo organizar observações em grupos, de modo que elementos pertencentes ao mesmo grupo apresentem maior similaridade entre si do que em relação a elementos de outros grupos \cite{bishop2006}. No caso das sobretensões obtidas em manobras de energização de linhas de transmissão, os algoritmos de clusterização podem auxiliar na identificação de faixas de comportamento recorrentes e na separação de valores discrepantes. Cada observação pode representar uma simulação, uma fase monitorada, um ponto de medição ou um valor máximo de tensão. A partir desses atributos, torna-se possível analisar se as sobretensões se organizam em grupos coerentes ou se existem valores isolados que devem ser investigados como possíveis anomalias.
 
 \subsection{K-Means}
 
@@ -775,11 +766,7 @@ O funcionamento do DBSCAN ocorre pela expansão de agrupamentos: inicialmente, o
 
 Mumtaz e Duraiswamy \cite{mumtaz2010} comparam o desempenho do DBSCAN, do K-Means e dos Mapas Auto-Organizáveis de Kohonen, conhecidos como SOM, em bases sintéticas espaciais. A comparação evidencia que o DBSCAN apresenta melhor desempenho em conjuntos de dados com formatos arbitrários, não convexos e estruturas espiraladas. Enquanto o K-Means tende a separar os dados em grupos influenciados pela proximidade aos centroides, o DBSCAN preserva melhor a forma natural dos agrupamentos, pois sua definição de agrupamento depende da densidade local dos pontos. A Figura~\ref{fig:dbscan-comparacao} apresenta uma comparação entre os resultados de clusterização obtidos por SOM, K-Means e DBSCAN em bases sintéticas bidimensionais.
 
-Essa característica é importante para a detecção de anomalias, pois o DBSCAN não força todos os pontos a pertencerem a algum grupo. Pontos situados em regiões de baixa densidade podem ser classificados como ruído, tornando o método adequado para identificar observações que não seguem o comportamento predominante da base de dados.
-
-No contexto deste trabalho, o DBSCAN será utilizado para auxiliar na identificação de sobretensões máximas isoladas em relação ao conjunto analisado.
-
-Entretanto, uma observação classificada como ruído não deve ser descartada automaticamente. Sua interpretação deve considerar a análise estatística, os parâmetros da simulação e a coerência física do fenômeno transitório.
+Essa característica é importante para a detecção de anomalias, pois o DBSCAN não força todos os pontos a pertencerem a algum grupo. Pontos situados em regiões de baixa densidade podem ser classificados como ruído, tornando o método adequado para identificar observações que não seguem o comportamento predominante da base de dados. No contexto deste trabalho, o DBSCAN será utilizado para auxiliar na identificação de sobretensões máximas isoladas em relação ao conjunto analisado. Entretanto, uma observação classificada como ruído não deve ser descartada automaticamente. Sua interpretação deve considerar a análise estatística, os parâmetros da simulação e a coerência física do fenômeno transitório.
 
 \begin{figure}[htbp]
 \centering
@@ -802,11 +789,7 @@ modelo de rede nem realizar um estudo completo de planejamento elétrico, mas
 registrar a origem dos dados, as simplificações adotadas e as variáveis que
 podem influenciar as sobretensões obtidas. Essa descrição estabelece a
 rastreabilidade entre o cenário elétrico, os arquivos produzidos pelo ATP e a
-base posteriormente processada pela aplicação em Python.
-
-O nível de detalhamento foi limitado às decisões necessárias para compreender
-e reproduzir o processo de geração dos dados. Assim, são apresentados o caso
-de referência, a redução da rede, a representação dos componentes no ATPDraw,
+base posteriormente processada pela aplicação em Python. O nível de detalhamento foi limitado às decisões necessárias para compreender e reproduzir o processo de geração dos dados. Assim, são apresentados o caso de referência, a redução da rede, a representação dos componentes no ATPDraw,
 o modelo da linha de transmissão e os pontos de observação, sem aprofundar as
 formulações matemáticas próprias dos programas elétricos empregados.
 
@@ -853,7 +836,6 @@ rede externa; elas não devem ser confundidas com a quantidade total de
 barramentos do modelo. A rede reduzida ainda contém barras nos níveis de
 500~kV, 345~kV, 138~kV e 13,8~kV, além dos nós auxiliares necessários à
 representação dos transformadores.
-
 Essa redução procura conservar, nas fronteiras escolhidas, o comportamento de
 curto-circuito considerado pelo ANAFAS. Ela não implica que todas as
 características transitórias da rede completa sejam preservadas. Essa
@@ -861,7 +843,7 @@ limitação é importante para a interpretação dos dados: uma observação at�
 deve ser investigada em relação ao modelo reduzido e às suas condições de
 simulação antes de ser associada a um fenômeno da rede real.
 
-\section{Componentes da rede reduzida}
+% \section{Componentes da rede reduzida}
 
 A Figura~\ref{fig:equivalente_anafas} apresenta o diagrama unifilar da região
 equivalentada. Entre os elementos mantidos encontram-se quatro
@@ -977,7 +959,7 @@ arquivos do ATP como \texttt{T\_MAN}, \texttt{1\_2LT} e \texttt{T\_OPO},
 estabelecendo uma correspondência direta entre o modelo e as colunas da base
 processada.
 
-\section{Manobra e geração dos dados}
+% \section{Manobra e geração dos dados}
 
 A energização é executada por chaves estatísticas independentes para as fases
 A, B e C. Em vez de utilizar um único instante determinístico, o ATP produz
@@ -1018,8 +1000,8 @@ Este capítulo apresenta os procedimentos computacionais utilizados para
 transformar as saídas do ATP em uma base tabular rastreável. A sequência
 compreende a extração dos máximos, a definição da unidade de observação, a
 normalização por unidade (P.U., do inglês \textit{per unit}) e a verificação da integridade e da limpeza dos dados.
-São descritos os critérios de validação dessas etapas; os resultados das
-verificações são apresentados no Capítulo~\ref{chap:results}.
+%São descritos os critérios de validação dessas etapas.
+%; os resultados dasverificações são apresentados no Capítulo~\ref{chap:results}.
 
 \section{Extração dos dados e validação do parser}
 
@@ -1036,7 +1018,6 @@ são tratados como saídas não estatísticas e não geram observações.
 O parser utiliza as posições impressas das colunas de variáveis para
 preservar células vazias no início, no interior e no final dos nós. Esse
 procedimento mantém a associação entre cada variável e seu ponto de medição.
-
 O escopo avaliado dos pontos de verificação das fontes compreende os casos
 completos, sem defeito, dos cenários SRPI e CRPI, com 50, 100, 200,
 1.000 e 10.000 simulações por cenário. A referência do CRPI registra todos os
@@ -1061,8 +1042,8 @@ simulações, pois sua identidade permanece no caminho de origem. A inclusão de
 novos cenários exige conferir previamente quais terminais e fases são esperados
 nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 
-\section{Normalização por unidade}
-\label{sec:per-unit-validation}
+% \section{Normalização por unidade}
+% \label{sec:per-unit-validation}
 
 Para a referência nominal de 138~kV de tensão eficaz entre fases, as bases
 de pico senoidal fase-terra e fase-fase decorrem da referência trifásica
@@ -1145,22 +1126,19 @@ Seleções vazias após a limpeza bloqueiam a análise. Nesta etapa, não se apl
 nenhum critério de corte baseado no instante de chaveamento ou na amplitude
 estatística.
 
-\section{Reprodutibilidade e critérios de aceitação}
+\subsection{Reprodutibilidade e critérios de aceitação}
 
 As verificações utilizam referências extraídas diretamente dos arquivos de
 origem, de forma independente do parser de produção. Os arquivos são
 identificados por resumos SHA-256, permitindo conferir se as entradas
 correspondem às utilizadas nas auditorias. A independência refere-se ao
 procedimento de extração e não pressupõe revisão humana independente.
-
 A aceitação exige concordância dos cabeçalhos e dos pontos de verificação,
 completude e unicidade das observações e concordância da conversão segundo
 as tolerâncias declaradas. A limpeza deve preservar os registros válidos e
 registrar as exclusões previstas. Testes com falhas introduzidas verificam
 se registros duplicados ou ausentes bloqueiam a análise e se valores
-inválidos são excluídos com rastreabilidade.
-
-Os comandos, os manifestos, os relatórios e o histórico das correções são
+inválidos são excluídos com rastreabilidade. Os comandos, os manifestos, os relatórios e o histórico das correções são
 reunidos no Apêndice~\ref{app:validation-records}.
 
 \section{Métodos de análise estatística e detecção de anomalias}
@@ -1446,16 +1424,14 @@ evidências analíticas de anomalia. Cada resultado permanece restrito ao
 escopo, ao método e à camada de validade declarados na
 Seção~\ref{sec:camadas-validade}.
 
-\section{Fidelidade da extração}
+% \section{Fidelidade da extração}
 
 Todas as 240 comparações de pares de cabeçalho do CRPI coincidiram. Nos dois
 cenários, os 20 pontos de verificação de chaveamento e os 60 pares de
 máximo/instante com sinal coincidiram exatamente. A varredura completa
 reconciliou 235 arquivos e 533.450 execuções. Esses
 resultados sustentam a aceitação do parser corrigido para o escopo declarado
-dos pontos de verificação das fontes.
-
-A varredura de toda a coleção verifica as contagens
+dos pontos de verificação das fontes. A varredura de toda a coleção verifica as contagens
 de execuções e os comprimentos das tabelas; ela não constitui uma verificação
 independente de cada coluna ou de cada valor numérico. A aceitação dos pontos
 de verificação das fontes é restrita aos dez arquivos selecionados e à
