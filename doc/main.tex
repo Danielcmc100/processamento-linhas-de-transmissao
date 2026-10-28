@@ -559,18 +559,10 @@ No caso da energização de linhas de transmissão, os transitórios dependem de
 
 Marin et al. \cite{marin2025} também evidenciam que simulações computacionais em ATP/EMTP permitem avaliar diferentes condições de manobra e observar a influência da configuração da rede e dos parâmetros elétricos da linha sobre os níveis de sobretensão. Desse modo, a análise desses transitórios permite estimar os níveis máximos de solicitação elétrica aos quais os equipamentos podem ser submetidos, apoiando estudos de coordenação de isolamento e contribuindo para a definição de margens de segurança compatíveis com o comportamento esperado do sistema.
 
-A Figura~\ref{fig:fluxograma_atp} apresenta o fluxograma geral do procedimento adotado para a análise de sobretensões transitórias em manobras de energização de linhas de transmissão por meio de simulações no ATP/EMTP. Inicialmente, o sistema elétrico de potência é representado a partir da linha de transmissão, de seus parâmetros elétricos e de sua configuração operacional. Em seguida, são definidos os cenários de simulação, considerando especialmente os instantes de fechamento dos disjuntores, uma vez que essa condição influencia diretamente os valores máximos de sobretensão durante o transitório eletromagnético.
-
-Após essa etapa, o sistema é modelado no ATP/EMTP, com a elaboração dos arquivos de entrada e dos modelos auxiliares necessários à execução das simulações. Os casos simulados geram arquivos de saída, que são posteriormente lidos e processados para a extração das sobretensões máximas. Por fim, os resultados são organizados em gráficos, tabelas e indicadores comparativos, permitindo avaliar os cenários mais críticos e fornecer subsídios para estudos de coordenação de isolamento, confiabilidade técnica e operação segura do sistema de transmissão.
-
-\begin{figure}[htbp]
-    \centering
-\caption{Fluxograma da metodologia de análise de sobretensões transitórias utilizando ATP/EMTP.}
-\label{fig:fluxograma_atp}
-    \includegraphics[width=0.75\textwidth]{imagens/fluxo.png}
-
-\legend{Fonte: elaboração própria.}
-\end{figure}
+O encadeamento entre a geração das simulações e o processamento das saídas
+é apresentado na Figura~\ref{fig:fluxograma_atp}, no início do
+Capítulo~\ref{chap:methodology}. A representação do sistema e a definição
+das manobras antecedem a análise computacional dos máximos registrados.
 
 No presente trabalho, esses transitórios foram analisados a partir dos valores máximos de sobretensão obtidos em simulações de energização. Esses valores constituem a base de dados utilizada nas etapas posteriores de tratamento estatístico, análise probabilística e detecção de possíveis anomalias.
 % \section{Simulação computacional com ATP}
@@ -636,6 +628,15 @@ A identificação de valores atípicos (\textit{outliers}), entretanto, deve ser
 \section{Visualização de dados e análise exploratória}
 
 A visualização de dados constitui uma etapa importante da análise exploratória, pois permite observar padrões, agrupamentos, dispersões e valores discrepantes que nem sempre são identificados apenas por medidas numéricas. Tukey \cite{tukey1977} destaca a análise exploratória como parte essencial da compreensão dos dados. Cleveland \cite{cleveland1993} ressalta que a visualização permite investigar a estrutura dos dados e revelar comportamentos relevantes para a análise. De forma complementar, Tufte \cite{tufte2001} enfatiza que bons gráficos devem comunicar informações quantitativas com clareza, precisão e eficiência. Entre as formas mais utilizadas de visualização está a nuvem de pontos, ou \textit{scatter plot}. Nesse tipo de gráfico, cada ponto representa uma observação posicionada de acordo com duas variáveis de interesse. No contexto deste trabalho, cada ponto pode representar uma simulação, uma fase monitorada, um ponto de medição ou uma combinação de atributos extraídos dos arquivos do ATP. Essa representação permite observar concentrações de valores, regiões de dispersão, possíveis agrupamentos e pontos isolados.
+
+As ilustrações desta fundamentação têm propósitos complementares: a
+Figura~\ref{fig:nuvem-clusters-anomalias} introduz a posição dos pontos e dos
+centroides; a Figura~\ref{fig:kmeans-mahon} ilustra a separação entre grupos;
+e a Figura~\ref{fig:dbscan-comparacao} contrasta critérios de densidade e de
+proximidade. São exemplos bidimensionais, sem resultados das simulações deste
+trabalho. A análise implementada utiliza um único atributo, o máximo de tensão
+em P.U., separadamente por terminal e fase; formas espaciais em duas dimensões
+não demonstram desempenho dos métodos nessa análise unidimensional.
 
 A Figura~\ref{fig:nuvem-clusters-anomalias} apresenta uma representação esquemática de uma nuvem de pontos com agrupamentos e possíveis observações anômalas. Os centroides representam os centros dos grupos, conceito associado a métodos particionais como o K-Means, enquanto os pontos afastados das regiões de maior concentração podem ser analisados como candidatos a valores atípicos.
 No presente trabalho, a visualização por nuvem de pontos foi utilizada como ferramenta de apoio à análise das sobretensões máximas obtidas nas simulações. Antes da aplicação dos algoritmos, ela permitiu observar a distribuição geral dos dados e identificar visualmente concentrações ou valores extremos. Após a aplicação dos métodos estatísticos e de aprendizagem de máquina, contribuiu para interpretar os agrupamentos formados e a posição dos pontos classificados como possíveis anomalias.
@@ -857,9 +858,11 @@ ONS, o diagrama do ANAFAS e o modelo do ATPDraw.
     \centering
 \caption{Rede elétrica equivalente representada no ANAFAS.}
 \label{fig:equivalente_anafas}
-    \includegraphics[width=0.95\textwidth]{imagens/rede_equivalente_anafas.png}
+    \includegraphics[width=\textwidth]{imagens/rede_equivalente_anafas.png}
 
-\legend{Fonte: elaboração própria a partir da base do ONS.}
+\legend{Fonte: elaboração própria a partir da base do ONS.
+Barras de interesse: 9049 (SGOTA2-MG138) e 48461 (CALTOS-MG138).
+Referências de tensão: 390 (500~kV), 391 (345~kV), 395 e 397 (13,8~kV).}
 \end{figure}
 
 \section{Rede modelada no ATPDraw}
@@ -919,9 +922,11 @@ intermediários receberam nomes próprios, empregados posteriormente pelo
     \centering
 \caption{Rede elétrica equivalente implementada no ATPDraw.}
 \label{fig:equivalente_atp_draw}
-    \includegraphics[width=0.95\textwidth]{imagens/rede_equivalente_atp_draw.png}
+    \includegraphics[width=\textwidth]{imagens/rede_equivalente_atp_draw.png}
 
-\legend{Fonte: elaboração própria.}
+\legend{Fonte: elaboração própria. Correspondência com o ANAFAS:
+9049 e 48461 (138~kV), 391 (345~kV), 390 (500~kV),
+395 e 397 (13,8~kV). Os identificadores preservam a grafia dos modelos.}
 \end{figure}
 
 \section{Modelo da linha de transmissão}
@@ -947,6 +952,20 @@ elétrica. A Figura~\ref{fig:modelo_linha} apresenta essa organização.
 \label{fig:modelo_linha}
     \includegraphics[width=\textwidth]
         {imagens/modelo_linha_transmissão.png}
+
+\medskip
+\begin{tikzpicture}[x=0.16cm, y=1cm, font=\small]
+\draw[thick] (0,0) -- (80,0);
+\foreach \x in {0,13.3,40,66.7,80}
+    \draw (\x,-0.08) -- (\x,0.08);
+\node[below, align=center] at (0,-0.1) {$T_{MAN}$\\Barra 9049};
+\node[below, align=center] at (40,-0.1) {$1/2\,LT$\\Centro da linha};
+\node[below, align=center] at (80,-0.1) {$T_{OPO}$\\Barra 48461};
+\node[above] at (6.65,0) {13,3 km};
+\node[above] at (26.65,0) {26,7 km};
+\node[above] at (53.35,0) {26,7 km};
+\node[above] at (73.35,0) {13,3 km};
+\end{tikzpicture}
 
 \legend{Fonte: elaboração própria.}
 \end{figure}
@@ -1002,6 +1021,63 @@ compreende a extração dos máximos, a definição da unidade de observação, 
 normalização por unidade (P.U., do inglês \textit{per unit}) e a verificação da integridade e da limpeza dos dados.
 %São descritos os critérios de validação dessas etapas.
 %; os resultados dasverificações são apresentados no Capítulo~\ref{chap:results}.
+
+A Figura~\ref{fig:fluxograma_atp} organiza o procedimento em geração dos
+arquivos no ATP e pós-processamento em Python. A identidade de cada observação
+acompanha todas as etapas, permitindo rastrear tanto os resultados quanto as
+exclusões por integridade. Os dois ramos analíticos distinguem a descrição
+probabilística e a adequação gaussiana dos critérios de candidatura a anomalia.
+A comparação dos métodos e a avaliação controlada produzem evidência
+computacional; a revisão elétrica qualificada permanece pendente.
+
+\begin{figure}[htbp]
+\centering
+\caption{Visão geral da geração dos dados e do processamento implementado.}
+\label{fig:fluxograma_atp}
+\begin{tikzpicture}[
+    box/.style={draw, rounded corners, align=center, font=\small,
+        inner sep=5pt, text width=13.0cm},
+    branch/.style={box, text width=6.0cm, minimum height=2.3cm},
+    arrow/.style={-{Latex[length=2mm]}, thick}, node distance=5mm]
+\node[box, fill=gray!12] (atp) {\textbf{Geração no ATP/ATPDraw}\\
+    Rede, cenários e chaveamento estatístico $\longrightarrow$ saídas
+    \texttt{.lis}\\
+    \texttt{SIGMAX=3.0}: configuração de entrada do chaveamento};
+\node[box, below=of atp] (extract) {\textbf{Pós-processamento em Python}\\
+    Extração dos máximos fase-terra e dos respectivos instantes\\
+    Identidade: fonte, cenário, simulação, terminal e fase};
+\node[box, below=of extract] (clean) {Conversão para P.U. e verificações
+    de integridade\\
+    Limpeza determinística e registro das exclusões};
+\node[branch, below left=5mm and -6.3cm of clean] (stats) {
+    \textbf{Descrição e probabilidade}\\
+    Média e desvio padrão amostral; excedência empírica e intervalo de Wilson\\
+    Adequação gaussiana e comparação qualificada};
+\node[branch, right=5mm of stats] (candidates) {
+    \textbf{Agrupamento e candidatos}\\
+    MAD, distância K-Means e ruído DBSCAN, conforme aplicabilidade\\
+    Hierarquia: descrição, sem voto};
+\node[box, below=of stats.south west, anchor=north west] (compare) {
+    Comparação dos métodos e dos tamanhos amostrais\\
+    Avaliação controlada com intervenções sintéticas e sensibilidade};
+\node[box, below=of compare] (evidence) {
+    Evidência reprodutível: tabelas, gráficos, identidades e resumos de execução};
+\node[box, dashed, below=of evidence] (review) {
+    \textbf{Etapa futura: revisão elétrica qualificada}\\
+    Casos selecionados permanecem sem conclusão causal};
+\draw[arrow] (atp) -- (extract);
+\draw[arrow] (extract) -- (clean);
+\draw[arrow] (clean.south -| stats.north) -- (stats.north);
+\draw[arrow] (clean.south -| candidates.north) -- (candidates.north);
+\draw[arrow] (stats.south) -- (stats.south |- compare.north);
+\draw[arrow] (candidates.south) -- (candidates.south |- compare.north);
+\draw[arrow] (compare) -- (evidence);
+\draw[arrow, dashed] (evidence) -- (review);
+\end{tikzpicture}
+\legend{Fonte: elaboração própria. As setas tracejadas indicam trabalho
+pendente; a adequação gaussiana não constitui voto de detecção.}
+\end{figure}
+\FloatBarrier
 
 A prosa e as tabelas usam vírgula decimal e ponto para separar milhares.
 Identificadores de barras, simulações e arquivos preservam sua grafia
