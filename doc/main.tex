@@ -403,7 +403,7 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 \begin{resumo}
 
-Este trabalho desenvolve uma rotina computacional para extrair, organizar e analisar máximos de tensão provenientes de simulações de energização de linhas de transmissão no \textit{Alternative Transients Program} (ATP). A avaliação utiliza dois cenários, com e sem resistor de pré-inserção, cinco quantidades de simulações, três terminais e três fases, totalizando 204.300 observações escalares. O foco é a análise comparativa de K-Means, DBSCAN e seleção hierárquica de cauda superior, utilizando Silhouette e Davies--Bouldin, contagens de grupos e estados de aplicabilidade. A comparação examina como os resultados variam com a quantidade de casos, sem interpretar separação geométrica como comprovação de erro numérico. A análise probabilística emprega frequências empíricas e intervalos de confiança; a rejeição da hipótese normal em 88 dos 90 grupos impede adotar uma distribuição gaussiana comum como referência de validação dos candidatos. A rotina preserva rastreabilidade e produz evidências reproduzíveis para investigação posterior. A validação causal por especialista, com formas de onda e repetições das simulações, constitui trabalho futuro, fora do escopo deste TCC.
+Este trabalho desenvolveu uma rotina computacional para extrair, organizar e analisar máximos de tensão provenientes de simulações de energização de linhas de transmissão no \textit{Alternative Transients Program} (ATP). A avaliação utilizou dois cenários, com e sem resistor de pré-inserção, cinco quantidades de simulações, três terminais e três fases, totalizando 204.300 observações escalares. O foco é a análise comparativa de K-Means, DBSCAN e seleção hierárquica de cauda superior, utilizando Silhouette e Davies--Bouldin, contagens de grupos e estados de aplicabilidade. A comparação examinou como os resultados variaram com a quantidade de casos, sem interpretar separação geométrica como comprovação de erro numérico. A análise probabilística empregou frequências empíricas e intervalos de confiança; a rejeição da hipótese normal em 88 dos 90 grupos impede adotar uma distribuição gaussiana comum como referência de validação dos candidatos. A rotina preserva rastreabilidade e produz evidências reproduzíveis para investigação posterior. A validação causal por especialista, com formas de onda e repetições das simulações, constitui trabalho futuro, fora do escopo deste TCC.
 
 %reduzir a subjetividade da avaliação técnica e oferecer suporte mais consistente à interpretação dos resultados de simulações de energização.
 
@@ -446,7 +446,7 @@ A utilização de simulações computacionais é particularmente relevante nesse
 % Além disso, nem todo valor extremo observado em uma simulação representa, necessariamente, a condição mais adequada para orientar uma decisão de projeto. Em alguns casos, picos isolados podem estar associados a condições operacionais muito específicas, comportamentos transitórios pouco representativos do conjunto analisado ou, ainda, a efeitos numéricos que precisam ser verificados por meio de uma análise mais criteriosa. Essa distinção é essencial, pois impacta diretamente a avaliação do nível de isolamento e, consequentemente, os custos e a segurança de projetos em sistemas de transmissão.
 % Assim, a adoção direta do maior valor observado como única referência de projeto pode conduzir a interpretações excessivamente conservadoras, sobretudo quando esse valor corresponde a uma ocorrência isolada ou estatisticamente discrepante em relação ao conjunto de dados analisado. Por isso, torna-se importante combinar a análise dos valores máximos com critérios estatísticos e com a interpretação física do fenômeno transitório estudado.
 
-Apesar da importância do ATP em estudos de transitórios eletromagnéticos, a análise dos arquivos gerados pelo programa ainda pode ser trabalhosa. Em simulações com muitos cenários, os resultados ficam distribuídos em arquivos extensos, exigindo que o usuário localize manualmente os maiores valores de sobretensão e organize essas informações para posterior interpretação. Esse processo, além de repetitivo, pode gerar inconsistências, principalmente quando diferentes instantes de fechamento dos disjuntores, fases e pontos de monitoramento são considerados. Por esse motivo, este trabalho propõe uma rotina computacional para identificar valores máximos, observar padrões estatísticos e apontar possíveis anomalias de forma organizada e reprodutível.
+Apesar da importância do ATP em estudos de transitórios eletromagnéticos, a análise dos arquivos gerados pelo programa ainda pode ser trabalhosa. Em simulações com muitos cenários, os resultados ficam distribuídos em arquivos extensos, exigindo que o usuário localize manualmente os maiores valores de sobretensão e organize essas informações para posterior interpretação. Esse processo, além de repetitivo, pode gerar inconsistências, principalmente quando diferentes instantes de fechamento dos disjuntores, fases e pontos de monitoramento são considerados. Por esse motivo, este trabalho desenvolveu uma rotina computacional para identificar valores máximos, observar padrões estatísticos e apontar possíveis anomalias de forma organizada e reprodutível.
 
 \section{Problema de pesquisa}
 
@@ -460,7 +460,7 @@ A justificativa deste trabalho está relacionada à necessidade de tornar a aná
 
 Parte-se da expectativa de que a combinação entre métodos estatísticos clássicos, análise probabilística e técnicas de aprendizagem de máquina não supervisionada contribua para tornar a avaliação mais robusta, reduzindo a subjetividade da inspeção manual e oferecendo suporte mais consistente à tomada de decisão em estudos de coordenação de isolamento. Algoritmos como K-Means e DBSCAN podem auxiliar, respectivamente, na identificação de agrupamentos predominantes e de regiões de baixa densidade associadas a observações atípicas \cite{ardebili2024}. Assim, além de contribuir para a confiabilidade técnica do processo analítico, a proposta pode favorecer a otimização de investimentos, ao evitar superdimensionamentos motivados por eventos sem relevância prática.
 
-A contribuição deste trabalho consiste em desenvolver uma rotina computacional em Python capaz de integrar a extração, a organização, o tratamento estatístico, a análise probabilística e a geração de evidências analíticas sobre os dados obtidos no ATP. A rotina identifica e organiza observações discrepantes como candidatos para investigação posterior, preservando sua rastreabilidade até a simulação de origem.
+A contribuição deste trabalho consistiu no desenvolvimento de uma rotina computacional em Python capaz de integrar a extração, a organização, o tratamento estatístico, a análise probabilística e a geração de evidências analíticas sobre os dados obtidos no ATP. A rotina identifica e organiza observações discrepantes como candidatos para investigação posterior, preservando sua rastreabilidade até a simulação de origem.
 
 
 \section{Objetivos}
@@ -572,7 +572,7 @@ Após essa etapa, o sistema é modelado no ATP/EMTP, com a elaboração dos arqu
 \legend{Fonte: elaboração própria.}
 \end{figure}
 
-No presente trabalho, esses transitórios são analisados a partir dos valores máximos de sobretensão obtidos em simulações de energização. Esses valores constituem a base de dados utilizada nas etapas posteriores de tratamento estatístico, análise probabilística e detecção de possíveis anomalias.
+No presente trabalho, esses transitórios foram analisados a partir dos valores máximos de sobretensão obtidos em simulações de energização. Esses valores constituem a base de dados utilizada nas etapas posteriores de tratamento estatístico, análise probabilística e detecção de possíveis anomalias.
 % \section{Simulação computacional com ATP}
 \section{Simulação computacional com ATP e extração dos dados}
 
@@ -638,7 +638,7 @@ A identificação de valores atípicos (\textit{outliers}), entretanto, deve ser
 A visualização de dados constitui uma etapa importante da análise exploratória, pois permite observar padrões, agrupamentos, dispersões e valores discrepantes que nem sempre são identificados apenas por medidas numéricas. Tukey \cite{tukey1977} destaca a análise exploratória como parte essencial da compreensão dos dados. Cleveland \cite{cleveland1993} ressalta que a visualização permite investigar a estrutura dos dados e revelar comportamentos relevantes para a análise. De forma complementar, Tufte \cite{tufte2001} enfatiza que bons gráficos devem comunicar informações quantitativas com clareza, precisão e eficiência. Entre as formas mais utilizadas de visualização está a nuvem de pontos, ou \textit{scatter plot}. Nesse tipo de gráfico, cada ponto representa uma observação posicionada de acordo com duas variáveis de interesse. No contexto deste trabalho, cada ponto pode representar uma simulação, uma fase monitorada, um ponto de medição ou uma combinação de atributos extraídos dos arquivos do ATP. Essa representação permite observar concentrações de valores, regiões de dispersão, possíveis agrupamentos e pontos isolados.
 
 A Figura~\ref{fig:nuvem-clusters-anomalias} apresenta uma representação esquemática de uma nuvem de pontos com agrupamentos e possíveis observações anômalas. Os centroides representam os centros dos grupos, conceito associado a métodos particionais como o K-Means, enquanto os pontos afastados das regiões de maior concentração podem ser analisados como candidatos a valores atípicos.
-No presente trabalho, a visualização por nuvem de pontos será utilizada como ferramenta de apoio à análise das sobretensões máximas obtidas nas simulações. Antes da aplicação dos algoritmos, ela permite observar a distribuição geral dos dados e identificar visualmente concentrações ou valores extremos. Após a aplicação dos métodos estatísticos e de aprendizagem de máquina, contribui para interpretar os agrupamentos formados e a posição dos pontos classificados como possíveis anomalias.
+No presente trabalho, a visualização por nuvem de pontos foi utilizada como ferramenta de apoio à análise das sobretensões máximas obtidas nas simulações. Antes da aplicação dos algoritmos, ela permitiu observar a distribuição geral dos dados e identificar visualmente concentrações ou valores extremos. Após a aplicação dos métodos estatísticos e de aprendizagem de máquina, contribuiu para interpretar os agrupamentos formados e a posição dos pontos classificados como possíveis anomalias.
 
 \begin{figure}[htbp]
 \centering
@@ -738,7 +738,7 @@ Mahon e Lapata \cite{mahon2025} apresentam uma aplicação baseada em métodos d
 
 Essa representação evidencia que o desempenho de métodos baseados em centroides depende da distribuição dos dados no espaço de atributos. Quando os grupos são compactos e bem separados, a identificação dos agrupamentos tende a ser mais clara. Entretanto, quando há sobreposição, dispersão elevada ou proximidade entre centroides, a clusterização torna-se mais sensível à escolha de $k$, à inicialização dos centroides e ao pré-processamento dos dados.
 
-No presente trabalho, o K-Means será utilizado como ferramenta exploratória para verificar se as sobretensões máximas obtidas nas simulações se organizam em grupos de comportamento semelhante. Pontos muito distantes dos centroides ou pertencentes a grupos pouco representativos podem ser analisados como possíveis candidatos a anomalias.
+No presente trabalho, o K-Means foi utilizado como ferramenta exploratória para verificar se as sobretensões máximas obtidas nas simulações se organizam em grupos de comportamento semelhante. Pontos muito distantes dos centroides ou pertencentes a grupos pouco representativos podem ser analisados como possíveis candidatos a anomalias.
 
 \begin{figure}[htbp]
 \centering
@@ -766,7 +766,7 @@ O funcionamento do DBSCAN ocorre pela expansão de agrupamentos: inicialmente, o
 
 Mumtaz e Duraiswamy \cite{mumtaz2010} comparam o desempenho do DBSCAN, do K-Means e dos Mapas Auto-Organizáveis de Kohonen, conhecidos como SOM, em bases sintéticas espaciais. A comparação evidencia que o DBSCAN apresenta melhor desempenho em conjuntos de dados com formatos arbitrários, não convexos e estruturas espiraladas. Enquanto o K-Means tende a separar os dados em grupos influenciados pela proximidade aos centroides, o DBSCAN preserva melhor a forma natural dos agrupamentos, pois sua definição de agrupamento depende da densidade local dos pontos. A Figura~\ref{fig:dbscan-comparacao} apresenta uma comparação entre os resultados de clusterização obtidos por SOM, K-Means e DBSCAN em bases sintéticas bidimensionais.
 
-Essa característica é importante para a detecção de anomalias, pois o DBSCAN não força todos os pontos a pertencerem a algum grupo. Pontos situados em regiões de baixa densidade podem ser classificados como ruído, tornando o método adequado para identificar observações que não seguem o comportamento predominante da base de dados. No contexto deste trabalho, o DBSCAN será utilizado para auxiliar na identificação de sobretensões máximas isoladas em relação ao conjunto analisado. Entretanto, uma observação classificada como ruído não deve ser descartada automaticamente. Sua interpretação deve considerar a análise estatística, os parâmetros da simulação e a coerência física do fenômeno transitório.
+Essa característica é importante para a detecção de anomalias, pois o DBSCAN não força todos os pontos a pertencerem a algum grupo. Pontos situados em regiões de baixa densidade podem ser classificados como ruído, tornando o método adequado para identificar observações que não seguem o comportamento predominante da base de dados. No contexto deste trabalho, o DBSCAN foi utilizado para auxiliar na identificação de sobretensões máximas isoladas em relação ao conjunto analisado. Entretanto, uma observação classificada como ruído não deve ser descartada automaticamente. Sua interpretação deve considerar a análise estatística, os parâmetros da simulação e a coerência física do fenômeno transitório.
 
 \begin{figure}[htbp]
 \centering
@@ -779,7 +779,7 @@ Essa característica é importante para a detecção de anomalias, pois o DBSCAN
 
 Apesar de suas vantagens, o DBSCAN apresenta limitações. A escolha inadequada de $\varepsilon$ ou de \textit{MinPts} pode levar à fragmentação excessiva dos agrupamentos ou à classificação indevida de muitos pontos como ruído. Além disso, quando os dados apresentam regiões com densidades muito diferentes, o uso de parâmetros globais pode dificultar a identificação correta dos agrupamentos. Por isso, sua aplicação deve ser acompanhada de análise exploratória, visualização gráfica e validação técnica.
 
-Com base nos conceitos apresentados, observa-se que a análise de sobretensões transitórias em manobras de energização exige a integração entre conhecimento físico do sistema elétrico, simulação computacional, tratamento estatístico, análise probabilística e técnicas de reconhecimento de padrões. O ATP fornece os dados necessários para representar diferentes condições de operação, enquanto a estatística e a visualização auxiliam na compreensão da distribuição dos valores máximos obtidos. Os algoritmos de clusterização, por sua vez, podem apoiar a identificação de comportamentos predominantes e de observações discrepantes. Essa fundamentação sustenta a etapa metodológica do trabalho, na qual serão definidos os procedimentos de extração, organização, análise probabilística e classificação das sobretensões simuladas.
+Com base nos conceitos apresentados, observa-se que a análise de sobretensões transitórias em manobras de energização exige a integração entre conhecimento físico do sistema elétrico, simulação computacional, tratamento estatístico, análise probabilística e técnicas de reconhecimento de padrões. O ATP fornece os dados necessários para representar diferentes condições de operação, enquanto a estatística e a visualização auxiliam na compreensão da distribuição dos valores máximos obtidos. Os algoritmos de clusterização, por sua vez, podem apoiar a identificação de comportamentos predominantes e de observações discrepantes. Essa fundamentação sustenta a etapa metodológica do trabalho, na qual foram definidos os procedimentos de extração, organização, análise probabilística e classificação das sobretensões simuladas.
 
 \chapter{Modelagem do sistema elétrico e geração dos dados}
 
@@ -1022,10 +1022,10 @@ O escopo avaliado dos pontos de verificação das fontes compreende os casos
 completos, sem defeito, dos cenários SRPI e CRPI, com 50, 100, 200,
 1.000 e 10.000 simulações por cenário. A referência do CRPI registra todos os
 48 pares ordenados de variável/nó, transcritos diretamente do arquivo de saída do ATP. A auditoria
-compara esses pares nos cinco arquivos. As primeiras e últimas execuções
+comparou esses pares nos cinco arquivos. As primeiras e últimas execuções
 fornecem os máximos com sinal e os instantes de ocorrência da fase A em
 $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, juntamente com os instantes da chave 10. As
-referências são lidas diretamente do texto do ATP, de forma independente do
+referências foram lidas diretamente do texto do ATP, de forma independente do
 parser de produção; os resumos SHA-256 identificam os arquivos de entrada
 locais completos. Os pontos de verificação existentes do SRPI são mantidos.
 
@@ -1043,7 +1043,7 @@ novos cenários exige conferir previamente quais terminais e fases são esperado
 nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 
 % \section{Normalização por unidade}
-% \label{sec:per-unit-validation}
+\label{sec:per-unit-validation}
 
 Para a referência nominal de 138~kV de tensão eficaz entre fases, as bases
 de pico senoidal fase-terra e fase-fase decorrem da referência trifásica
@@ -1087,11 +1087,11 @@ módulo apenas na normalização. O fluxo não reconstrói os extremos da forma 
 onda. Consequentemente, esse procedimento não estabelece se o passo de
 integração capturou o máximo global em tempo contínuo.
 
-A validação da conversão compara os valores relidos do CSV com razões
+A validação da conversão comparou os valores relidos do CSV com razões
 calculadas em aritmética Decimal a partir de referências com sinal
-transcritas independentemente do LIS. São consideradas a primeira e a última
+transcritas independentemente do LIS. Foram consideradas a primeira e a última
 execução de cada um dos dez arquivos, na fase A dos três terminais. Também
-são comparadas as médias não agrupadas das três fases nos três terminais
+foram comparadas as médias não agrupadas das três fases nos três terminais
 com os resumos em P.U. impressos pelo ATP.
 
 A comparação com as médias não agrupadas do ATP abrange as três fases nos
@@ -1104,7 +1104,7 @@ a convenção de módulo, mas não verifica independentemente cada observação.
 \section{Integridade e limpeza dos dados}
 \label{sec:data-cleaning-validation}
 
-A integridade dos dados é avaliada separadamente
+A integridade dos dados foi avaliada separadamente
 para os dez casos SRPI/CRPI de modelo completo, sem defeito, com 50, 100, 200,
 1000 e 10000 execuções, utilizando a base aceita de 112677~V. A chave de cada
 observação é composta pelo arquivo de origem, pela execução, pelo terminal e
@@ -1128,7 +1128,7 @@ estatística.
 
 \subsection{Reprodutibilidade e critérios de aceitação}
 
-As verificações utilizam referências extraídas diretamente dos arquivos de
+As verificações utilizaram referências extraídas diretamente dos arquivos de
 origem, de forma independente do parser de produção. Os arquivos são
 identificados por resumos SHA-256, permitindo conferir se as entradas
 correspondem às utilizadas nas auditorias. A independência refere-se ao
@@ -1147,8 +1147,8 @@ reunidos no Apêndice~\ref{app:validation-records}.
 \subsection{Escopo experimental e separação das evidências}
 \label{sec:camadas-validade}
 
-A matriz final de análise compreende dez fontes: os cenários SRPI e CRPI,
-cada qual com 50, 100, 200, 1.000 e 10.000 simulações. Os cenários são
+A matriz final de análise compreendeu dez fontes: os cenários SRPI e CRPI,
+cada qual com 50, 100, 200, 1.000 e 10.000 simulações. Os cenários foram
 analisados separadamente antes de qualquer comparação, pois representam
 definições distintas de chaveamento. Todas as fontes comparáveis devem usar a
 base de 112677~V, a mesma janela temporal e a mesma definição de evento.
@@ -1198,7 +1198,7 @@ estabelece causa física ou numérica.
 \subsection{Estatística descritiva e probabilidade de excedência}
 \label{sec:metodo-estatistico}
 
-Para cada combinação de cenário, tamanho da amostra, terminal e fase, são
+Para cada combinação de cenário, tamanho da amostra, terminal e fase, foram
 calculados número total e número válido de observações, média, desvio padrão
 amostral, mediana, primeiro e terceiro quartis, percentis 90, 95 e 99, mínimo
 e máximo. Valores nulos ou não finitos permanecem contabilizados como
@@ -1223,7 +1223,7 @@ a precisão impressa.
 O uso de uma distribuição gaussiana para os máximos de saída não decorre da
 distribuição configurada para os instantes de chaveamento. Em cada grupo, o
 ajuste registra tamanho amostral, média, desvio padrão amostral, exclusões e
-política de estimação. A adequação é examinada pelo teste de
+política de estimação. A adequação foi examinada pelo teste de
 Anderson--Darling com nível de significância de 5\%, pelo gráfico quantil--
 quantil, pela assimetria, pelo excesso de curtose e pela diferença entre as
 probabilidades empírica e gaussiana nas caudas. Em amostras grandes, o teste
@@ -1251,7 +1251,7 @@ contribuem para concordância entre métodos.
 \subsection{Evidência contextual de K-Means e DBSCAN}
 \label{sec:metodo-anomalias}
 
-Os modelos de agrupamento são ajustados separadamente por cenário,
+Os modelos de agrupamento foram ajustados separadamente por cenário,
 linhagem da fonte, terminal e
 fase. Essa separação evita que diferenças ordinárias de posição ao longo da
 linha ou assimetrias entre fases sejam convertidas em anomalias. O atributo
@@ -1326,7 +1326,7 @@ internas e distância entre centroides, calculando a média dessas razões.
 Silhouette maior e Davies--Bouldin menor favorecem separação geométrica.
 Nenhum deles estima probabilidade de erro numérico.
 
-A comparação cobre dois cenários, cinco tamanhos amostrais, três terminais,
+A comparação cobriu dois cenários, cinco tamanhos amostrais, três terminais,
 três fases e três métodos: 270 registros. No DBSCAN, o denominador dos
 índices exclui o ruído; nos demais métodos, inclui todos os pontos com
 rótulo. Logo, uma classificação direta dos métodos exige conferir também
@@ -1341,18 +1341,18 @@ não se atribui causalmente toda mudança de escore ao tamanho amostral.
 
 \subsection{Ensaios controlados dos detectores}
 
-A avaliação controlada utiliza cópias dos dados e mantém as fontes originais
-inalteradas. Além de controles limpos, são previstas perturbações pontuais de
+A avaliação controlada utilizou cópias dos dados e manteve as fontes originais
+inalteradas. Além de controles limpos, foram aplicadas perturbações pontuais de
 magnitude, perturbações contextuais relativas ao grupo e deslocamentos
-coletivos em execuções contíguas. As proporções de contaminação são 1\%, 5\%
+coletivos em execuções contíguas. As proporções de contaminação foram 1\%, 5\%
 e 10\%; intensidade, semente, identidade afetada, valor original e valor
-alterado são registrados em manifesto próprio.
+alterado foram registrados em manifesto próprio.
 
-A separação entre desenvolvimento e avaliação é feita conjuntamente por
+A separação entre desenvolvimento e avaliação foi feita conjuntamente por
 linhagem da fonte e identidade da simulação, mantendo fases e terminais da
-mesma execução no mesmo subconjunto. Escalas, centroides e limiares são
+mesma execução no mesmo subconjunto. Escalas, centroides e limiares foram
 ajustados somente no desenvolvimento. Para cada família, intensidade e
-método, relatam-se primeiro verdadeiros positivos, falsos positivos,
+método, foram relatados primeiro verdadeiros positivos, falsos positivos,
 verdadeiros negativos e falsos negativos; em seguida, precisão, revocação,
 $F_1$ e taxa de falsos positivos. Métricas com denominador nulo são mantidas
 como indefinidas, acompanhadas do motivo. Esses rótulos comprovam apenas a
@@ -1379,11 +1379,11 @@ constituem erro. Toda comparação declara se seu caráter é descritivo,
 exploratório ou inferencial e, no último caso, explicita o tratamento da
 multiplicidade.
 
-A sensibilidade é avaliada com grades predefinidas para sementes e número de
+A sensibilidade foi avaliada com grades predefinidas para sementes e número de
 grupos do K-Means, limiares de distância e parâmetros ou calibração do
-DBSCAN, mantendo os demais controles fixos. Para cada política são informados
+DBSCAN, mantendo os demais controles fixos. Para cada política foram informados
 aplicabilidade, quantidade e taxa de candidatos. A estabilidade de identidade
-é medida pelo índice de Jaccard entre dois conjuntos de candidatos, $A$ e $B$:
+foi medida pelo índice de Jaccard entre dois conjuntos de candidatos, $A$ e $B$:
 \begin{equation}
 J(A,B)=\frac{|A\cap B|}{|A\cup B|}.
 \end{equation}
@@ -1393,16 +1393,17 @@ a estabilidade da seleção; não mede acurácia nem valida uma configuração c
 
 \subsection{Revisão técnica e limites causais}
 
-A amostra de revisão técnica contempla casos com concordância entre métodos,
+A amostra selecionada para revisão técnica contemplou casos com concordância entre métodos,
 discordância, escores elevados, proximidade do limiar e controles não
 sinalizados, distribuídos pelos cenários e grupos disponíveis. Cada ficha
 preserva fonte, simulação, terminal, fase, máximo com sinal, valor em P.U.,
 instante, condições de chaveamento, demais fases e terminais da execução e a
 evidência explícita de cada método.
 
-Quando disponíveis, as formas de onda e as repetições da simulação preservam
-fonte, parâmetros, passo de integração, tolerância de comparação e
-comportamento observado. A investigação numérica repete as mesmas condições
+A obtenção de formas de onda e de repetições comparáveis da simulação
+permanece pendente. Quando disponíveis, deverão preservar fonte, parâmetros,
+passo de integração, tolerância de comparação e comportamento observado.
+Uma futura investigação numérica deverá repetir as mesmas condições
 de chaveamento e condições iniciais com passos de integração sucessivamente
 menores. Sensibilidade ao passo motiva investigação adicional, enquanto
 convergência numérica isolada não valida o modelo físico.
@@ -1411,8 +1412,8 @@ As categorias permitidas são defeito de dados, artefato numérico suspeito,
 extremo fisicamente plausível e caso não resolvido. A conclusão registra
 revisor, data, evidências e justificativa. A ausência de forma de onda, de
 repetição comparável ou de revisor elétrico qualificado força o estado não
-resolvido e impede atribuição causal. Quando não houver revisão elétrica
-independente qualificada, essa limitação será declarada no texto dos
+resolvido e impede atribuição causal. Como não houve revisão elétrica
+independente qualificada, essa limitação foi declarada no texto dos
 resultados.
 
 \chapter{Resultados e discussão}

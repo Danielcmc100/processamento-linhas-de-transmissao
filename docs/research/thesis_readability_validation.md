@@ -224,3 +224,43 @@ notebook note is needed because this report now owns the terminology audit.
 - No SPEC_DEVIATION. T6 owns verb-tense alignment; T8 owns conclusion
   restructuring; T9–T12 retain numeric, figure/table and integrated-layout
   work. This task does not close pending electrical review.
+
+
+## T6 — Align tense with execution status (2026-10-28)
+
+Completed extraction/conversion audits, statistical calculations, clustering,
+controlled perturbations and parameter sensitivity are now described in past
+tense where the text reports this study's actions. Algorithm definitions,
+software behavior, applicability rules, physical relationships and current
+limitations retain present tense. Earlier future-tense K-Means, DBSCAN,
+visualization and methodology statements now identify completed use.
+
+The execution-status authority is the current v3 evidence and the results
+section on controlled evaluation: the controlled benchmark and parameter
+sensitivity were executed on the declared reference groups; five selected
+review cases remain unresolved. Selecting cases does not constitute electrical
+review. The methodology now explicitly reserves future investigation for
+missing waveforms and repeat simulations; no new ATP run, independent review
+or causal validation is claimed. Phase-to-phase extraction remains future work.
+
+Verification:
+
+- `just build` passes, producing 80 physical PDF pages. Final log has no
+  actual warnings, undefined citations/references, missing assets or overfull
+  boxes (internal silence-package warning-counter declarations are not
+  warnings).
+- The first build exposed a pre-existing commented-out
+  `sec:per-unit-validation` label. Restored that intended target immediately
+  before the existing conversion derivation, without adding a heading; the
+  referring results text now resolves. No other labels were changed.
+- Before/after source comparison preserves all 44 citation commands, six
+  input inclusions, 13 graphics and 12 equation blocks exactly. Numerical
+  evidence, table assets and raw sources are unchanged.
+- Physical PDF pages 11, 14, 24, 28–29, 36–40 and 42–44 were rendered and
+  visually inspected. Updated paragraphs fit without clipping; figures and
+  equations retain their space. The short methodology-ending page remains;
+  whole-document placement belongs to T12.
+- Editorial-only task: no Python code or tests changed. Root reports fresh
+  `uv run task format` and `uv run task lint` passing;
+  `uv run task test` reports 327 passed in 74.59 seconds. Root owns task
+  tracking and commits. No SPEC_DEVIATION.
