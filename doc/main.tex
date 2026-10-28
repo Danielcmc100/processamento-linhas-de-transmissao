@@ -1951,13 +1951,14 @@ artefato (\texttt{analysis\_mode=exploratory}).
 \section{Comparação entre tamanhos amostrais}
 \label{sec:convergencia-amostral}
 
-A Tabela~\ref{tab:defesa-convergencia}, gerada a partir do pacote de
-evidências, compara os
-cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000 simulações) sob a
+A comparação dos cinco tamanhos amostrais (50, 100, 200, 1.000 e 10.000
+simulações) foi realizada sob a
 mesma base, o mesmo limiar, o mesmo agrupamento e a mesma política de
-método, para os noventa grupos de cenário, terminal e fase.
-
-\input{evidence/v7/tables/convergence.tex}
+método, para os noventa grupos de cenário, terminal e fase. Os resultados
+completos, incluindo medidas descritivas, probabilidades, incerteza e
+candidatos por grupo, estão preservados na
+Tabela~\ref{tab:defesa-convergencia}, na seção de comparação amostral do
+Apêndice~\ref{app:comparacao-amostral-detalhada}.
 
 A largura do intervalo de confiança da probabilidade empírica diminui de
 forma monotônica com o tamanho amostral em todos os grupos, de 0,0713 em
@@ -1967,8 +1968,12 @@ não comprova, por si só, convergência independente da estimativa. A taxa de
 candidatos analíticos varia entre tamanhos: no SRPI, terminal $T_{OPO}$, fase
 A, a taxa varia de 8,52\% a 12\% nos cinco tamanhos avaliados, enquanto no
 CRPI, mesmo terminal e fase,
-a taxa varia de 16\% em $N=50$ até valores inferiores a 2\% entre $N=200$ e
-$N=10.000$. A referência de 10.000 simulações é tratada como referência
+a taxa passa de 16\% em $N=50$ para 12\% em $N=100$, 1\% em $N=200$ e
+$N=1.000$, e 1,09\% em $N=10.000$. Esses exemplos se restringem ao
+terminal $T_{OPO}$, fase A, também representado nas
+Figuras~\ref{fig:defesa-convergencia-crpi} e
+\ref{fig:defesa-convergencia-srpi}; não resumem os demais terminais e fases.
+A referência de 10.000 simulações é tratada como referência
 empírica de maior amostragem, não como verdade fundamental; a comparação
 descreve os conjuntos observados e não estabelece acurácia do detector, e as
 dez fontes não são presumidas independentes ou aninhadas entre si.
@@ -2362,6 +2367,19 @@ Apêndice~\ref{app:pacote-evidencias}; a tabela foi gerada automaticamente
 a partir dos resultados validados, sem agregação dos grupos.
 
 \input{evidence/v7/tables/probability.tex}
+
+\section{Comparação detalhada entre tamanhos amostrais}
+\label{app:comparacao-amostral-detalhada}
+
+A Tabela~\ref{tab:defesa-convergencia} preserva os noventa grupos e os
+cinco tamanhos amostrais sob controles comuns, incluindo as medidas
+descritivas, os intervalos de confiança e as evidências de candidatos.
+Sua fonte é o pacote catalogado no
+Apêndice~\ref{app:pacote-evidencias}. A maior amostra permanece uma
+referência empírica, sem estabelecer verdade fundamental, independência
+ou aninhamento entre as fontes.
+
+\input{evidence/v7/tables/convergence.tex}
 
 \end{apendicesenv}
 
