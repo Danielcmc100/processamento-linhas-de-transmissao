@@ -2008,8 +2008,11 @@ fontes não presumidas independentes ou aninhadas.}
 \texttt{sources/convergence.csv}.}
 \end{figure}
 
-\section{Avaliação controlada, sensibilidade a parâmetros e revisão técnica}
+\section{Discussão acerca dos resultados}
+\label{sec:discussao-resultados}
 \label{sec:avaliacao-controlada}
+\label{sec:alcance-limitacoes}
+\label{sec:lacunas-pacote}
 
 O pacote de evidências final registra que a revisão
 técnica com evidência elétrica completa permanece pendente sobre o conjunto
@@ -2069,13 +2072,11 @@ Tabela~\ref{tab:defesa-revisao-tecnica}, na seção de casos pendentes do
 Apêndice~\ref{app:casos-revisao-pendente}, preserva as identidades das
 observações, os valores e as evidências analíticas, com correspondência
 entre cenário, tamanho amostral, caminho completo da fonte e SHA-256.
-As consequências dessas lacunas para a interpretação são detalhadas na
-Seção~\ref{sec:lacunas-pacote}.
+A seleção documentada permite orientar a investigação posterior, mas não
+constitui validação elétrica concluída.
 
-\section{Discussão}
-\label{sec:discussao-resultados}
-
-Os resultados sustentam, com evidência rastreável, os objetivos específicos
+À luz dessas evidências, os resultados sustentam, com evidência rastreável,
+os objetivos específicos
 relativos à extração, à organização, ao tratamento estatístico e à análise
 probabilística dos dados do ATP (Seção~\ref{sec:resultados-estatisticos}), e
 à aplicação de K-Means e DBSCAN para identificação de agrupamentos e de
@@ -2098,18 +2099,12 @@ deste capítulo foram gerados de forma automática e rastreável a partir dos
 dez arquivos declarados, conforme o manifesto de reprodutibilidade
 catalogado no Apêndice~\ref{app:pacote-evidencias}, incluindo o ensaio controlado com
 perturbações sintéticas e a repetição da grade de sensibilidade de
-parâmetros, ambos concluídos sobre o grupo de referência do conjunto-alvo
-(Seção~\ref{sec:avaliacao-controlada}). O desempenho
-de detecção medido no ensaio controlado é restrito às condições sintéticas
-testadas e ao grupo de referência avaliado; não é generalizado como
-acurácia de detecção de erros numéricos reais do ATP nos demais grupos, e a
-estabilidade de parâmetro observada não é equiparada a acurácia do
-detector. O estado de validação do pacote é delimitado a seguir.
+parâmetros, ambos concluídos sobre o grupo de referência do conjunto-alvo.
+O atendimento desses objetivos computacionais não amplia a validade dos
+resultados para além das condições e populações examinadas.
 
-\section{Alcance e limitações dos resultados}
-\label{sec:alcance-limitacoes}
-
-A base tabular de máximos sustenta conclusões sobre a distribuição dos máximos de
+Nesse alcance, a base tabular de máximos sustenta conclusões sobre a
+distribuição dos máximos de
 tensão, mas não representa as séries temporais nem a forma das ondas. Ela não
 permite, isoladamente, concluir sobre duração, frequência, taxa de variação ou
 conteúdo oscilatório do transitório. Tais conclusões exigiriam armazenar e
@@ -2121,10 +2116,8 @@ restrições de cobertura numérica, adequação dos modelos, aplicabilidade dos
 índices, condições sintéticas e comparação entre fontes foram apresentadas
 junto aos respectivos resultados.
 
-\subsection{Limites da validação causal e trabalho futuro}
-\label{sec:lacunas-pacote}
-
-O registro de estado do pacote final declara explicitamente seu estado
+Diante dessas restrições, o registro de estado do pacote final declara
+explicitamente seu estado
 ``incompleto'' e restringe
 as camadas aceitas à validade dos dados, ao cálculo estatístico e à geração
 de candidatos analíticos. A validade elétrica dos candidatos permanece
