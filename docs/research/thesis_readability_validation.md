@@ -333,3 +333,51 @@ Verification:
 - No SPEC_DEVIATION. CodeNavi and dataframely guidance were applied; no new
   schema dependency or publication framework was introduced. Discovery is
   documented here rather than duplicated in a notebook entry.
+
+
+## T2 — Lead results with principal findings (2026-10-28)
+
+Status: complete. T9 was verified and committed before this sequential
+sub-agent task. Files changed: `doc/main.tex` and this research record only.
+
+The results chapter now opens with the accepted dataset, empirical
+exceedance and Wilson uncertainty, Gaussian adequacy, and geometric-index
+applicability before the existing parser audit. A short transition preserves
+the extraction-to-analysis sequence. The synthesis distinguishes index
+eligibility from detector applicability, retains descriptive/non-voting
+hierarchical labels, and keeps electrical review pending.
+
+Source-to-prose reconciliation uses the current
+`results/defense-evidence/v4/sources/` files. T9 inherited these scientific
+CSVs byte-for-byte from v3; no experiments were rerun for this task.
+
+| Opening claim | Source and columns | Reconciliation |
+| --- | --- | --- |
+| Ten files, SRPI and CRPI | `dataset_manifest.csv`: `source_path`, `scenario`, `included` | Ten distinct source paths, all included; scenarios are SRPI and CRPI. |
+| 204,300 accepted observations in 90 groups, no exclusions | `statistical_evidence.csv`: `scenario`, `sample_size`, `terminal`, `phase`, `count`, `valid_count`, `excluded_count`, `validation_status` | Ninety unique group keys; sums of count and valid count are both 204,300; excluded counts sum to zero; all rows are valid. The sum describes dataset size, not an inferential probability denominator. |
+| No observation exceeded 2.3 P.U. | `statistical_evidence.csv`: `comparison_operator`, `threshold`, `occurrence_count`, `empirical_probability` | All 90 rows use strict `>` and threshold 2.3; all event counts and empirical probabilities are zero. |
+| Wilson 95% uncertainty remains per group | `statistical_evidence.csv`: `denominator`, `confidence_level`, `confidence_interval_method`, `confidence_interval_lower`, `confidence_interval_upper` | Each denominator equals its own group size; all rows use Wilson at 0.95. Lower limits are zero; positive upper limits range from 0.00038399837067659573 to 0.07134759913335872. No pooled interval is introduced. Zero events do not establish zero underlying probability. |
+| Anderson–Darling rejected normality in 88 of 90 groups at 5% | `distribution_adequacy.csv`: `decision`, `significance_level`, `reference_method` | 88 rejected and two not rejected, all at 0.05; reference method is `scipy_anderson_interpolate`. This is adequacy evidence, not a voltage detector or a causal classification. |
+| Geometric indices applicable in 90 K-Means, four DBSCAN and six hierarchical groups | `clustering_comparison.csv`: `method`, `applicability`, `silhouette_score`, `davies_bouldin_score` | 270 method-group records: each method has 90 groups; applicable counts are 90, four and six respectively. Every applicable row has both index scores. These counts concern partitions, not detector eligibility or accuracy. |
+| Electrical review pending and cause unresolved | `../package_status.json`: `package_status`, `causal_conclusion`, `incomplete_evidence.technical_review` | Incomplete/unresolved; waveforms, repeat simulations and a qualified independent reviewer remain unavailable. |
+
+Verification:
+
+- `just build` passes: 81 physical PDF pages. The final log has no actual
+  LaTeX/package warnings, undefined citations/references, missing assets,
+  multiply defined labels or overfull boxes.
+- Physical PDF pages 45–47 were rendered and visually inspected. The new
+  synthesis fits on the opening results page before the audit, references
+  resolve to Tables 3 and 4, and subsequent conversion/cleaning material
+  remains readable without clipping. Whole-document final integration
+  remains assigned to T12.
+- Before/after comparison preserves all 44 citation commands, 39 labels,
+  six input inclusions, thirteen graphics and twelve equation blocks
+  exactly. No figure, table, raw input, scientific output, Python source or
+  test was changed.
+- Numeric claims were independently recomputed with Python standard-library
+  CSV reading, including unique group/source identities and index-score
+  availability. Root's preceding software gate remains 328 tests passing
+  in 76.23 seconds, with format/lint/typecheck passing; this prose-only task
+  does not require repeating unchanged software tests.
+- No SPEC_DEVIATION. Root owns task tracking and commits.

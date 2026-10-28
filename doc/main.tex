@@ -1425,11 +1425,30 @@ resultados.
 \chapter{Resultados e discussão}
 \label{chap:results}
 
-Este capítulo reúne as validações do parser, da estrutura das observações, da
-conversão em P.U. e da limpeza, seguidas pelos resultados estatísticos e pelas
-evidências analíticas de anomalia. Cada resultado permanece restrito ao
-escopo, ao método e à camada de validade declarados na
-Seção~\ref{sec:camadas-validade}.
+A base validada reuniu 204.300 observações escalares de dez arquivos dos
+cenários SRPI e CRPI, distribuídas em noventa grupos de cenário, tamanho
+amostral, terminal e fase, sem exclusões. Nenhuma observação excedeu
+2,3~P.U.; os intervalos de Wilson de 95\%, calculados separadamente por
+grupo, mantêm explícita a incerteza: a ausência de eventos não estabelece
+probabilidade subjacente nula (Tabela~\ref{tab:defesa-probabilidade}).
+A normalidade foi rejeitada por Anderson--Darling a 5\% em 88 dos noventa
+grupos, impedindo adotar um modelo gaussiano comum como referência sem
+verificação de adequação.
+
+Os índices geométricos Silhouette e Davies--Bouldin foram aplicáveis às
+partições de todos os noventa grupos do K-Means, mas somente a quatro do
+DBSCAN e a seis do método hierárquico
+(Tabela~\ref{tab:cluster-summary}). Essas contagens descrevem a possibilidade
+de avaliar as partições, não a aplicabilidade dos detectores de candidatos.
+A seleção de candidatos utiliza MAD, distância ao centroide do K-Means e
+ruído do DBSCAN sob suas regras de aplicabilidade; os rótulos hierárquicos
+permanecem descritivos e não participam dessa seleção. A revisão elétrica
+continua pendente, sem atribuição de causa aos extremos.
+
+As verificações de extração, identidade, conversão e limpeza a seguir
+fundamentam essa síntese; depois são detalhadas as análises estatísticas e
+comparativas. Cada resultado permanece restrito ao escopo, ao método e à
+camada de validade declarados na Seção~\ref{sec:camadas-validade}.
 
 % \section{Fidelidade da extração}
 
