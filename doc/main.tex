@@ -1703,7 +1703,8 @@ de visualização.
 
 \begin{figure}[htbp]
 \centering
-\caption{Histograma com densidade gaussiana ajustada e gráfico
+\caption[Histograma e gráfico quantil--quantil, CRPI,
+terminal $T_{OPO}$, fase A, $N=10.000$.]{Histograma com densidade gaussiana ajustada e gráfico
 quantil--quantil para o CRPI, terminal $T_{OPO}$, fase A, $N=10.000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
 empírica permanece principal. Classes e escalas são comuns aos dois
@@ -1719,7 +1720,8 @@ cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 
 \begin{figure}[htbp]
 \centering
-\caption{Histograma com densidade gaussiana ajustada e gráfico
+\caption[Histograma e gráfico quantil--quantil, SRPI,
+terminal $T_{OPO}$, fase A, $N=10.000$.]{Histograma com densidade gaussiana ajustada e gráfico
 quantil--quantil para o SRPI, terminal $T_{OPO}$, fase A, $N=10.000$. A
 normalidade é rejeitada pelo teste de Anderson--Darling a 5\%; a estimativa
 empírica permanece principal. Classes e escalas são comuns aos dois
@@ -1887,7 +1889,8 @@ isolado de $N$ nem estabelece um número ótimo de simulações.
 
 \begin{figure}[htbp]
 \centering
-\caption{Silhouette e Davies--Bouldin por quantidade de casos no CRPI,
+\caption[Silhouette e Davies--Bouldin por tamanho amostral, CRPI,
+terminal $T_{OPO}$, fase A.]{Silhouette e Davies--Bouldin por quantidade de casos no CRPI,
 terminal $T_{OPO}$, fase A. Os dois cenários usam as mesmas escalas
 por índice e os mesmos estilos por método. Ausência de ponto indica
 não aplicabilidade, explicitada no painel; a legenda inclui somente
@@ -1903,7 +1906,8 @@ grupos terminal--fase da Tabela~\ref{tab:cluster-summary}.}
 
 \begin{figure}[htbp]
 \centering
-\caption{Silhouette e Davies--Bouldin por quantidade de casos no SRPI,
+\caption[Silhouette e Davies--Bouldin por tamanho amostral, SRPI,
+terminal $T_{OPO}$, fase A.]{Silhouette e Davies--Bouldin por quantidade de casos no SRPI,
 terminal $T_{OPO}$, fase A. Os dois cenários usam as mesmas escalas
 por índice e os mesmos estilos por método. Ausência de ponto indica
 não aplicabilidade, explicitada no painel; a legenda inclui somente
@@ -1987,7 +1991,8 @@ dez fontes não são presumidas independentes ou aninhadas entre si.
 
 \begin{figure}[htbp]
 \centering
-\caption{Comparação descritiva entre os cinco tamanhos amostrais, CRPI,
+\caption[Comparação descritiva dos tamanhos amostrais, CRPI,
+terminal $T_{OPO}$, fase A.]{Comparação descritiva entre os cinco tamanhos amostrais, CRPI,
 terminal $T_{OPO}$, fase A: média e percentil 95 (painel superior), taxa de
 candidatos (central) e probabilidade empírica de exceder 2,3 P.U. com intervalo
 de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do SRPI;
@@ -2002,7 +2007,8 @@ zero eventos não implica probabilidade subjacente nula.}
 
 \begin{figure}[htbp]
 \centering
-\caption{Comparação descritiva entre os cinco tamanhos amostrais, SRPI,
+\caption[Comparação descritiva dos tamanhos amostrais, SRPI,
+terminal $T_{OPO}$, fase A.]{Comparação descritiva entre os cinco tamanhos amostrais, SRPI,
 terminal $T_{OPO}$, fase A: média e percentil 95 (painel superior), taxa de
 candidatos (central) e probabilidade empírica de exceder 2,3 P.U. com intervalo
 de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do CRPI;
@@ -2374,7 +2380,10 @@ intervalos de Wilson de 95\%. A fonte é o pacote catalogado no
 Apêndice~\ref{app:pacote-evidencias}; a tabela foi gerada automaticamente
 a partir dos resultados validados, sem agregação dos grupos.
 
+\begingroup
+\SingleSpacing
 \input{evidence/v9/tables/probability.tex}
+\endgroup
 
 \section{Comparação detalhada entre tamanhos amostrais}
 \label{app:comparacao-amostral-detalhada}
@@ -2387,7 +2396,10 @@ Apêndice~\ref{app:pacote-evidencias}. A maior amostra permanece uma
 referência empírica, sem estabelecer verdade fundamental, independência
 ou aninhamento entre as fontes.
 
+\begingroup
+\SingleSpacing
 \input{evidence/v9/tables/convergence.tex}
+\endgroup
 
 \section{Ensaio controlado detalhado por condição}
 \label{app:benchmark-detalhado}
