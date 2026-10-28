@@ -205,3 +205,88 @@ No specification deviation. Whole-document integration remains T12.
 - Whole-document reflow remains T12; no T13/T14 work performed. No spec
   deviations. No new notebook entry: generator/replay ownership is recorded
   here and existing scope notes already cover the scientific boundary.
+
+
+## T11.4 — Pending electrical-review cases and source identity (2026-10-28)
+
+### Plan and acceptance reconciliation
+
+- Assumption: immutable v8 retains the five selected cases and the authoritative
+  dataset catalog. This task changes presentation only, with no experiments,
+  electrical review, or causal conclusions added.
+- Task-owned files: manuscript; defense-reporting generator and tests; builder
+  catalog wiring; existing presentation replay callers; v9 manuscript assets;
+  this evidence record. Pre-existing TODOS/spec/task/state edits are preserved.
+- The detailed table is included exactly once, in the titled appendix section
+  `app:casos-revisao-pendente`, retaining its original caption and
+  `tab:defesa-revisao-tecnica` label. Main prose references both targets and
+  reports five unresolved cases, missing waveforms/repetitions/qualified review,
+  and pending electrical review rather than completed validation.
+- Every observation retains simulation, terminal, phase, signed source value,
+  P.U. value and analytical evidence. Shared conclusion, reviewer, date and
+  rationale appear once in a note only when genuinely identical; differing
+  per-case values remain separate columns.
+- The control is explicitly identified as `controle sem sinalização`, including
+  empty evidence read from CSV as null. No empty evidence cell remains.
+- Four cases resolve to CRPI, N=100, and one to CRPI, N=1000. Both source
+  identities display full repository-relative paths and full SHA-256 values.
+  All five rows, ten voltage values, simulation/terminal/phase identities and
+  method evidence were reconciled against saved full-precision review data and
+  `sources/dataset_manifest.csv`. The map declares the repository root.
+
+### Regression and software gates
+
+- RED confirmed missing source-catalog support; duplicate-basename/blank-control
+  and missing/ambiguous identity regressions failed before implementation.
+  A separate basename-only catalog regression reproduced misleading publication,
+  and a contextual traceability test reproduced duplicate keys for identical
+  bytes assigned to different scenarios. Each subsequently passed.
+- Eight new tests cover duplicate basenames, explicit empty/null controls,
+  shared versus differing review status, missing/ambiguous/basename-only source
+  identities, and identical-byte sources disambiguated by known scenario/N.
+  Source validation runs before writing any artifact.
+- The first full gate exposed an integration fixture with identical source bytes
+  across several contexts. The builder now preserves known scenario/N in future
+  review records; catalog lookup and trace keys use that context. Historical
+  hash-only records require a unique catalog match. Saved CSVs remain unchanged.
+- One new preservation-test CSV read was corrected with parent approval to
+  `missing_utf8_is_empty_string=True`, matching source empty-string semantics
+  rather than weakening the assertion. Test setup also fixes an Int32/Int64
+  concatenation mismatch before GREEN.
+- Reporting suite: 18 passed. Builder/reporting integration checkpoint: 22
+  passed (collected before the last two unit tests were added).
+- Final `uv run task format`, `uv run task lint`, and
+  `uv run task typecheck` pass; typecheck has zero errors/warnings/notes.
+  Final `uv run task test`: **342 passed in 86.52 seconds**, no skips/failures,
+  up from the fresh preceding T11.3 baseline of 334 tests.
+
+### Publication and rendered-document gates
+
+- Replay command: `uv run python -m
+  docs.research.replay_thesis_benchmark_table --source
+  results/defense-evidence/v8 --output results/defense-evidence/v9 --table
+  technical_review`. The existing replay owner now accepts benchmark/review
+  selection and source/output directories; default benchmark replay is retained.
+- Only `tables/technical_review.tex` changes between saved v8 and final v9.
+  All **290 CSVs**, including presentation traceability, retain bytes, schemas,
+  rows and scientific precision. No experimental routines run. The v9 manifest
+  records inherited provenance, replay command, current implementation hashes
+  and `experiments_rerun: false`.
+- All **609 v9 output hashes** and all v1–v9 manifest-referenced paths verify:
+  **5,332 unique paths**, including the ten raw inputs. Historical packages and
+  raw sources remain unchanged. Current implementation hashes also reconcile.
+- `uv run python -m scripts.prepare_defense_document` copies eleven referenced
+  assets; every manuscript reference uses v9 and matches package bytes.
+- `just build` passes: **84 PDF pages**. Final log contains no undefined
+  references/citations, duplicate labels, missing assets or overfull/underfull
+  boxes. Original table caption/label and appendix references resolve.
+- Physical PDF pages **60–61, 83–84** were rendered and inspected: main prose
+  and its continuation, appendix heading/provenance, and the complete table.
+  All five cases and both full source maps fit one readable landscape page
+  (PDF 84, printed 83); common notes and control are legible, without clipping.
+  Original table numbering remains Table 7. Source contains one inclusion only,
+  after the appendix begins.
+- No T13/T14/T12 work performed. Whole-document integration remains T12;
+  electrical review remains unresolved. No specification deviations. No new
+  notebook entry: this record captures the catalog/replay ownership and the
+  existing scope notebook already documents pending causal validation.

@@ -1704,7 +1704,7 @@ empírica permanece principal. Classes e escalas são comuns aos dois
 cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v8/figures/distribution-crpi-t_opo-a.png}
+{evidence/v9/figures/distribution-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1720,7 +1720,7 @@ empírica permanece principal. Classes e escalas são comuns aos dois
 cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v8/figures/distribution-srpi-t_opo-a.png}
+{evidence/v9/figures/distribution-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -1799,7 +1799,7 @@ DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
 partição elegível para avaliação, sem atribuir artificialmente escore zero.
 
 \clearpage
-\input{evidence/v8/tables/clustering_summary.tex}
+\input{evidence/v9/tables/clustering_summary.tex}
 
 Os índices foram aplicáveis em 90 dos 90 grupos do K-Means, em quatro
 dos 90 grupos do DBSCAN e em seis dos 90 grupos do método hierárquico.
@@ -1891,7 +1891,7 @@ métodos com pontos válidos. Este recorte difere das medianas dos nove
 grupos terminal--fase da Tabela~\ref{tab:cluster-summary}.}
 \label{fig:cluster-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v8/figures/clustering-crpi.png}
+{evidence/v9/figures/clustering-crpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1907,7 +1907,7 @@ métodos com pontos válidos. Este recorte difere das medianas dos nove
 grupos terminal--fase da Tabela~\ref{tab:cluster-summary}.}
 \label{fig:cluster-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v8/figures/clustering-srpi.png}
+{evidence/v9/figures/clustering-srpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -1987,7 +1987,7 @@ de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do SRPI;
 zero eventos não implica probabilidade subjacente nula.}
 \label{fig:defesa-convergencia-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v8/figures/convergence-crpi-t_opo-a.png}
+{evidence/v9/figures/convergence-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -2002,7 +2002,7 @@ de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do CRPI;
 fontes não presumidas independentes ou aninhadas.}
 \label{fig:defesa-convergencia-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v8/figures/convergence-srpi-t_opo-a.png}
+{evidence/v9/figures/convergence-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -2059,16 +2059,18 @@ estável, nesse grupo, à variação de parâmetro testada. Essa estabilidade é
 reportada como evidência de reprodutibilidade do conjunto de candidatos,
 não como evidência de acurácia de detecção.
 
-A revisão técnica selecionou cinco casos representativos, cobrindo
-concordância entre métodos, discordância, escore elevado e controle sem
-sinalização, conforme a regra de amostragem declarada na metodologia. A
-Tabela~\ref{tab:defesa-revisao-tecnica} reproduz o resultado.
-
-\input{evidence/v8/tables/technical_review.tex}
-
-Todos os cinco casos permanecem com conclusão ``não resolvido''. As
-evidências ausentes e suas consequências para a interpretação são
-detalhadas na Seção~\ref{sec:lacunas-pacote}.
+A seleção para revisão técnica reuniu cinco casos representativos,
+cobrindo concordância entre métodos, discordância, escore elevado e controle
+sem sinalização, conforme a regra de amostragem declarada na metodologia.
+Os cinco casos aguardam revisão elétrica e permanecem com conclusão causal
+``não resolvido'': não foram disponibilizadas formas de onda, repetições
+comparáveis nem revisão elétrica independente qualificada. A
+Tabela~\ref{tab:defesa-revisao-tecnica}, na seção de casos pendentes do
+Apêndice~\ref{app:casos-revisao-pendente}, preserva as identidades das
+observações, os valores e as evidências analíticas, com correspondência
+entre cenário, tamanho amostral, caminho completo da fonte e SHA-256.
+As consequências dessas lacunas para a interpretação são detalhadas na
+Seção~\ref{sec:lacunas-pacote}.
 
 \section{Discussão}
 \label{sec:discussao-resultados}
@@ -2328,7 +2330,7 @@ Seu manifesto preserva a proveniência experimental herdada e identifica a
 reprodução da apresentação pelo comando
 \texttt{uv run python -m docs.research.replay\_thesis\_numeric\_tables}.
 
-O diretório do pacote atual é \path{results/defense-evidence/v8/}.
+O diretório do pacote atual é \path{results/defense-evidence/v9/}.
 Os caminhos a seguir são relativos a esse diretório e vinculam os
 resultados aos respectivos registros completos:
 \begin{description}
@@ -2359,7 +2361,7 @@ pacote: \path{sources/annotated_observations.csv},
 \path{sources/distribution_adequacy.csv},
 \path{sources/clustering_comparison.csv} e
 \path{sources/convergence.csv}. As cópias incluídas neste documento ficam
-em \path{doc/evidence/v8/}, permitindo sua compilação independente.
+em \path{doc/evidence/v9/}, permitindo sua compilação independente.
 O documento de GTPPLOT citado na discussão estatística é identificado no
 acervo pelo arquivo \texttt{2000-N4-Estati-1.pdf}.
 
@@ -2372,7 +2374,7 @@ intervalos de Wilson de 95\%. A fonte é o pacote catalogado no
 Apêndice~\ref{app:pacote-evidencias}; a tabela foi gerada automaticamente
 a partir dos resultados validados, sem agregação dos grupos.
 
-\input{evidence/v8/tables/probability.tex}
+\input{evidence/v9/tables/probability.tex}
 
 \section{Comparação detalhada entre tamanhos amostrais}
 \label{app:comparacao-amostral-detalhada}
@@ -2385,7 +2387,7 @@ Apêndice~\ref{app:pacote-evidencias}. A maior amostra permanece uma
 referência empírica, sem estabelecer verdade fundamental, independência
 ou aninhamento entre as fontes.
 
-\input{evidence/v8/tables/convergence.tex}
+\input{evidence/v9/tables/convergence.tex}
 
 \section{Ensaio controlado detalhado por condição}
 \label{app:benchmark-detalhado}
@@ -2405,7 +2407,18 @@ A origem permanece
 em \path{sources/controlled_benchmark.csv} e
 \path{tables/benchmark.csv}, sem nova execução dos ensaios.
 
-\input{evidence/v8/tables/benchmark.tex}
+\input{evidence/v9/tables/benchmark.tex}
+
+\section{Casos pendentes de revisão elétrica e identificação das fontes}
+\label{app:casos-revisao-pendente}
+
+A Tabela~\ref{tab:defesa-revisao-tecnica} preserva os cinco casos
+selecionados no pacote identificado no Apêndice~\ref{app:pacote-evidencias}.
+A seleção computacional não constitui revisão elétrica concluída. Os
+identificadores combinam cenário e tamanho amostral; o mapa de caminhos
+completos e hashes distingue fontes com o mesmo nome de arquivo.
+
+\input{evidence/v9/tables/technical_review.tex}
 
 \end{apendicesenv}
 

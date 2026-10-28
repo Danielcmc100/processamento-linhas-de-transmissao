@@ -202,6 +202,7 @@ def build_defense_evidence(
         benchmark=benchmark,
         convergence=convergence,
         review=review,
+        review_sources=_dataset_manifest_frame(entries),
         rounding=RoundingPolicy(decimal_places=4),
         generator_version=GENERATOR_VERSION,
         overwrite=overwrite,
@@ -576,6 +577,8 @@ def _unresolved_review_table(annotated: DataFrame) -> DataFrame:
     return selected.select(
         "source_file",
         "source_sha256",
+        "scenario",
+        "sample_size",
         "simulation",
         "terminal",
         "phase",

@@ -255,6 +255,7 @@ def generate_defense_tables(
     benchmark: DataFrame,
     convergence: DataFrame,
     review: DataFrame,
+    review_sources: DataFrame,
     rounding: RoundingPolicy = RoundingPolicy(),
     generator_version: str = "1.0.0",
     manuscript_labels: Mapping[str, str] | None = None,
@@ -287,6 +288,8 @@ def generate_defense_tables(
     for name, table in tables.items():
         _validate_table(table, definitions[name])
 
+    review_identities = _review_source_identities(review, review_sources)
+
     source_paths = {
         name: output_dir / definition.source_filename
         for name, definition in definitions.items()
@@ -315,7 +318,7 @@ def generate_defense_tables(
         table = tables[name].sort(list(definition.sort_columns))
         _write_machine_csv(source_paths[name], table)
         latex_paths[name].write_text(
-            _render_latex(table, definition, rounding),
+            _render_latex(table, definition, rounding, review_identities),
             encoding="utf-8",
         )
         trace_rows.extend(_trace_rows(table, definition, generator_version))
@@ -376,6 +379,65 @@ def _validate_table(table: DataFrame, definition: _TableDefinition) -> None:
         )
 
 
+def _review_source_identities(
+    review: DataFrame,
+    sources: DataFrame,
+) -> dict[tuple[str, str, str], tuple[str, str, str]]:
+    """Resolve review hashes against an unambiguous source catalog.
+
+    Returns:
+        Scenario, sample-size and full-path identities indexed by hash.
+
+    Raises:
+        ValueError: If a selected source identity is missing or ambiguous.
+    """
+    required = {"scenario", "sample_size", "source_path", "source_sha256"}
+    if not required.issubset(sources.columns):
+        raise ValueError("Missing review source identity catalog columns.")
+    identities: dict[tuple[str, str, str], tuple[str, str, str]] = {}
+    for selected in review.iter_rows(named=True):
+        source_hash = str(selected["source_sha256"])
+        matches = {
+            (
+                str(row["scenario"]),
+                str(row["sample_size"]),
+                str(row["source_path"]),
+            )
+            for row in sources.iter_rows(named=True)
+            if row["source_sha256"] == source_hash
+            and all(
+                column not in selected or selected[column] == row[column]
+                for column in ("scenario", "sample_size")
+            )
+            and all(row[column] is not None for column in required)
+        }
+        if len(matches) != 1:
+            raise ValueError("Missing or ambiguous review source identity.")
+        identity = matches.pop()
+        if (
+            not all(identity)
+            or any(character in identity[2] for character in "{}\n\r")
+            or len(Path(identity[2]).parts) < 2
+            or Path(identity[2]).name != selected["source_file"]
+        ):
+            raise ValueError("Inconsistent review source identity.")
+        identities[_review_identity_key(selected)] = identity
+    return identities
+
+
+def _review_identity_key(row: Mapping[str, object]) -> tuple[str, str, str]:
+    """Identify selected sources using all retained experimental context.
+
+    Returns:
+        Hash and optional scenario/sample-size identity.
+    """
+    return (
+        str(row["source_sha256"]),
+        str(row.get("scenario", "")),
+        str(row.get("sample_size", "")),
+    )
+
+
 def _write_machine_csv(path: Path, table: DataFrame) -> None:
     """Write all source columns without presentation rounding."""
     rows = [dict(row) for row in table.iter_rows(named=True)]
@@ -430,9 +492,20 @@ def _render_latex(
     table: DataFrame,
     definition: _TableDefinition,
     rounding: RoundingPolicy,
+    review_identities: Mapping[tuple[str, str, str], tuple[str, str, str]],
 ) -> str:
     """Render one deterministic Brazilian Portuguese LaTeX table."""
     columns = definition.display_columns
+    shared: list[tuple[str, str]] = []
+    if definition.name == "technical_review":
+        shared = [
+            (column, label)
+            for column, label in columns
+            if column in {"conclusion", "reviewer", "review_date", "rationale"}
+            and table.height > 0
+            and table[column].n_unique() == 1
+        ]
+        columns = tuple(item for item in columns if item not in shared)
     weights = [
         0.65
         if definition.name == "benchmark"
@@ -487,6 +560,13 @@ def _render_latex(
         r"\hline\endhead",
     ]
     for row in table.iter_rows(named=True):
+        if definition.name == "technical_review":
+            scenario, sample_size, _ = review_identities[
+                _review_identity_key(row)
+            ]
+            row["source_file"] = (
+                f"{scenario}-{sample_size} / {row['source_file']}"
+            )
         values = [
             _presentation_value(row[column], column, rounding)
             for column, _ in columns
@@ -495,6 +575,40 @@ def _render_latex(
     lines.extend((
         r"\hline",
         r"\end{longtable}",
+    ))
+    if definition.name == "technical_review":
+        if set(table["conclusion"]) == {"unresolved"}:
+            lines.append("Casos aguardando revisão elétrica.\\par")
+        if shared:
+            first = table.row(0, named=True)
+            lines.append(
+                "; ".join(
+                    f"{label}: "
+                    + _presentation_value(first[column], column, rounding)
+                    for column, label in shared
+                ).rstrip(".")
+                + ".\\par"
+            )
+        lines.append(
+            "Identificação das fontes: caminhos completos relativos à raiz "
+            "do repositório; SHA-256 identifica os bytes de entrada.\\par"
+        )
+        for source_key, identity in sorted(review_identities.items()):
+            source_hash = source_key[0]
+            scenario, sample_size, source_path = identity
+            wrapped_hash = r"\allowbreak{}".join(
+                source_hash[index : index + 8]
+                for index in range(0, len(source_hash), 8)
+            )
+            lines.append(
+                _latex_escape(f"{scenario}-{sample_size}")
+                + r": \path{"
+                + source_path
+                + r"}; SHA-256: \texttt{"
+                + wrapped_hash
+                + r"}.\par"
+            )
+    lines.extend((
         r"\endgroup",
         r"\end{landscape}",
         "",
@@ -508,6 +622,8 @@ def _presentation_value(
     rounding: RoundingPolicy,
 ) -> str:
     """Format and safely escape one presentation value."""
+    if column == "method_evidence" and value in {None, ""}:
+        return "controle sem sinalização"
     if value is None:
         return "não definido"
     if isinstance(value, bool):
@@ -536,7 +652,7 @@ def _translate_value(value: str, column: str) -> str:
     method_names = {
         "mad_modified_z": "MAD",
         "kmeans": "K-Means",
-        "kmeans_distance": "distância ao centróide (K-Means)",
+        "kmeans_distance": "distância ao centroide (K-Means)",
         "dbscan_noise": "ruído (DBSCAN)",
         "dbscan_density_novelty": "DBSCAN",
     }
@@ -550,6 +666,8 @@ def _translate_value(value: str, column: str) -> str:
     if column == "method":
         return method_names.get(value, value)
     if column == "method_evidence":
+        if not value:
+            return "controle sem sinalização"
         return "; ".join(
             method_names.get(part, part) for part in value.split(";")
         )
@@ -602,13 +720,17 @@ def _trace_rows(
     generator_version: str,
 ) -> list[dict[str, object]]:
     """Build one traceability entry per source row."""
+    key_columns = definition.key_columns
+    if definition.name == "technical_review":
+        key_columns += tuple(
+            column for column in ("scenario", "sample_size") if column in table
+        )
     return [
         {
             "table_name": definition.name,
             "source_artifact": definition.source_filename,
             "row_key": "|".join(
-                str(_machine_value(row[column]))
-                for column in definition.key_columns
+                str(_machine_value(row[column])) for column in key_columns
             ),
             "generator_version": generator_version,
             "manuscript_label": definition.manuscript_label,

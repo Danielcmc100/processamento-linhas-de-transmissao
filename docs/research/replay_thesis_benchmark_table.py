@@ -1,5 +1,6 @@
-"""Replay benchmark presentation from immutable v7 evidence."""
+"""Replay benchmark or review presentation from immutable saved evidence."""
 
+from argparse import ArgumentParser
 from datetime import UTC, datetime
 from hashlib import sha256
 from json import dumps, loads
@@ -26,8 +27,21 @@ def main() -> None:
     Raises:
         ValueError: If scientific outputs change during presentation replay.
     """
-    original = Path("results/defense-evidence/v7")
-    output = Path("results/defense-evidence/v8")
+    parser = ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--source", type=Path, default=Path("results/defense-evidence/v7")
+    )
+    parser.add_argument(
+        "--output", type=Path, default=Path("results/defense-evidence/v8")
+    )
+    parser.add_argument(
+        "--table",
+        choices=("benchmark", "technical_review"),
+        default="benchmark",
+    )
+    arguments = parser.parse_args()
+    original: Path = arguments.source
+    output: Path = arguments.output
     original_manifest = original / "reproducibility_manifest.json"
     inherited = loads(original_manifest.read_text())
     for artifact in inherited["outputs"]:
@@ -44,10 +58,12 @@ def main() -> None:
             benchmark=read_csv(original / "tables/benchmark.csv"),
             convergence=read_csv(original / "tables/convergence.csv"),
             review=read_csv(original / "tables/technical_review.csv"),
+            review_sources=read_csv(original / "sources/dataset_manifest.csv"),
             rounding=RoundingPolicy(decimal_places=4),
         )
         copy2(
-            rendered.latex_paths["benchmark"], output / "tables/benchmark.tex"
+            rendered.latex_paths[arguments.table],
+            output / "tables" / f"{arguments.table}.tex",
         )
         copy2(
             rendered.traceability_path,
@@ -61,7 +77,7 @@ def main() -> None:
         if path.read_bytes() != (output / relative).read_bytes():
             changed.append(relative.as_posix())
             if relative not in {
-                Path("tables/benchmark.tex"),
+                Path(f"tables/{arguments.table}.tex"),
                 Path("tables/table_traceability.csv"),
             }:
                 message = f"Nonpresentation artifact changed: {relative}"
@@ -95,7 +111,8 @@ def main() -> None:
         code_revision=_git_revision(Path.cwd()),
         dependencies=inherited["dependencies"],
         commands=[
-            "uv run python -m docs.research.replay_thesis_benchmark_table"
+            "uv run python -m docs.research.replay_thesis_benchmark_table "
+            f"--source {original} --output {output} --table {arguments.table}"
         ],
         output_files={
             path.relative_to(output).as_posix(): path

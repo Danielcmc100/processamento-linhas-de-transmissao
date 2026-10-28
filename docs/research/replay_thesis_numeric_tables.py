@@ -43,6 +43,7 @@ def main() -> None:
         benchmark=read_csv(original / "tables/benchmark.csv"),
         convergence=read_csv(original / "tables/convergence.csv"),
         review=read_csv(original / "tables/technical_review.csv"),
+        review_sources=read_csv(original / "sources/dataset_manifest.csv"),
         rounding=RoundingPolicy(decimal_places=4),
         overwrite=True,
     )
