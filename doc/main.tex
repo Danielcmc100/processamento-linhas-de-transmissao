@@ -610,17 +610,70 @@ em que $Q_1$ e $Q_3$ representam, respectivamente, o primeiro e o terceiro quart
 \end{equation}
 Esse procedimento não substitui a interpretação física do fenômeno, mas oferece uma referência adicional para identificar observações que se afastam da região central dos dados.
 
+A Figura~\ref{fig:boxplot-didatico} apresenta esses elementos em um
+esquema didático. O critério de IQR serve à interpretação exploratória;
+não integra a votação dos detectores implementados neste trabalho.
+
+\begin{figure}[htbp]
+\centering
+\caption{Elementos de um boxplot e limites exploratórios baseados no IQR.}
+\label{fig:boxplot-didatico}
+\begin{tikzpicture}[x=1cm, y=1cm, font=\small, >=Stealth]
+\draw[->, gray] (0,-0.8) -- (11.7,-0.8)
+    node[right] {$V$};
+\draw[thick] (2,0) -- (4,0);
+\draw[thick] (6,0) -- (8,0);
+\draw[thick] (2,-0.25) -- (2,0.25);
+\draw[thick] (8,-0.25) -- (8,0.25);
+\draw[thick, fill=gray!12] (4,-0.35) rectangle (6,0.35);
+\draw[very thick] (5,-0.35) -- (5,0.35);
+\node[above] at (4,0.4) {$Q_1$};
+\node[above] at (5,0.4) {$Q_2$};
+\node[above] at (6,0.4) {$Q_3$};
+\draw[<->] (4,1.25) -- (6,1.25)
+    node[midway, above] {$IQR=Q_3-Q_1$};
+\draw[dashed] (1,-0.4) -- (1,1.1);
+\draw[dashed] (9,-0.4) -- (9,1.1);
+\node[above, align=center] at (1,1.1) {$Q_1-1{,}5IQR$};
+\node[above, align=center] at (9,1.1) {$Q_3+1{,}5IQR$};
+\draw[fill=white, thick] (10.3,0) circle (0.07);
+\draw[fill=white, thick] (10.7,0) circle (0.07);
+\node[below, align=center, text width=2.5cm] at (2,-1)
+    {Menor valor interno};
+\node[below, align=center, text width=2.5cm] at (5,-1)
+    {Mediana ($Q_2$)};
+\node[below, align=center, text width=2.5cm] at (8,-1)
+    {Maior valor interno};
+\node[above, align=center, text width=2.2cm] at (10.5,0.15)
+    {Pontos externos};
+\end{tikzpicture}
+\legend{Fonte: elaboração própria. Esquema ilustrativo, sem dados do ATP.
+Os bigodes alcançam os valores observados mais extremos dentro dos
+limites tracejados; pontos externos não são erros confirmados.}
+\end{figure}
+
 A análise probabilística complementa a descrição estatística ao permitir estimar a frequência de ocorrência de eventos críticos. Considerando $N$ simulações e um limiar de sobretensão $v$, a probabilidade empírica de excedência pode ser estimada por
 
 \begin{equation}
 \hat{P}(V > v)=\frac{n_v}{N},
 \end{equation}
-em que $n_v$ representa o número de observações cujo valor de sobretensão $V$ excede o limiar estabelecido. Essa estimativa permite avaliar, por exemplo, a proporção de simulações que ultrapassa determinado nível de tensão. Quando necessário, níveis de confiança podem ser associados a estimativas proporcionais por meio de aproximações estatísticas, como
+em que $n_v$ representa o número de observações cujo valor de sobretensão
+$V$ excede o limiar estabelecido. Neste trabalho, a incerteza dessa
+proporção é representada pelo intervalo bilateral de Wilson:
 
 \begin{equation}
-IC_{\hat{p}} = \hat{p} \pm z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{N}},
+IC_{\mathrm{Wilson}} =
+\frac{\hat{p}+\dfrac{z^2}{2N}
+\;\pm\; z\sqrt{\dfrac{\hat{p}(1-\hat{p})}{N}
++\dfrac{z^2}{4N^2}}}{1+\dfrac{z^2}{N}},
 \end{equation}
-em que $\hat{p}$ representa a proporção estimada, $z_{\alpha/2}$ é o valor crítico da distribuição normal padrão e $N$ é o número total de observações.
+em que $\hat{p}=n_v/N$, $z$ é o quantil $1-\alpha/2$ da distribuição
+normal padrão e $1-\alpha$ é o nível de confiança, fixado em 95\%.
+Ao contrário da aproximação simétrica de Wald, o intervalo de Wilson
+mantém limite superior positivo quando nenhuma ocorrência é observada.
+O intervalo se refere à proporção binomial por grupo; seu cálculo não
+pressupõe distribuição gaussiana para os máximos de tensão nem demonstra
+independência entre as fontes.
 
 A identificação de valores atípicos (\textit{outliers}), entretanto, deve ser conduzida com cautela, pois valores discrepantes podem ter diferentes origens e interpretações, não sendo necessariamente erros ou observações inválidas \cite{barnett1994}. Em aplicações de sistemas elétricos, um valor extremo pode representar um evento fisicamente relevante, uma condição operacional rara, um comportamento transitório específico ou, ainda, um desvio associado ao processo numérico da simulação. Portanto, a análise estatística e probabilística deve ser combinada com visualização de dados, interpretação física e métodos computacionais de identificação de padrões.
 
@@ -1123,7 +1176,45 @@ simulações, pois sua identidade permanece no caminho de origem. A inclusão de
 novos cenários exige conferir previamente quais terminais e fases são esperados
 nesse cenário, em vez de presumir que todos os arquivos têm o mesmo leiaute.
 
-% \section{Normalização por unidade}
+A Figura~\ref{fig:unidade-observacao} ilustra a passagem de uma execução
+para os nove registros esperados nos casos selecionados. Os registros da
+mesma execução compartilham a origem, mas distinguem terminal e fase;
+essa organização não pressupõe independência estatística entre eles.
+
+\begin{figure}[htbp]
+\centering
+\caption{Da execução do ATP às nove observações escalares de tensão.}
+\label{fig:unidade-observacao}
+\begin{tikzpicture}[
+    font=\small,
+    box/.style={draw, rounded corners, align=center, inner sep=7pt},
+    >=Stealth
+]
+\node[box, text width=11.5cm] (source)
+    {Arquivo de origem + número da simulação};
+\node[box, below=0.6cm of source, text width=3.2cm] (middle)
+    {$1/2\,LT$\\Fases A, B e C};
+\node[box, left=0.4cm of middle, text width=3.2cm] (start)
+    {$T_{MAN}$\\Fases A, B e C};
+\node[box, right=0.4cm of middle, text width=3.2cm] (end)
+    {$T_{OPO}$\\Fases A, B e C};
+\draw[->] (source.south) -- (middle.north);
+\draw[->] (source.south -| start.north) -- (start.north);
+\draw[->] (source.south -| end.north) -- (end.north);
+\node[box, below=0.65cm of middle, text width=11.5cm] (records)
+    {3 terminais $\times$ 3 fases = 9 registros por simulação\\
+    Cada registro: máximo com sinal, instante e valor em P.U.};
+\draw[->] (start.south) -- (start.south |- records.north);
+\draw[->] (middle.south) -- (records.north);
+\draw[->] (end.south) -- (end.south |- records.north);
+\node[below=0.25cm of records, align=center, text width=12cm]
+    {Exemplo de chave: (arquivo SRPI de 100 execuções, 1, $T_{MAN}$, A).};
+\end{tikzpicture}
+\legend{Fonte: elaboração própria. A chave composta identifica um único
+máximo escalar; os registros não representam a forma de onda.}
+\end{figure}
+
+\section{Normalização por unidade}
 \label{sec:per-unit-validation}
 
 Para a referência nominal de 138~kV de tensão eficaz entre fases, as bases
@@ -1193,19 +1284,46 @@ pela fase. A unicidade das chaves e a igualdade entre seu conjunto e o produto
 cartesiano das execuções declaradas (de 1 a NENERG), dos três terminais e das
 fases A/B/C estabelecem a completude antes da limpeza. As declarações nos
 arquivos de origem são lidas independentemente da contagem de linhas extraídas.
-Chaves duplicadas ou incompletas bloqueiam a análise, em vez de alterar
-silenciosamente a unidade amostral.
+As ações de bloqueio, exclusão e preservação são sintetizadas na
+Tabela~\ref{tab:regras-limpeza}.
 
 Os instantes de ocorrência devem pertencer ao intervalo fechado $[0;0{,}3]$~s,
 conforme declarado na reprodução do cartão de parâmetros diversos no LIS e
 confirmado em cada arquivo de entrada ATP correspondente. Trata-se de uma
 verificação de consistência com a janela de simulação, e não de uma
-classificação física. Medições não finitas ou instantes fora desse intervalo
-são excluídos, preservando-se a identificação de origem, os valores originais e
-o motivo da exclusão. Valores extremos finitos de tensão são preservados.
-Seleções vazias após a limpeza bloqueiam a análise. Nesta etapa, não se aplica
-nenhum critério de corte baseado no instante de chaveamento ou na amplitude
-estatística.
+classificação física. Toda exclusão preserva identificação de origem,
+valores originais e motivo. Nesta etapa, não se aplica critério de corte
+baseado no instante de chaveamento ou na amplitude estatística.
+
+\begin{table}[htbp]
+\centering
+\caption{Decisões de integridade e limpeza da base de máximos.}
+\label{tab:regras-limpeza}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}L
+    >{\RaggedRight\arraybackslash}p{2cm} L@{}}
+\hline
+\textbf{Condição} & \textbf{Ação} & \textbf{Registro e interpretação} \\
+\hline
+Chave composta duplicada & Bloquear &
+Identificar colisão; não reduzir silenciosamente a amostra. \\
+Combinação esperada ausente & Bloquear &
+Registrar incompletude antes de calcular estatísticas. \\
+Tensão não finita & Excluir registro &
+Preservar origem, valor e motivo da exclusão. \\
+Instante fora de $[0;0{,}3]$~s & Excluir registro &
+Registrar inconsistência com a janela declarada. \\
+Extremo finito com identidade e instante válidos & Preservar &
+Manter na amostra; eventual sinalização analítica não o exclui. \\
+Seleção vazia após limpeza & Bloquear &
+Impedir análise sem observações válidas. \\
+\hline
+\end{tabularx}
+\legend{Fonte: elaboração própria. Bloqueio impede a análise da seleção;
+exclusão afeta somente o registro inválido e permanece rastreável.}
+\end{table}
+\FloatBarrier
 
 \subsection{Reprodutibilidade e critérios de aceitação}
 
@@ -1235,6 +1353,37 @@ definições distintas de chaveamento. Todas as fontes comparáveis devem usar a
 base de 112.677~V, a mesma janela temporal e a mesma definição de evento.
 Configurações com base diferente ou sem procedência suficiente são excluídas
 da matriz comparável, com registro do motivo.
+
+A Tabela~\ref{tab:composicao-base} explicita a composição da matriz.
+Cada arquivo contém nove combinações de terminal e fase; cada combinação
+constitui um grupo de análise com $N$ observações.
+
+\begin{table}[htbp]
+\centering
+\caption{Composição da base por tamanho amostral nos dois cenários.}
+\label{tab:composicao-base}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}L r r r r@{}}
+\hline
+\textbf{$N$ por arquivo} & \textbf{Arquivos} & \textbf{Grupos} &
+\shortstack{\textbf{Registros por}\\\textbf{cenário}} &
+\shortstack{\textbf{Registros}\\\textbf{totais}} \\
+\hline
+50 & 2 & 18 & 450 & 900 \\
+100 & 2 & 18 & 900 & 1.800 \\
+200 & 2 & 18 & 1.800 & 3.600 \\
+1.000 & 2 & 18 & 9.000 & 18.000 \\
+10.000 & 2 & 18 & 90.000 & 180.000 \\
+\hline
+Total & 10 & 90 & 102.150 & 204.300 \\
+\hline
+\end{tabularx}
+\legend{Fonte: elaboração própria. Um arquivo SRPI e um CRPI por tamanho;
+três terminais e três fases por arquivo. Totais descrevem a estrutura da
+base e não constituem denominador único de probabilidade.}
+\end{table}
+\FloatBarrier
 
 A unidade de observação permanece o máximo escalar de tensão fase--terra de
 uma fase, em um terminal e em uma simulação. São considerados os terminais
@@ -1266,15 +1415,40 @@ independência nem inclusão entre simulações de arquivos distintos. A
 identidade de cada observação continua definida por arquivo, simulação,
 terminal e fase.
 
-A validação é dividida em quatro camadas. A validade dos dados verifica
-extração, identidade, normalização e limpeza. A validade estatística examina
-medidas descritivas, probabilidades, incerteza e adequação de modelos. A
-validade dos detectores avalia o comportamento dos critérios diante de
-perturbações controladas e variações de parâmetros. Por fim, a validade
-elétrica trata da interpretação específica de cada caso. Evidência de uma
-camada não é usada como prova automática de outra: testes de software não
-demonstram adequação estatística, e concordância entre detectores não
-estabelece causa física ou numérica.
+A validação é dividida em quatro camadas, sintetizadas na
+Tabela~\ref{tab:camadas-validade}. Evidência de uma camada não é usada como
+prova automática de outra: testes de software não demonstram adequação
+estatística, e concordância entre detectores não estabelece causa física
+ou numérica.
+
+\begin{table}[htbp]
+\centering
+\caption{Camadas de validade e alcance das evidências.}
+\label{tab:camadas-validade}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}
+    {@{}>{\RaggedRight\arraybackslash}p{2.1cm} L L@{}}
+\hline
+\textbf{Camada} & \textbf{Evidência examinada} &
+\textbf{Alcance e limite} \\
+\hline
+Dados & Cabeçalhos, identidade, completude, conversão e limpeza &
+Sustenta a fidelidade no escopo verificado; não valida a física do modelo.
+\\
+Estatística & Medidas descritivas, excedência, intervalos e adequação &
+Descreve as distribuições e sua incerteza; não atribui causa aos extremos.
+\\
+Detectores & Perturbações controladas e sensibilidade de parâmetros &
+Avalia detecção sintética e estabilidade; não mede acurácia sobre erros
+numéricos reais do ATP. \\
+Elétrica & Caso de origem, formas de onda, repetições e revisão qualificada &
+Permite investigar a causa de cada evento; permanece pendente neste estudo.
+\\
+\hline
+\end{tabularx}
+\legend{Fonte: elaboração própria.}
+\end{table}
 
 \subsection{Estatística descritiva e probabilidade de excedência}
 \label{sec:metodo-estatistico}
@@ -1354,9 +1528,9 @@ centroides, escore, limiar, regra de escala, chave do grupo e identificador da
 configuração. Assim, um agrupamento denso de tensões elevadas pode permanecer
 inteiramente válido.
 
-No DBSCAN, o número mínimo de vizinhos é declarado na configuração e o raio
-efetivo é calibrado pelo percentil 95 das distâncias ao vizinho de ordem
-correspondente no conjunto de calibração padronizado. São registrados o
+No DBSCAN, o pacote avaliado utiliza raio efetivo de 0,5 no espaço
+padronizado e número mínimo de cinco vizinhos, declarados na configuração.
+São registrados o
 espaço de atributos, a escala, a origem dos parâmetros, o raio efetivo, o
 número de grupos, a quantidade e a taxa de ruído. Um ponto classificado como
 ruído constitui evidência analítica somente quando o ajuste é aplicável.
@@ -1369,6 +1543,46 @@ da contagem. O artefato conserva, para cada método, escore, limiar, indicador,
 aplicabilidade e motivo; concordâncias e discordâncias permanecem visíveis.
 Os termos adotados para as saídas são ``candidato'' e ``evidência
 analítica'', nunca ``erro numérico confirmado do ATP''.
+
+A Tabela~\ref{tab:criterios-metodos} reúne os critérios de seleção e
+separa sua aplicabilidade da avaliação geométrica das partições. A
+adequação gaussiana é examinada à parte e não participa da votação.
+
+\begin{table}[htbp]
+\centering
+\caption{Síntese dos métodos e de sua participação na seleção de candidatos.}
+\label{tab:criterios-metodos}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}
+    {@{}>{\RaggedRight\arraybackslash}p{2cm} L L@{}}
+\hline
+\textbf{Método e papel} & \textbf{Escore ou regra} &
+\textbf{Aplicabilidade e votação} \\
+\hline
+MAD: referência robusta &
+Escore em relação à mediana; sinaliza quando $|z_{MAD}|>3{,}5$. &
+Requer pelo menos oito valores finitos e MAD não nulo. Vota quando
+aplicável. \\
+K-Means: distância ao centroide &
+Distância no espaço padronizado estritamente acima do percentil 99 da
+calibração. Rótulo de grupo não é sinalização. &
+Requer amostra de calibração suficiente, escala não degenerada e valores
+distintos suficientes para os centroides. Vota quando aplicável. \\
+DBSCAN: ruído por densidade &
+Sinaliza pontos de ruído; raio efetivo de 0,5 no espaço padronizado e
+mínimo de cinco vizinhos no pacote avaliado. &
+Grupos esparsos, constantes ou inteiramente classificados como ruído não
+votam. Zero ruído em ajuste aplicável significa zero candidatos. \\
+Hierárquico: descrição da cauda &
+Separa até 10\% da cauda superior, com lacuna acima de 0,05~P.U. e de cinco
+vezes a mediana das lacunas; preserva três pontos de referência. &
+Sem separação suficiente, mantém um rótulo. Não participa da votação. \\
+\hline
+\end{tabularx}
+\legend{Fonte: elaboração própria. Silhouette e Davies--Bouldin avaliam
+partições sob critérios próprios; não são votos de anomalia.}
+\end{table}
 
 Para comparar geometricamente os agrupamentos ajustados, o fluxo
 calcula, para cada grupo comparável, o coeficiente de Silhouette e o índice
@@ -1439,6 +1653,50 @@ $F_1$ e taxa de falsos positivos. Métricas com denominador nulo são mantidas
 como indefinidas, acompanhadas do motivo. Esses rótulos comprovam apenas a
 detecção das intervenções declaradas e não representam erros numéricos reais
 produzidos pelo ATP.
+
+O fluxo da Figura~\ref{fig:fluxo-ensaio-controlado} destaca que a divisão
+precede as intervenções e que a avaliação não reajusta os parâmetros.
+Esse desenho se distingue do ajuste exploratório sobre todas as
+observações descrito na Seção~\ref{sec:metodo-anomalias}.
+
+\begin{figure}[htbp]
+\centering
+\caption{Separação dos dados e avaliação nos ensaios controlados.}
+\label{fig:fluxo-ensaio-controlado}
+\begin{tikzpicture}[
+    font=\small,
+    box/.style={draw, rounded corners, align=center, inner sep=7pt},
+    >=Stealth
+]
+\node[box, text width=11.6cm] (source)
+    {Cópias dos dados: fontes originais preservadas};
+\node[box, below=0.45cm of source, text width=11.6cm] (split)
+    {Divisão por linhagem e identidade da simulação\\
+    Fases e terminais da mesma execução no mesmo subconjunto};
+\node[box, anchor=north, text width=4.8cm] (development)
+    at ([xshift=-3.1cm,yshift=-0.7cm]split.south)
+    {Desenvolvimento\\Ajustar escalas, centroides e limiares};
+\node[box, anchor=north, text width=5.4cm] (evaluation)
+    at ([xshift=3.1cm,yshift=-0.7cm]split.south)
+    {Avaliação\\Controle limpo ou intervenção em cópias:\\
+    pontual, contextual ou coletiva; 1\%, 5\% ou 10\%};
+\node[box, anchor=north, text width=11.6cm] (frozen)
+    at ([xshift=-3.1cm,yshift=-0.6cm]evaluation.south)
+    {Aplicar parâmetros congelados\\Sem reajuste na avaliação};
+\node[box, below=0.5cm of frozen, text width=11.6cm] (metrics)
+    {Comparar com rótulos das intervenções\\
+    VP, FP, VN, FN; precisão, revocação, $F_1$ e taxa de FP};
+\draw[->] (source) -- (split);
+\draw[->] (split.south -| development.north) -- (development.north);
+\draw[->] (split.south -| evaluation.north) -- (evaluation.north);
+\draw[->] (evaluation.south) -- (evaluation.south |- frozen.north);
+\draw[->] (development.south) -- (development.south |- frozen.north);
+\draw[->] (frozen) -- (metrics);
+\end{tikzpicture}
+\legend{Fonte: elaboração própria. Rótulos identificam intervenções
+sintéticas; métricas não comprovam detecção de erros numéricos reais.}
+\end{figure}
+\FloatBarrier
 
 \subsection{Convergência, comparação e sensibilidade}
 
@@ -1661,11 +1919,37 @@ totalizando noventa combinações de cenário, tamanho amostral, terminal e
 fase. Para cada combinação foram calculados contagem, contagem válida,
 média, desvio padrão amostral, mediana, quartis, percentis 90, 95 e 99,
 mínimo e máximo, conforme a metodologia da
-Seção~\ref{sec:metodo-estatistico} do capítulo de metodologia. A título
-de exemplo, no grupo $T_{OPO}$, fase A, com 10.000 simulações, o CRPI
-apresentou média de 1,1769~P.U. e desvio padrão de 0,1209~P.U., enquanto o
-SRPI apresentou média de 1,7006~P.U. e desvio padrão de 0,1317~P.U., valores
-consistentes com a definição de chaveamento de cada cenário.
+Seção~\ref{sec:metodo-estatistico} do capítulo de metodologia. A
+Tabela~\ref{tab:estatistica-referencia} compara medidas descritivas e
+diagnósticos gaussianos no grupo $T_{OPO}$, fase A, com 10.000 simulações.
+As diferenças entre cenários são examinadas preservando suas definições
+distintas de chaveamento.
+
+\begin{table}[htbp]
+\centering
+\caption{Descrição estatística e diagnóstico gaussiano no terminal
+$T_{OPO}$, fase A, com 10.000 simulações por cenário.}
+\label{tab:estatistica-referencia}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}L r r@{}}
+\hline
+\textbf{Medida} & \textbf{CRPI} & \textbf{SRPI} \\
+\hline
+Média (P.U.) & 1,1769 & 1,7006 \\
+Desvio padrão amostral (P.U.) & 0,1209 & 0,1317 \\
+Assimetria & 0,7838 & $-1{,}6187$ \\
+Excesso de curtose & $-0{,}4042$ & 2,2944 \\
+Estatística de Anderson--Darling & 397,77 & 588,48 \\
+Correlação quantil--quantil & 0,9460 & 0,9081 \\
+Decisão de normalidade a 5\% & Rejeitada & Rejeitada \\
+\hline
+\end{tabularx}
+\legend{Fonte: elaboração própria a partir de
+\texttt{sources/distribution\_adequacy.csv}. Valores arredondados para
+apresentação. Diagnósticos não participam da seleção de candidatos.}
+\end{table}
+\FloatBarrier
 
 Nenhuma das 204.300 observações aceitas excedeu 2,3~P.U.; a probabilidade
 empírica é, portanto, zero em todos os noventa grupos. Em cada grupo, o
@@ -1687,11 +1971,10 @@ significância nos noventa grupos. A
 normalidade foi rejeitada em 88 dos 90 grupos; as duas exceções ocorrem em
 grupos do SRPI com apenas 50 simulações ($1/2\,LT$, fase B, e $T_{MAN}$, fase
 C), compatível com a menor potência do teste em amostras pequenas. No grupo
-de referência $T_{OPO}$, fase A, $N=10.000$, a estatística de
-Anderson--Darling foi 397,77 no CRPI e 588,48 no SRPI ($p$ interpolado em
-0,01 para ambos), com assimetria de 0,7838 no CRPI contra $-1,6187$ no SRPI,
-excesso de curtose de $-0,4042$ no CRPI contra 2,2944 no SRPI e correlação
-quantil--quantil de 0,9460 no CRPI contra 0,9081 no SRPI. As
+de referência da Tabela~\ref{tab:estatistica-referencia}, o $p$
+interpolado foi 0,01 em ambos os cenários. A assimetria tem sinais opostos
+e o excesso de curtose é maior no SRPI; a correlação quantil--quantil é
+inferior à unidade nos dois cenários. As
 Figuras~\ref{fig:defesa-distribuicao-crpi} e~\ref{fig:defesa-distribuicao-srpi}
 apresentam o histograma com densidade ajustada e o gráfico quantil--quantil
 desse grupo de referência. Os dois cenários compartilham as classes do
@@ -1934,19 +2217,41 @@ de candidatos, que seguem critérios próprios. As evidências de anomalia
 foram calculadas separadamente por cenário,
 linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:metodo-anomalias}
 da metodologia, e cobrem as 204.300 observações do pacote.
-No grupo de referência $T_{OPO}$, fase A, $N=10.000$, o
-escore robusto MAD sinalizou 109 observações no CRPI (1,09\%) e 852 no SRPI
-(8,52\%). O K-Means, aplicável nos dois cenários, sinalizou 99 observações
-em cada um por distância ao centroide acima do percentil 99 da
-calibração; nesse mesmo grupo, todas as 99 observações sinalizadas pelo
-K-Means coincidem com observações também sinalizadas pelo MAD. O DBSCAN foi
-aplicável nos dois cenários, mas não classificou nenhuma observação como
-ruído nesse grupo específico, resultando em zero candidatos por esse
-método -- um resultado de zero sinalizações por um detector aplicável; isso
-não implica que os índices geométricos sejam calculáveis. O número total de
-candidatos analíticos (união dos métodos aplicáveis) foi 109 no CRPI e 852
-no SRPI, coincidindo com a contagem apresentada na
-Seção~\ref{sec:convergencia-amostral}.
+No grupo de referência $T_{OPO}$, fase A, $N=10.000$, os três detectores
+foram aplicáveis nos dois cenários. A
+Tabela~\ref{tab:candidatos-referencia} apresenta suas sinalizações e
+concordâncias. Todas as observações sinalizadas pelo K-Means também foram
+sinalizadas pelo MAD; por isso, a união coincide com o conjunto do MAD.
+O DBSCAN aplicável produziu zero candidatos nesse recorte, o que não
+implica que seus índices geométricos sejam calculáveis. As contagens da
+união coincidem com a Seção~\ref{sec:convergencia-amostral}.
+
+\begin{table}[htbp]
+\centering
+\caption{Candidatos e concordância no terminal $T_{OPO}$, fase A,
+com 10.000 simulações por cenário.}
+\label{tab:candidatos-referencia}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}L r r r r@{}}
+\hline
+& \multicolumn{2}{c}{\textbf{CRPI}} &
+\multicolumn{2}{c}{\textbf{SRPI}} \\
+\textbf{Critério ou conjunto} & \textbf{Quantidade} & \textbf{Taxa} &
+\textbf{Quantidade} & \textbf{Taxa} \\
+\hline
+MAD & 109 & 1,09\% & 852 & 8,52\% \\
+Distância do K-Means & 99 & 0,99\% & 99 & 0,99\% \\
+Ruído do DBSCAN & 0 & 0,00\% & 0 & 0,00\% \\
+Interseção MAD $\cap$ K-Means & 99 & 0,99\% & 99 & 0,99\% \\
+União dos três critérios & 109 & 1,09\% & 852 & 8,52\% \\
+\hline
+\end{tabularx}
+\legend{Fonte: elaboração própria a partir de
+\texttt{sources/method\_comparison.csv} e das observações anotadas do pacote.
+Denominador de cada taxa: 10.000. Todos os três detectores são aplicáveis
+neste recorte; concordância não comprova causa física ou numérica.}
+\end{table}
 
 As diferenças entre
 as sinalizações do MAD, do K-Means e do DBSCAN são relatadas sem tratar um
@@ -2039,12 +2344,10 @@ As contagens de confusão e as métricas derivadas do ensaio controlado,
 preservadas na Tabela~\ref{tab:defesa-benchmark}, na seção dedicada do
 Apêndice~\ref{app:benchmark-detalhado}, foram calculadas para as três famílias de
 intervenção (pontual, contextual e coletiva) nas taxas de contaminação de
-1\%, 5\% e 10\%, mais a condição limpa de referência. Na
-condição limpa, o K-Means produziu 42 falsos positivos sobre 5.400
-observações de avaliação (taxa de falsos positivos de 0,0078), contra 391
-falsos positivos do DBSCAN calibrado por novidade de densidade (taxa de
-0,0724) -- diferença consistente com a maior sensibilidade do DBSCAN à
-calibração já discutida na Seção~\ref{sec:evidencias-anomalia}. Sob
+1\%, 5\% e 10\%, mais a condição limpa de referência. A
+Tabela~\ref{tab:controle-limpo} sintetiza os falsos positivos na condição
+limpa; a Figura~\ref{fig:ensaio-precisao-revocacao} apresenta precisão e
+revocação nas condições com intervenção. Sob
 intervenção contextual, ambos os métodos alcançam revocação de 1,0000 em
 toda taxa de contaminação testada, com $F_1$ do K-Means entre 0,7200 e
 0,9660 e $F_1$ do DBSCAN entre 0,2173 e 0,7531. Sob intervenções pontual e
@@ -2060,6 +2363,45 @@ As contagens da tabela agregam os dois cenários no grupo de referência
 indicado, sem estender os resultados a outros terminais ou fases. Esses
 resultados quantificam o desempenho nas condições sintéticas testadas,
 sem estimar a acurácia de identificação de erros numéricos reais do ATP.
+
+\begin{table}[htbp]
+\centering
+\caption{Falsos positivos na condição limpa do ensaio controlado.}
+\label{tab:controle-limpo}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}L r r r@{}}
+\hline
+\textbf{Método} & \textbf{Observações} & \textbf{Falsos positivos} &
+\textbf{Taxa de FP} \\
+\hline
+K-Means & 5.400 & 42 & 0,0078 \\
+DBSCAN por novidade & 5.400 & 391 & 0,0724 \\
+\hline
+\end{tabularx}
+\legend{Fonte: elaboração própria a partir de
+\texttt{tables/benchmark.csv}. CRPI e SRPI agregados, terminal $T_{OPO}$,
+fase A, fontes de 10.000 simulações. Na condição limpa, todos os registros
+são negativos controlados; revocação é indefinida.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\caption[Precisão e revocação nos ensaios controlados.]{Precisão e revocação
+por contaminação e família de intervenção nos ensaios controlados.
+Cada condição agrega 5.400 observações de avaliação de CRPI e SRPI,
+terminal $T_{OPO}$, fase A, das fontes de 10.000 simulações.
+O DBSCAN é avaliado por novidade de densidade.}
+\label{fig:ensaio-precisao-revocacao}
+\includegraphics[width=\textwidth]
+    {illustrations/benchmark-precision-recall.pdf}
+\legend{Fonte: elaboração própria a partir de
+\texttt{tables/benchmark.csv}, preservado no pacote de evidências.
+Intensidades: pontual, 0,3; contextual, 4; coletiva, 0,2, nas escalas
+próprias de cada intervenção. Linhas conectam condições testadas;
+na intervenção contextual, as curvas de revocação coincidem em 1.
+As métricas não estimam acurácia sobre erros numéricos reais do ATP.}
+\end{figure}
 
 A grade congelada de sensibilidade de parâmetros -- número de grupos e
 sementes do K-Means, raio efetivo e número mínimo de vizinhos do DBSCAN --

@@ -1,7 +1,7 @@
 # Thesis Readability and Sigma Correction Specification
 
-**Status:** Partially implemented — READ-01–READ-09 verified;
-READ-10–READ-12 remain planned
+**Status:** Implemented and verified — READ-01–READ-12 and final editorial
+integration complete; electrical causal validation remains unresolved
 **Created:** 2026-10-26
 **Tasks:** [tasks.md](tasks.md)
 **Scope:** Nine original editorial proposals, including the correction of the
@@ -200,3 +200,44 @@ rendered-page inspections are recorded in
 `docs/research/thesis_readability_validation.md`. T10.1 is next; final
 whole-document layout acceptance remains assigned to T12. Historical v3
 verification above is preserved; the manuscript now references v4 only.
+
+READ-10 was implemented and verified on 2026-10-28 through four distinct
+sequential sub-agents: T10.1 → T10.2 → T10.3 → T10.4. Conceptual/model
+figures now have distinct purposes and the implemented workflow opens the
+methodology. Distribution, geometric-index and sample-size figures have
+coordinated scenario scales, explicit applicability and uncertainty, and
+accurate scope. Presentation-only v5–v7 replays preserve scientific outputs
+and historical evidence without rerunning experiments. Final software gate:
+333 tests pass; format/lint/typecheck pass. The 83-page manuscript builds
+with affected-page visual review. Evidence and hash-verification counts:
+`docs/research/thesis_figure_coherence_validation.md`. T11.1 is next; full
+document integration remains T12.
+
+READ-11 was implemented and verified on 2026-10-28 through four distinct
+sequential sub-agents: T11.1 → T11.2 → T11.3 → T11.4. Detailed probability,
+sample-size, benchmark and pending-review tables now have appendix ownership
+and connected main-text summaries. Benchmark condition keys include
+contamination; review identities include scenario, sample size and full
+source/hash mapping, with explicit controls and unresolved causal status.
+Presentation-only v8–v9 preserve saved experiments and scientific CSVs. Final
+software gates pass with 342 tests; the 84-page manuscript builds with
+affected-page visual review. Evidence:
+`docs/research/thesis_table_relocation_validation.md`. Next task: T13; T14
+and final whole-document integration T12 remain pending.
+
+
+T13 → T14 → T12 completed on 2026-10-28 through three distinct sequential
+sub-agents. READ-12 and TODOS REQ-01–REQ-05 are verified. The final
+81-page manuscript has one consolidated discussion, no results subsections,
+four detailed appendix tables with connected summaries, and an integrated
+methodology overview. Every page received rendered overview review; every
+figure/table and continuation received full-size inspection. Short list
+captions and local table spacing preserve complete scientific captions,
+all rows and existing fonts. Fresh presentation replay reproduces all 609
+artifacts, including 290 unchanged CSVs; historical hashes and eleven copied
+assets verify. Software proof: 342 tests, scoped Ruff checks and typecheck on
+all 76 tracked Python files pass. Broad commands encounter unrelated errors
+in the untracked nested rip_atpdraw repository; its files remain unchanged.
+No experiments were rerun; electrical validation remains unresolved.
+Final page inventory and READ/TODOS reconciliation:
+`docs/research/thesis_final_integration_validation.md`.

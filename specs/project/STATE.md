@@ -4,6 +4,20 @@
 
 ## Decisions
 
+- 2026-10-28: The author authorized T13 → T14 → T12 with three distinct
+  sequential sub-agents. All readability tasks and READ-01–READ-12 are
+  verified; final manuscript 81 pages. Scientific evidence is unchanged;
+  electrical causal validation remains unresolved.
+
+- 2026-10-28: The author authorized T11.1 → T11.2 → T11.3 → T11.4
+  with four distinct sequential sub-agents. READ-11 is verified; T13 is next.
+  Four detailed tables moved to appendix sections; condition/source identity
+  corrected without rerunning experiments. Final presentation package v9.
+
+- 2026-10-28: The author authorized T10.1 → T10.2 → T10.3 → T10.4
+  with distinct sequential sub-agents. READ-10 is verified; T11.1 is next.
+  Presentation-only v5–v7 preserve scientific results and historical evidence.
+
 - 2026-10-28: The author authorized T6 → T9 → T2 → T8 with sub-agents.
   Four distinct agents executed sequentially. READ-01–READ-09 are verified;
   T10.1 is next. T9 published v4 numeric presentation from inherited v3
@@ -45,6 +59,29 @@
   `specs/features/thesis-defense-evidence/validation.md`.
 
 ## Completed software capability
+
+- Final editorial integration: consolidated discussion, connected results
+  prose, four appendix tables, complete rendered-PDF review and readable
+  lists/continuations. READ-01–READ-12 and TODOS REQ-01–REQ-05 verified.
+  Publication replay: 609 identical outputs, 290 unchanged CSVs; 5,332
+  historical/raw hashes and eleven copied assets verify. Software: 342 tests,
+  scoped Ruff and all tracked Python typechecks pass. Broad commands traverse
+  unrelated untracked rip_atpdraw and fail there; no nested files changed.
+  Evidence: docs/research/thesis_final_integration_validation.md.
+
+- READ-11: detailed tables relocated with main-text syntheses; benchmark
+  contamination and aggregation explicit; pending-review cases have contextual
+  source/hash identities and explicit controls. v9 verifies 609 output hashes
+  and 5,332 historical/raw manifest-referenced paths; scientific CSVs remain
+  unchanged. Format/lint/typecheck pass; 342 tests pass; manuscript 84 pages.
+  Evidence: `docs/research/thesis_table_relocation_validation.md`.
+
+- READ-10: integrated methodology workflow and curated conceptual/model
+  figures; coordinated distribution, geometric-index and sample-size figures.
+  Final v7 reuses saved experiments; all scientific CSVs remain unchanged.
+  Software gates pass with 333 tests and zero typecheck errors/warnings.
+  Manuscript builds to 83 pages with affected-page visual inspection.
+  Evidence: `docs/research/thesis_figure_coherence_validation.md`.
 
 - READ-02/06/08/09: aligned completed/pending procedure tenses, localized
   numeric presentation through owning generators, introduced verified
@@ -110,9 +147,8 @@
 
 ## Next actions
 
-- Continue readability tasks in canonical order: T10.1–T10.4 →
-  T11.1–T11.4 → T13 → T14 → T12. T1–T9 are verified; final
-  whole-document layout acceptance remains assigned to T12.
+- Readability queue complete: T13, T14 and T12 verified; no pending
+  implementation task remains in thesis-readability-and-sigma-correction.
 - Obtain waveform data, repeat-simulation evidence, and a qualified
   independent electrical reviewer to close the technical review and move
   the causal conclusion out of "unresolved" — this is now the only
