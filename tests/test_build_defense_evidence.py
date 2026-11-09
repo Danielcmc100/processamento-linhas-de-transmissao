@@ -16,6 +16,7 @@ from scripts.build_defense_evidence import (
 )
 from scripts.prepare_defense_document import main
 from src.services.dataset_manifest import DatasetManifestEntry
+from src.services.defense_reporting import _translate_value
 from src.services.reproducibility import validate_reproducibility_manifest
 
 
@@ -66,9 +67,16 @@ def test_dataset_manifest_frame_preserves_provenance() -> None:
     assert row["exclusion_reasons"] == ""
 
 
-def test_default_publication_routes_to_v3() -> None:
+def test_default_publication_routes_to_v10() -> None:
     assert _argument_parser().parse_args([]).output == Path(
-        "results/defense-evidence/v3"
+        "results/defense-evidence/v10"
+    )
+
+
+def test_hierarchical_evidence_has_manuscript_translation() -> None:
+    assert (
+        _translate_value("hierarchical_upper_tail", "method_evidence")
+        == "cauda superior (hierárquico)"
     )
 
 
@@ -157,9 +165,9 @@ def test_fixture_package_consumes_pipeline_contract_and_copies_assets(
         "scripts.build_defense_evidence.build_dataset_manifest",
         lambda _: entries,
     )
-    output = tmp_path / "results/defense-evidence/v3"
+    output = tmp_path / "results/defense-evidence/v10"
     historical = []
-    for version in ("v1", "v2"):
+    for version in ("v1", "v2", "v9"):
         path = output.parent / version / "keep.txt"
         path.parent.mkdir(parents=True)
         path.write_bytes(version.encode())
@@ -173,12 +181,16 @@ def test_fixture_package_consumes_pipeline_contract_and_copies_assets(
     )
     assert matrix.height == 4_500
     assert set(matrix["compared_methods"]) == {
-        "mad_modified_z;kmeans_distance;dbscan_noise"
+        "kmeans_distance;dbscan_noise;hierarchical_upper_tail"
     }
     methods = (
-        ("mad_flag", "mad_applicability", "mad_modified_z"),
         ("flag", "applicability", "kmeans_distance"),
         ("dbscan_flag", "dbscan_applicability", "dbscan_noise"),
+        (
+            "hierarchical_flag",
+            "hierarchical_applicability",
+            "hierarchical_upper_tail",
+        ),
     )
     for row in matrix.iter_rows(named=True):
         applicable = [item for item in methods if row[item[1]] == "applicable"]
@@ -210,16 +222,20 @@ def test_fixture_package_consumes_pipeline_contract_and_copies_assets(
         .sort(scope)
         .equals(expected.sort(scope))
     )
-    assert set(convergence["method_policy"]) == {"defense-v3-three-methods"}
+    assert set(convergence["method_policy"]) == {
+        "defense-v10-clustering-methods"
+    }
     for path in output.rglob("*.csv"):
         table = read_csv(path)
         assert not any("sigma" in name.lower() for name in table.columns)
+        assert not any("mad" in name.lower() for name in table.columns)
         assert "sigma_3" not in path.read_text(encoding="utf-8")
     for path in output.rglob("*.tex"):
         assert "sigma" not in path.read_text(encoding="utf-8").lower()
 
     manifest = loads(manifest_path.read_text(encoding="utf-8"))
     validate_reproducibility_manifest(manifest)
+    assert manifest["generator_version"] == "2.1.0"
     assert manifest["package_status"] == "incomplete"
     assert manifest["validation_statuses"]["technical_review"] == "incomplete"
     for record in [*manifest["sources"], *manifest["outputs"]]:
@@ -234,7 +250,7 @@ def test_fixture_package_consumes_pipeline_contract_and_copies_assets(
         if path.is_file() and path != manifest_path
     ])
     references = [
-        "evidence/v3/" + path.relative_to(output).as_posix()
+        "evidence/v10/" + path.relative_to(output).as_posix()
         for directory in ("tables", "figures")
         for path in sorted((output / directory).iterdir())
         if path.suffix in {".tex", ".pdf", ".png"}
@@ -248,7 +264,7 @@ def test_fixture_package_consumes_pipeline_contract_and_copies_assets(
     )
     main(root=tmp_path)
     for reference in references:
-        relative = Path(reference).relative_to("evidence/v3")
+        relative = Path(reference).relative_to("evidence/v10")
         assert (document / reference).read_bytes() == (
             output / relative
         ).read_bytes()

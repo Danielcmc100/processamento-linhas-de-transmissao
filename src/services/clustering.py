@@ -14,7 +14,16 @@ from numpy import (
     ndarray,
     zeros,
 )
-from polars import DataFrame, Float64, Int32, Series, col, concat
+from polars import (
+    Boolean,
+    DataFrame,
+    Float64,
+    Int32,
+    Series,
+    String,
+    col,
+    concat,
+)
 from sklearn.cluster import (  # type: ignore[reportMissingTypeStubs]
     DBSCAN,
     KMeans,
@@ -148,6 +157,7 @@ def cluster_hierarchical(
     gap_factor: float = 5.0,
     max_tail_fraction: float = 0.1,
     label_col: str = "hierarchical_cluster",
+    group_columns: tuple[str, ...] | None = None,
 ) -> DataFrame:
     """Label separated upper tails using terminal-local single linkage.
 
@@ -159,7 +169,9 @@ def cluster_hierarchical(
 
     Returns:
         Input rows with Int32 labels: zero for reference observations and
-        one for a separated upper tail. No qualifying gap yields all zeros.
+        one for a separated upper tail. Explicit Boolean evidence selects
+        that tail only in groups with at least four finite observations.
+        No split yields false flags; invalid rows remain non-applicable.
 
     Raises:
         ValueError: If parameters or required numeric values are invalid.
@@ -170,33 +182,91 @@ def cluster_hierarchical(
         raise ValueError("gap_factor must be finite and at least one.")
     if not isfinite(max_tail_fraction) or not 0 < max_tail_fraction < 0.5:
         raise ValueError("max_tail_fraction must be between zero and 0.5.")
-    _validated_values(df, value_col)
+    if value_col not in df.columns:
+        raise ValueError(
+            f"Required clustering column is missing: {value_col}."
+        )
+    if not df.schema[value_col].is_numeric():
+        raise ValueError(f"{value_col} must contain numeric values.")
     if terminal_col not in df.columns:
         raise ValueError(
             f"Required clustering column is missing: {terminal_col}."
         )
     HierarchicalObservation.validate(
-        df.select(
+        df.filter(col(value_col).is_finite()).select(
             col(terminal_col).alias("terminal"),
             col(value_col).cast(Float64).alias("value_pu"),
         )
     )
     if df.is_empty():
-        return _with_empty_label(df, label_col)
+        return _with_empty_label(df, label_col).with_columns(
+            Series("hierarchical_flag", [], dtype=Boolean),
+            Series("hierarchical_applicability", [], dtype=String),
+            Series("hierarchical_reason", [], dtype=String),
+        )
 
     row_index_col = _available_internal_column(df, "_clustering_row_index")
     indexed = df.with_row_index(row_index_col)
     groups: list[DataFrame] = []
-    for subset in indexed.partition_by(terminal_col, maintain_order=True):
+    grouping = (
+        list(group_columns)
+        if group_columns
+        else [
+            column
+            for column in (
+                "scenario",
+                "source_lineage"
+                if "source_lineage" in indexed.columns
+                else "source_file",
+                terminal_col,
+                "phase",
+            )
+            if column in indexed.columns
+        ]
+    )
+    for subset in indexed.partition_by(grouping, maintain_order=True):
+        finite = subset.filter(col(value_col).is_finite())
         labels = _hierarchical_labels(
-            _validated_values(subset, value_col),
+            _validated_values(finite, value_col),
             min_gap_pu,
             gap_factor,
             max_tail_fraction,
         )
-        labelled = subset.with_columns(Series(label_col, labels))
+        applicable = finite.height >= 4
+        evidence = finite.select(row_index_col).with_columns(
+            Series(label_col, labels),
+            Series(
+                "hierarchical_flag",
+                [bool(label == 1) if applicable else None for label in labels],
+                dtype=Boolean,
+            ),
+            Series(
+                "hierarchical_applicability",
+                ["applicable" if applicable else "non_applicable"]
+                * finite.height,
+                dtype=String,
+            ),
+            Series(
+                "hierarchical_reason",
+                [
+                    "insufficient_observations"
+                    if not applicable
+                    else "separated_upper_tail"
+                    if label == 1
+                    else "outside_separated_upper_tail"
+                    for label in labels
+                ],
+                dtype=String,
+            ),
+        )
+        labelled = subset.join(
+            evidence, on=row_index_col, how="left"
+        ).with_columns(
+            col("hierarchical_applicability").fill_null("non_applicable"),
+            col("hierarchical_reason").fill_null("non_finite_value"),
+        )
         HierarchicalClusterObservation.validate(
-            labelled.select(
+            labelled.filter(col(value_col).is_finite()).select(
                 col(terminal_col).alias("terminal"),
                 col(value_col).cast(Float64).alias("value_pu"),
                 col(label_col).alias("hierarchical_cluster"),

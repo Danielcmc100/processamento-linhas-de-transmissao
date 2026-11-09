@@ -17,9 +17,13 @@ from polars import (
 )
 
 _METHODS = (
-    ("mad_flag", "mad_applicability", "mad_modified_z"),
     ("flag", "applicability", "kmeans_distance"),
     ("dbscan_flag", "dbscan_applicability", "dbscan_noise"),
+    (
+        "hierarchical_flag",
+        "hierarchical_applicability",
+        "hierarchical_upper_tail",
+    ),
 )
 _APPLICABLE = "applicable"
 _NON_APPLICABLE = "non_applicable"

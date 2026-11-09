@@ -63,21 +63,24 @@ def _method_evidence() -> polars.DataFrame:
         "terminal_position_km": [0.0, 0.0],
         "phase": ["A", "B"],
         "event_definition": ["absolute maximum"] * 2,
-        "mad_flag": [True, False],
-        "mad_applicability": ["applicable", "applicable"],
-        "mad_reason": ["Modified score above 3.5.", None],
         "flag": [False, False],
         "applicability": ["applicable", "applicable"],
         "reason": [None, None],
+        "hierarchical_flag": [False, None],
+        "hierarchical_applicability": ["applicable", "non_applicable"],
+        "hierarchical_reason": [
+            "outside_separated_upper_tail",
+            "insufficient_observations",
+        ],
         "dbscan_flag": [True, None],
         "dbscan_applicability": ["applicable", "non_applicable"],
         "dbscan_reason": ["Noise point.", "Insufficient calibration."],
-        "method_agreement": [2, 0],
-        "applicable_method_count": [3, 2],
+        "method_agreement": [1, 0],
+        "applicable_method_count": [3, 1],
         "method_disagreement": [True, False],
         "anomaly_candidate": [True, False],
         "anomaly_reasons": [
-            "mad_modified_z;dbscan_noise",
+            "dbscan_noise",
             "",
         ],
     })
@@ -189,11 +192,13 @@ def test_method_matrix_preserves_identity_status_reason_and_scope() -> None:
     assert set(result["multiplicity_qualification"]) == {
         "No inferential family-wise claim is made."
     }
-    assert result.item(0, "mad_reason") == "Modified score above 3.5."
+    assert (
+        result.item(0, "hierarchical_reason") == "outside_separated_upper_tail"
+    )
     assert result.item(1, "dbscan_applicability") == "non_applicable"
     assert result.item(1, "dbscan_reason") == "Insufficient calibration."
     assert set(result["compared_methods"]) == {
-        "mad_modified_z;kmeans_distance;dbscan_noise"
+        "kmeans_distance;dbscan_noise;hierarchical_upper_tail"
     }
     assert result.select("simulation", "terminal", "phase").rows() == [
         (1, "T_MAN", "A"),

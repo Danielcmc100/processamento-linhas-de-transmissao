@@ -78,7 +78,7 @@ from src.services.sensitivity import (
 from src.services.technical_review import select_review_cases
 
 SCHEMA_VERSION = "1.0.0"
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "2.1.0"
 THRESHOLD_PU = 2.3
 TERMINALS = ("T_MAN", "1_2LT", "T_OPO")
 PHASES = ("A", "B", "C")
@@ -543,7 +543,7 @@ def _convergence_input(
             lit("scenario|source_lineage|terminal|phase").alias(
                 "grouping_policy"
             ),
-            lit("defense-v3-three-methods").alias("method_policy"),
+            lit("defense-v10-clustering-methods").alias("method_policy"),
             lit("independence_not_established").alias("relationship_status"),
         )
         .select(
@@ -749,6 +749,8 @@ def _write_manifest(
         },
         claim_evidence=claims,
     )
+    # Identify the evidence generator, not the generic manifest helper.
+    manifest["generator_version"] = GENERATOR_VERSION
     manifest_path = output / "reproducibility_manifest.json"
     manifest_path.write_text(
         dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
@@ -873,7 +875,7 @@ def _argument_parser() -> ArgumentParser:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("results/defense-evidence/v3"),
+        default=Path("results/defense-evidence/v10"),
     )
     parser.add_argument("--overwrite", action="store_true")
     return parser

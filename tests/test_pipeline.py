@@ -89,9 +89,6 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
         "dbscan_threshold",
         "dbscan_flag",
         "dbscan_applicability",
-        "modified_mad_score",
-        "mad_flag",
-        "mad_applicability",
         "method_agreement",
         "applicable_method_count",
         "method_disagreement",
@@ -99,7 +96,7 @@ def test_pipeline_runs_fixture_directory_end_to_end(tmp_path: Path) -> None:
         "anomaly_reasons",
     }.issubset(result.annotated_observations.columns)
     assert not any(
-        column.startswith("sigma_")
+        column.startswith(("sigma_", "mad_"))
         for column in result.annotated_observations.columns
     )
     assert all(

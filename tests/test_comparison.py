@@ -17,14 +17,9 @@ def _annotated_observations() -> pl.DataFrame:
         "dbscan_cluster": [-1, 0, 7, -1, None],
         "kmeans_cluster": [0, 1, 1, 9, None],
         "hierarchical_cluster": [1, 1, 0, 1, 1],
-        "mad_flag": [True, False, True, False, None],
-        "mad_applicability": [
-            "applicable",
-            "applicable",
-            "applicable",
-            "non_applicable",
-            "non_applicable",
-        ],
+        "hierarchical_flag": [False, False, False, None, None],
+        "hierarchical_applicability": ["applicable"] * 3
+        + ["non_applicable"] * 2,
         "flag": [True, False, False, None, None],
         "applicability": [
             "applicable",
@@ -59,10 +54,10 @@ def test_comparison_records_explicit_votes_and_preserves_identity() -> None:
     ]
     assert result["simulation"].to_list() == [4, 1, 3, 2, 5]
     assert result.select(observations.columns).equals(observations)
-    assert result["method_agreement"].to_list() == [3, 0, 2, 0, 0]
+    assert result["method_agreement"].to_list() == [2, 0, 1, 0, 0]
     assert result["applicable_method_count"].to_list() == [3, 3, 3, 1, 0]
     assert result["method_disagreement"].to_list() == [
-        False,
+        True,
         False,
         True,
         False,
@@ -81,9 +76,9 @@ def test_reasons_list_only_met_explicit_criteria_in_stable_order() -> None:
     result = compare_anomaly_methods(_annotated_observations())
 
     assert result["anomaly_reasons"].to_list() == [
-        "mad_modified_z;kmeans_distance;dbscan_noise",
+        "kmeans_distance;dbscan_noise",
         "",
-        "mad_modified_z;dbscan_noise",
+        "dbscan_noise",
         "",
         "",
     ]
@@ -140,12 +135,12 @@ def test_non_applicable_methods_do_not_vote_or_create_disagreement() -> None:
 @pytest.mark.parametrize(
     "missing_column",
     [
-        "mad_flag",
-        "mad_applicability",
         "flag",
         "applicability",
         "dbscan_flag",
         "dbscan_applicability",
+        "hierarchical_flag",
+        "hierarchical_applicability",
     ],
 )
 def test_comparison_rejects_missing_evidence_columns(
@@ -162,10 +157,10 @@ def test_comparison_rejects_missing_evidence_columns(
 
 def test_comparison_rejects_non_boolean_flags() -> None:
     observations = _annotated_observations().with_columns(
-        pl.col("mad_flag").cast(pl.Int8)
+        pl.col("hierarchical_flag").cast(pl.Int8)
     )
 
-    with pytest.raises(ValueError, match="mad_flag must be Boolean"):
+    with pytest.raises(ValueError, match="hierarchical_flag must be Boolean"):
         compare_anomaly_methods(observations)
 
 
@@ -190,13 +185,16 @@ def test_comparison_rejects_true_non_applicable_flag() -> None:
         pl
         .when(pl.col("simulation") == 2)
         .then(True)
-        .otherwise(pl.col("mad_flag"))
-        .alias("mad_flag")
+        .otherwise(pl.col("hierarchical_flag"))
+        .alias("hierarchical_flag")
     )
 
     with pytest.raises(
         ValueError,
-        match="mad_flag must not be true when mad_applicability",
+        match=(
+            "hierarchical_flag must not be true when "
+            "hierarchical_applicability"
+        ),
     ):
         compare_anomaly_methods(observations)
 
@@ -231,9 +229,13 @@ def test_empty_comparison_has_declared_output_schema() -> None:
 @pytest.mark.parametrize(
     ("flag_column", "applicability_column", "reason"),
     [
-        ("mad_flag", "mad_applicability", "mad_modified_z"),
         ("flag", "applicability", "kmeans_distance"),
         ("dbscan_flag", "dbscan_applicability", "dbscan_noise"),
+        (
+            "hierarchical_flag",
+            "hierarchical_applicability",
+            "hierarchical_upper_tail",
+        ),
     ],
 )
 @pytest.mark.parametrize("positive", [False, True])
@@ -261,16 +263,17 @@ def test_single_applicable_method_defines_union_without_disagreement(
     assert result["anomaly_reasons"].to_list() == [reason if positive else ""]
 
 
-def test_retired_sigma_fields_cannot_supply_votes_or_require_validation() -> (
-    None
-):
+@pytest.mark.parametrize("prefix", ["sigma", "mad"])
+def test_retired_fields_cannot_supply_votes_or_require_validation(
+    prefix: str,
+) -> None:
     observations = _annotated_observations().with_columns(
-        pl.lit("retired").alias("sigma_flag"),
-        pl.lit("retired").alias("sigma_applicability"),
+        pl.lit("retired").alias(f"{prefix}_flag"),
+        pl.lit("retired").alias(f"{prefix}_applicability"),
     )
 
     result = compare_anomaly_methods(observations)
 
-    assert result["method_agreement"].to_list() == [3, 0, 2, 0, 0]
+    assert result["method_agreement"].to_list() == [2, 0, 1, 0, 0]
     assert result["applicable_method_count"].to_list() == [3, 3, 3, 1, 0]
-    assert all("sigma" not in reason for reason in result["anomaly_reasons"])
+    assert all(prefix not in reason for reason in result["anomaly_reasons"])

@@ -14,6 +14,7 @@ def test_copier_follows_each_reference_version(tmp_path: Path) -> None:
         "evidence/v2/tables/probability.tex",
         "evidence/v3/tables/probability.tex",
         "evidence/v3/figures/distribution.pdf",
+        "evidence/v10/runs/crpi/200/a/hierarchical_clusters.png",
     ]
     for reference in references:
         relative = Path(reference).relative_to("evidence")

@@ -385,7 +385,6 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
   \item[IQR] Amplitude interquartil (\textit{interquartile range})
   \item[LIS] Arquivo de listagem de saída do ATP (\texttt{.lis})
   \item[LT] Linha de transmissão
-  \item[MAD] Desvio absoluto mediano (\textit{median absolute deviation})
   \item[MATLAB] \textit{Matrix Laboratory}
   \item[NA] Não aplicável
   \item[NaN] \textit{Not a Number}
@@ -612,7 +611,7 @@ A partir dos dados extraídos dos arquivos do ATP, a análise estatística permi
 
 Medidas como média, desvio padrão, mínimo, máximo, quartis e percentis são importantes para compreender o comportamento geral das tensões simuladas. A média fornece uma medida representativa do conjunto analisado, enquanto o desvio padrão expressa o grau de dispersão dos dados em relação a essa média.
 
-O ajuste de uma distribuição normal descreve uma referência probabilística cuja adequação deve ser examinada, pois máximos de tensão não são necessariamente gaussianos. A média e o desvio padrão descrevem posição e dispersão; a identificação de candidatos neste trabalho utiliza critérios explícitos de MAD (desvio absoluto mediano, do inglês \textit{median absolute deviation}), distância do K-Means e ruído do DBSCAN, apresentados na metodologia.
+O ajuste de uma distribuição normal descreve uma referência probabilística cuja adequação deve ser examinada, pois máximos de tensão não são necessariamente gaussianos. A média e o desvio padrão descrevem posição e dispersão; a identificação de candidatos neste trabalho utiliza critérios explícitos de distância do K-Means, ruído do DBSCAN e cauda superior hierárquica, apresentados na metodologia.
 
 Como complemento, podem ser utilizados quartis, percentis e a IQR (amplitude interquartil, do inglês \textit{interquartile range}), definida na Equação~\ref{eq:iqr}:
 
@@ -1128,8 +1127,8 @@ computacional; a revisão elétrica qualificada permanece pendente.
     Adequação gaussiana e comparação qualificada};
 \node[branch, right=5mm of stats] (candidates) {
     \textbf{Agrupamento e candidatos}\\
-    MAD, distância K-Means e ruído DBSCAN, conforme aplicabilidade\\
-    Hierarquia: descrição, sem voto};
+    Distância K-Means, ruído DBSCAN e cauda hierárquica\\
+    Silhouette e Davies--Bouldin: avaliação das partições};
 \node[box, below=of stats.south west, anchor=north west] (compare) {
     Comparação dos métodos e dos tamanhos amostrais\\
     Avaliação controlada com intervenções sintéticas e sensibilidade};
@@ -1521,18 +1520,6 @@ estimativa empírica permanece principal e a inferência gaussiana é apresentad
 apenas como comparação qualificada, sem participar da votação de
 candidatos a anomalias.
 
-Como referência robusta, também se calcula o escore baseado na mediana e no
-desvio absoluto mediano (MAD), definido na Equação~\ref{eq:escore-mad}:
-\begin{equation}
-\label{eq:escore-mad}
-z_{MAD}=0{,}67448975\,
-\frac{x-\operatorname{mediana}(x)}
-{\operatorname{mediana}(|x-\operatorname{mediana}(x)|)}.
-\end{equation}
-Uma observação satisfaz esse critério quando $|z_{MAD}|>3{,}5$. Grupos com
-menos de oito valores finitos ou com MAD nulo são não aplicáveis e não
-contribuem para concordância entre métodos.
-
 \subsection{Evidência contextual de K-Means e DBSCAN}
 \label{sec:metodo-anomalias}
 
@@ -1567,8 +1554,8 @@ ruído constitui evidência analítica somente quando o ajuste é aplicável.
 Grupos esparsos, constantes ou nos quais todos os pontos são classificados
 como ruído recebem estado não aplicável e não votam na comparação.
 
-A comparação considera três critérios booleanos explícitos: MAD,
-distância do K-Means e ruído do DBSCAN. Somente métodos aplicáveis participam
+A comparação considera três critérios booleanos explícitos:
+distância do K-Means, ruído do DBSCAN e seleção hierárquica da cauda superior. Somente métodos aplicáveis participam
 da contagem. O artefato conserva, para cada método, escore, limiar, indicador,
 aplicabilidade e motivo; concordâncias e discordâncias permanecem visíveis.
 Os termos adotados para as saídas são ``candidato'' e ``evidência
@@ -1590,10 +1577,6 @@ adequação gaussiana é examinada à parte e não participa da votação.
 \textbf{Método e papel} & \textbf{Escore ou regra} &
 \textbf{Aplicabilidade e votação} \\
 \hline
-MAD: referência robusta &
-Escore em relação à mediana; sinaliza quando $|z_{MAD}|>3{,}5$. &
-Requer pelo menos oito valores finitos e MAD não nulo. Vota quando
-aplicável. \\
 K-Means: distância ao centroide &
 Distância no espaço padronizado estritamente acima do percentil 99 da
 calibração. Rótulo de grupo não é sinalização. &
@@ -1604,10 +1587,12 @@ Sinaliza pontos de ruído; raio efetivo de 0,5 no espaço padronizado e
 mínimo de cinco vizinhos no pacote avaliado. &
 Grupos esparsos, constantes ou inteiramente classificados como ruído não
 votam. Zero ruído em ajuste aplicável significa zero candidatos. \\
-Hierárquico: descrição da cauda &
+Hierárquico: seleção da cauda &
 Separa até 10\% da cauda superior, com lacuna acima de 0,05~P.U. e de cinco
 vezes a mediana das lacunas; preserva três pontos de referência. &
-Sem separação suficiente, mantém um rótulo. Não participa da votação. \\
+Requer pelo menos quatro valores finitos; sinaliza os membros da cauda
+superior separada quando aplicável.
+Sem separação suficiente, não sinaliza candidatos. \\
 \hline
 \end{tabularx}
 \legend{Fonte: elaboração própria. Silhouette e Davies--Bouldin avaliam
@@ -1635,10 +1620,11 @@ inspecionam-se as lacunas adjacentes. Uma separação só é aceita quando
 isola até 10\% dos maiores valores, conserva pelo menos três observações
 no grupo de referência e supera simultaneamente 0,05~P.U. e cinco vezes
 a mediana das lacunas. Sem separação suficiente, todos os pontos recebem
-o mesmo rótulo. A execução é separada por fase; portanto, as fases não
-são misturadas, embora a chave interna desse método não inclua a fase.
-Essa partição exploratória não equivale a um diagnóstico de anomalia e
-não participa da votação dos três critérios de detecção.
+o mesmo rótulo. A execução preserva grupos por cenário, linhagem da fonte,
+terminal e fase, sem misturar contextos distintos.
+A pertença à cauda superior constitui o terceiro critério de candidatura. A seleção permanece exploratória: não equivale a um
+diagnóstico de erro numérico. A aplicabilidade da seleção é distinta da
+aplicabilidade dos índices geométricos, que exigem partições avaliáveis.
 
 Para cada observação, Silhouette compara a distância média ao próprio
 agrupamento, $a(i)$, com a menor distância média a outro agrupamento, $b(i)$,
@@ -1807,9 +1793,9 @@ partições de todos os noventa grupos do K-Means, mas somente a quatro do
 DBSCAN e a seis do método hierárquico
 (Tabela~\ref{tab:cluster-summary}). Essas contagens descrevem a possibilidade
 de avaliar as partições, não a aplicabilidade dos detectores de candidatos.
-A seleção de candidatos utiliza MAD, distância ao centroide do K-Means e
-ruído do DBSCAN sob suas regras de aplicabilidade; os rótulos hierárquicos
-permanecem descritivos e não participam dessa seleção. A revisão elétrica
+A seleção de candidatos utiliza distância ao centroide do K-Means,
+ruído do DBSCAN e pertença à cauda superior hierárquica, sob suas regras
+de aplicabilidade. A revisão elétrica
 continua pendente, sem atribuição de causa aos extremos.
 
 As verificações de extração, identidade, conversão e limpeza deste capítulo
@@ -2026,7 +2012,7 @@ empírica permanece principal. Classes e escalas são comuns aos dois
 cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v9/figures/distribution-crpi-t_opo-a.png}
+{evidence/v10/figures/distribution-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -2043,7 +2029,7 @@ empírica permanece principal. Classes e escalas são comuns aos dois
 cenários; a nota informa as excedências do limiar de 2,3~P.U. fora da janela.}
 \label{fig:defesa-distribuicao-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v9/figures/distribution-srpi-t_opo-a.png}
+{evidence/v10/figures/distribution-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/annotated\_observations.csv} e
@@ -2108,7 +2094,7 @@ causal de candidatos pela probabilidade do caso não foi alcançada.
 
 Em complemento à descrição das distribuições, a comparação geométrica
 examina as partições produzidas pelos métodos de clusterização.
-A apresentação v4 reúne os índices internos das partições efetivamente produzidas
+O pacote de evidências reúne os índices internos das partições efetivamente produzidas
 pelo fluxo, sem reajustar os modelos para maximizar os escores. A
 Tabela~\ref{tab:cluster-summary} sintetiza os resultados dos nove grupos
 terminal--fase de cada cenário e tamanho amostral. Os 270 registros
@@ -2124,7 +2110,7 @@ NA (não aplicável) indica a ausência de uma partição elegível para
 avaliação, sem atribuir artificialmente escore zero.
 
 \clearpage
-\input{evidence/v9/tables/clustering_summary.tex}
+\input{evidence/v10/tables/clustering_summary.tex}
 
 Os índices foram aplicáveis em 90 dos 90 grupos do K-Means, em quatro
 dos 90 grupos do DBSCAN e em seis dos 90 grupos do método hierárquico.
@@ -2214,7 +2200,7 @@ métodos com pontos válidos. Este recorte difere das medianas dos nove
 grupos terminal--fase da Tabela~\ref{tab:cluster-summary}.}
 \label{fig:cluster-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v9/figures/clustering-crpi.png}
+{evidence/v10/figures/clustering-crpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -2231,7 +2217,7 @@ métodos com pontos válidos. Este recorte difere das medianas dos nove
 grupos terminal--fase da Tabela~\ref{tab:cluster-summary}.}
 \label{fig:cluster-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v9/figures/clustering-srpi.png}
+{evidence/v10/figures/clustering-srpi.png}
 
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/clustering\_comparison.csv}.}
@@ -2243,6 +2229,46 @@ aplicabilidade, a fração de ruído e a finalidade de cada método.
 As diferenças de finalidade e de população avaliada impedem declarar
 um vencedor universal.
 
+As Figuras~\ref{fig:clusters-kmeans}, \ref{fig:clusters-dbscan} e
+\ref{fig:clusters-hierarchical} apresentam as partições obtidas no mesmo
+cenário CRPI, com 200 simulações, fase A, preservando os terminais
+representados nos gráficos. As cores indicam os rótulos de cada método;
+não constituem classificação de erro numérico. A leitura visual complementa
+a avaliação por Silhouette e Davies--Bouldin, sem substituir suas regras
+de aplicabilidade.
+
+\begin{figure}[htbp]
+\centering
+\caption{Agrupamentos por K-Means no CRPI, fase A, com 200 simulações.}
+\label{fig:clusters-kmeans}
+\includegraphics[width=0.96\textwidth,height=0.52\textheight,keepaspectratio]
+{evidence/v10/runs/crpi/200/a/kmeans_clusters.png}
+\legend{Fonte: elaboração própria a partir dos artefatos de execução
+do pacote de evidências. Rótulos de grupos são específicos de cada método.}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\caption{Agrupamentos por DBSCAN no CRPI, fase A, com 200 simulações.}
+\label{fig:clusters-dbscan}
+\includegraphics[width=0.96\textwidth,height=0.52\textheight,keepaspectratio]
+{evidence/v10/runs/crpi/200/a/dbscan_clusters.png}
+\legend{Fonte: elaboração própria a partir dos artefatos de execução
+do pacote de evidências. Rótulos de grupos são específicos de cada método.}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\caption{Agrupamentos por seleção hierárquica de cauda superior no CRPI, fase A, com 200 simulações.}
+\label{fig:clusters-hierarchical}
+\includegraphics[width=0.96\textwidth,height=0.52\textheight,keepaspectratio]
+{evidence/v10/runs/crpi/200/a/hierarchical_clusters.png}
+\legend{Fonte: elaboração própria a partir dos artefatos de execução
+do pacote de evidências. Rótulos de grupos são específicos de cada método.}
+\end{figure}
+
+\FloatBarrier
+
 \section{Evidências analíticas de anomalia}
 \label{sec:evidencias-anomalia}
 
@@ -2251,14 +2277,21 @@ de candidatos, que seguem critérios próprios. As evidências de anomalia
 foram calculadas separadamente por cenário,
 linhagem da fonte, terminal e fase, conforme a Seção~\ref{sec:metodo-anomalias}
 da metodologia, e cobrem as 204.300 observações do pacote.
-No grupo de referência $T_{OPO}$, fase A, $N=10.000$, os três detectores
+No grupo de referência $T_{OPO}$, fase A, $N=10.000$, os três critérios
 foram aplicáveis nos dois cenários. A
 Tabela~\ref{tab:candidatos-referencia} apresenta suas sinalizações e
-concordâncias. Todas as observações sinalizadas pelo K-Means também foram
-sinalizadas pelo MAD; por isso, a união coincide com o conjunto do MAD.
-O DBSCAN aplicável produziu zero candidatos nesse recorte, o que não
+concordâncias. O hierárquico não selecionou candidatos nesse
+recorte; por isso, a união dos três critérios coincide com o conjunto
+selecionado pela distância do K-Means.
+O DBSCAN aplicável também produziu zero candidatos nesse recorte, o que não
 implica que seus índices geométricos sejam calculáveis. As contagens da
 união coincidem com a Seção~\ref{sec:convergencia-amostral}.
+
+Considerando toda a base, o critério hierárquico sinalizou 29 observações,
+das quais oito não haviam sido selecionadas pelos outros dois critérios.
+A união dos três critérios contém 2.010 candidatos analíticos.
+Essas contagens descrevem a seleção exploratória, sem confirmar a causa
+dos valores sinalizados.
 
 \begin{table}[htbp]
 \centering
@@ -2274,25 +2307,24 @@ com 10.000 simulações por cenário.}
 \textbf{Critério ou conjunto} & \textbf{Quantidade} & \textbf{Taxa} &
 \textbf{Quantidade} & \textbf{Taxa} \\
 \hline
-MAD & 109 & 1,09\% & 852 & 8,52\% \\
 Distância do K-Means & 99 & 0,99\% & 99 & 0,99\% \\
 Ruído do DBSCAN & 0 & 0,00\% & 0 & 0,00\% \\
-Interseção MAD $\cap$ K-Means & 99 & 0,99\% & 99 & 0,99\% \\
-União dos três critérios & 109 & 1,09\% & 852 & 8,52\% \\
+Cauda superior hierárquica & 0 & 0,00\% & 0 & 0,00\% \\
+União dos três critérios & 99 & 0,99\% & 99 & 0,99\% \\
 \hline
 \end{tabularx}
 \legend{Fonte: elaboração própria a partir de
 \texttt{sources/method\_comparison.csv} e das observações anotadas do pacote.
-Denominador de cada taxa: 10.000. Todos os três detectores são aplicáveis
+Denominador de cada taxa: 10.000. Todos os três critérios são aplicáveis
 neste recorte; concordância não comprova causa física ou numérica.}
 \end{table}
 
 As diferenças entre
-as sinalizações do MAD, do K-Means e do DBSCAN são relatadas sem tratar um
+as sinalizações do K-Means, do DBSCAN e do hierárquico são relatadas sem tratar um
 dos métodos como referência de verdade. A assimetria e o excesso de curtose
 registrados na Seção~\ref{sec:resultados-estatisticos} descrevem as
-distribuições, mas não demonstram uma causa para o comportamento do MAD;
-essa relação exigiria uma análise específica. A comparação foi realizada em modo
+distribuições, mas não demonstram a causa física ou numérica dos extremos;
+essa atribuição exigiria evidências elétricas adicionais. A comparação foi realizada em modo
 exploratório, sem correção de multiplicidade, conforme registrado no próprio
 artefato (\texttt{analysis\_mode=exploratory}).
 
@@ -2315,10 +2347,9 @@ $N=50$ para 0,0004 em $N=10.000$. Com zero excedências, esse estreitamento
 reflete a redução da incerteza da proporção sob o modelo do intervalo, e
 não comprova, por si só, convergência independente da estimativa. A taxa de
 candidatos analíticos varia entre tamanhos: no SRPI, terminal $T_{OPO}$, fase
-A, a taxa varia de 8,52\% a 12\% nos cinco tamanhos avaliados, enquanto no
-CRPI, mesmo terminal e fase,
-a taxa passa de 16\% em $N=50$ para 12\% em $N=100$, 1\% em $N=200$ e
-$N=1.000$, e 1,09\% em $N=10.000$. Esses exemplos se restringem ao
+A, as taxas são 12\%, 0\%, 0,5\%, 0,9\% e 0,99\%, respectivamente.
+No CRPI, mesmo terminal e fase, as taxas são 0\%, 1\%, 1\%, 0,9\% e
+0,99\% para os mesmos tamanhos. Esses exemplos se restringem ao
 terminal $T_{OPO}$, fase A, também representado nas
 Figuras~\ref{fig:defesa-convergencia-crpi} e
 \ref{fig:defesa-convergencia-srpi}; não resumem os demais terminais e fases.
@@ -2337,7 +2368,7 @@ de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do SRPI;
 zero eventos não implica probabilidade subjacente nula.}
 \label{fig:defesa-convergencia-crpi}
 \includegraphics[width=\textwidth]
-{evidence/v9/figures/convergence-crpi-t_opo-a.png}
+{evidence/v10/figures/convergence-crpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -2353,7 +2384,7 @@ de Wilson de 95\% (inferior). Eixos correspondentes comuns aos do CRPI;
 fontes não presumidas independentes ou aninhadas.}
 \label{fig:defesa-convergencia-srpi}
 \includegraphics[width=\textwidth]
-{evidence/v9/figures/convergence-srpi-t_opo-a.png}
+{evidence/v10/figures/convergence-srpi-t_opo-a.png}
 
 \legend{Fonte: elaborado pelo autor a partir de
 \texttt{sources/convergence.csv}.}
@@ -2469,10 +2500,9 @@ relativos à extração, à organização, ao tratamento estatístico e à anál
 probabilística dos dados do ATP (Seção~\ref{sec:resultados-estatisticos}), e
 à aplicação de K-Means e DBSCAN para identificação de agrupamentos e de
 candidatos a observações atípicas (Seção~\ref{sec:evidencias-anomalia}). O
-objetivo de comparar a coerência entre os métodos estatísticos e os
-algoritmos de clusterização também é atendido: as diferenças entre o
-escore robusto MAD e a distância do K-Means no grupo de referência são
-relatadas explicitamente, em vez de serem resumidas em um único rótulo, e o
+objetivo de comparar os algoritmos de clusterização também é atendido:
+Silhouette e Davies--Bouldin descrevem a geometria das partições,
+enquanto as sinalizações de cada método permanecem explícitas. O
 DBSCAN permaneceu aplicável, com zero candidatos para a
 combinação de parâmetros congelada nesse grupo, o que ilustra a
 sensibilidade desse método à calibração e à escala local dos dados --
@@ -2516,8 +2546,7 @@ auditoria das formas de onda.
 
 Em consequência, os cinco casos selecionados e os demais candidatos do
 pacote mantêm conclusão causal ``não resolvida''
-(\texttt{causal\_conclusion: "unresolved"}). Os critérios MAD, K-Means e
-DBSCAN não permitem confirmar erro numérico ou evento físico apenas por
+(\texttt{causal\_conclusion: "unresolved"}). Os critérios K-Means, DBSCAN e hierárquico não permitem confirmar erro numérico ou evento físico apenas por
 raridade, separação geométrica, concordância ou estabilidade da seleção.
 Essa classificação requer conferir o caso de origem, as condições de
 chaveamento e a coerência entre fases e terminais, além das evidências
@@ -2543,10 +2572,10 @@ probabilidade subjacente nula. A normalidade foi rejeitada em 88 dos noventa
 grupos, impedindo adotar uma referência gaussiana comum sem verificar sua
 adequação. Os índices Silhouette e Davies--Bouldin foram aplicáveis a noventa
 grupos do K-Means, quatro do DBSCAN e seis do método hierárquico. Essas
-contagens descrevem partições e não a aplicabilidade dos detectores. MAD,
-distância ao centroide do K-Means e ruído do DBSCAN forneceram evidências de
-candidatos sob critérios explícitos, com concordâncias e discordâncias
-preservadas; os rótulos hierárquicos permaneceram descritivos e não votantes.
+contagens descrevem partições e não a aplicabilidade dos detectores. A
+distância ao centroide do K-Means, ruído do DBSCAN e cauda superior
+hierárquica fornecem evidências de candidatos sob critérios explícitos,
+com concordâncias e discordâncias preservadas.
 Os resultados detalhados encontram-se no Capítulo~\ref{chap:results}.
 
 A aceitação computacional permanece restrita aos arquivos, leiautes e pontos
@@ -2711,7 +2740,11 @@ Seu manifesto preserva a proveniência experimental herdada e identifica a
 reprodução da apresentação pelo comando
 \texttt{uv run python -m docs.research.replay\_thesis\_numeric\_tables}.
 
-O diretório do pacote atual é \path{results/defense-evidence/v9/}.
+A metodologia inclui a cauda superior hierárquica na seleção de candidatos e
+prioriza Silhouette e Davies--Bouldin na avaliação dos agrupamentos.
+Esses índices não estabelecem a causa dos extremos.
+
+O diretório do pacote atual é \path{results/defense-evidence/v10/}.
 Os caminhos a seguir são relativos a esse diretório e vinculam os
 resultados aos respectivos registros completos:
 \begin{description}
@@ -2742,7 +2775,7 @@ pacote: \path{sources/annotated_observations.csv},
 \path{sources/distribution_adequacy.csv},
 \path{sources/clustering_comparison.csv} e
 \path{sources/convergence.csv}. As cópias incluídas neste documento ficam
-em \path{doc/evidence/v9/}, permitindo sua compilação independente.
+em \path{doc/evidence/v10/}, permitindo sua compilação independente.
 O documento de GTPPLOT citado na discussão estatística é identificado no
 acervo pelo arquivo \texttt{2000-N4-Estati-1.pdf}.
 
@@ -2757,7 +2790,7 @@ a partir dos resultados validados, sem agregação dos grupos.
 
 \begingroup
 \SingleSpacing
-\input{evidence/v9/tables/probability.tex}
+\input{evidence/v10/tables/probability.tex}
 \endgroup
 
 \section{Comparação detalhada entre tamanhos amostrais}
@@ -2773,7 +2806,7 @@ ou aninhamento entre as fontes.
 
 \begingroup
 \SingleSpacing
-\input{evidence/v9/tables/convergence.tex}
+\input{evidence/v10/tables/convergence.tex}
 \endgroup
 
 \section{Ensaio controlado detalhado por condição}
@@ -2794,7 +2827,7 @@ A origem permanece
 em \path{sources/controlled_benchmark.csv} e
 \path{tables/benchmark.csv}, sem nova execução dos ensaios.
 
-\input{evidence/v9/tables/benchmark.tex}
+\input{evidence/v10/tables/benchmark.tex}
 
 \section{Casos pendentes de revisão elétrica e identificação das fontes}
 \label{app:casos-revisao-pendente}
@@ -2805,7 +2838,7 @@ A seleção computacional não constitui revisão elétrica concluída. Os
 identificadores combinam cenário e tamanho amostral; o mapa de caminhos
 completos e hashes distingue fontes com o mesmo nome de arquivo.
 
-\input{evidence/v9/tables/technical_review.tex}
+\input{evidence/v10/tables/technical_review.tex}
 
 \end{apendicesenv}
 

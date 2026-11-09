@@ -81,7 +81,6 @@ class AnalysisConfig(BaseModel):
         "terminal",
         "phase",
     )
-    mad_threshold: float = Field(default=3.5, allow_inf_nan=False)
     confidence_level: float = Field(default=0.95, allow_inf_nan=False)
     adequacy_significance_level: float = Field(
         default=0.05,
@@ -186,7 +185,6 @@ class AnalysisConfig(BaseModel):
             message = "Input and output directories must be different."
             raise ValueError(message)
         frozen_policies = {
-            "mad_threshold": (self.mad_threshold, 3.5),
             "confidence_level": (self.confidence_level, 0.95),
             "adequacy_significance_level": (
                 self.adequacy_significance_level,

@@ -75,7 +75,6 @@ def test_analysis_config_is_json_serializable(tmp_path: Path) -> None:
             "terminal",
             "phase",
         ],
-        "mad_threshold": 3.5,
         "confidence_level": 0.95,
         "adequacy_significance_level": 0.05,
         "kmeans_threshold_percentile": 99.0,
@@ -246,7 +245,7 @@ def test_analysis_config_rejects_stale_schema_and_changed_policies(
         AnalysisConfig.model_validate(values)
 
     values = _config_values(tmp_path, tmp_path / "results")
-    values["mad_threshold"] = 4.0
+    values["confidence_level"] = 0.9
     with pytest.raises(ValidationError):
         AnalysisConfig.model_validate(values)
 

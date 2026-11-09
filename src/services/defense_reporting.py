@@ -650,10 +650,10 @@ def _presentation_value(
 def _translate_value(value: str, column: str) -> str:
     """Translate controlled statuses while preserving technical identities."""
     method_names = {
-        "mad_modified_z": "MAD",
         "kmeans": "K-Means",
         "kmeans_distance": "distância ao centroide (K-Means)",
         "dbscan_noise": "ruído (DBSCAN)",
+        "hierarchical_upper_tail": "cauda superior (hierárquico)",
         "dbscan_density_novelty": "DBSCAN",
     }
     if column == "intervention_family":

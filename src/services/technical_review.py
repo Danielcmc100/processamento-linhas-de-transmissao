@@ -37,11 +37,6 @@ _SELECTION_COLUMNS = (
 _SCORE_COLUMNS = (
     ("score", "threshold", "applicability"),
     (
-        "modified_mad_score",
-        "mad_threshold",
-        "mad_applicability",
-    ),
-    (
         "dbscan_score",
         "dbscan_threshold",
         "dbscan_applicability",

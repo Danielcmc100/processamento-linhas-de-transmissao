@@ -1,5 +1,6 @@
 """Unit tests for deterministic clustering labels."""
 
+from collections.abc import Sequence
 from math import inf, nan
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from src.services.clustering import (
 )
 
 
-def _observations(values: list[float]) -> DataFrame:
+def _observations(values: Sequence[float | None]) -> DataFrame:
     return DataFrame({
         "source_file": ["run.lis"] * len(values),
         "simulation": list(range(1, len(values) + 1)),
@@ -167,7 +168,7 @@ def test_hierarchical_preserves_custom_columns_and_labels() -> None:
         label_col="upper_group",
     )
     assert result["upper_group"].to_list() == [0] * 9 + [1]
-    assert result.drop("upper_group").equals(observations)
+    assert result.select(observations.columns).equals(observations)
 
 
 def test_hierarchical_empty_input_has_int32_labels() -> None:
@@ -201,7 +202,7 @@ def test_hierarchical_rejects_invalid_parameters(
             cluster_hierarchical(_observations([1.0]), max_tail_fraction=value)
 
 
-@pytest.mark.parametrize("algorithm", ["dbscan", "kmeans", "hierarchical"])
+@pytest.mark.parametrize("algorithm", ["dbscan", "kmeans"])
 @pytest.mark.parametrize("invalid_value", [nan, inf, -inf])
 def test_clustering_rejects_non_finite_values(
     algorithm: str,
@@ -214,8 +215,52 @@ def test_clustering_rejects_non_finite_values(
             detect_outliers_dbscan(observations)
         elif algorithm == "kmeans":
             cluster_kmeans(observations, n_clusters=1)
-        else:
-            cluster_hierarchical(observations)
+
+
+def test_hierarchical_evidence_preserves_invalid_rows_without_votes() -> None:
+    observations = _observations([1.0] * 9 + [1.5, nan, inf, None])
+
+    result = cluster_hierarchical(observations)
+
+    assert result["hierarchical_flag"].to_list() == (
+        [False] * 9 + [True, None, None, None]
+    )
+    assert result["hierarchical_applicability"].to_list() == (
+        ["applicable"] * 10 + ["non_applicable"] * 3
+    )
+    assert result["hierarchical_reason"].to_list()[-3:] == (
+        ["non_finite_value"] * 3
+    )
+
+
+def test_hierarchical_evidence_isolates_scenarios_sources_and_phases() -> None:
+    observations = DataFrame({
+        "terminal": ["T_MAN"] * 40,
+        "scenario": ["one"] * 20 + ["two"] * 20,
+        "source_lineage": (["first"] * 10 + ["second"] * 10) * 2,
+        "phase": ["A"] * 30 + ["B"] * 10,
+        "value_pu": [1.0] * 9 + [1.5] + [2.0] * 10 + [3.0] * 20,
+    })
+
+    result = cluster_hierarchical(observations)
+
+    assert result["hierarchical_flag"].to_list() == (
+        [False] * 9 + [True] + [False] * 30
+    )
+
+
+def test_hierarchical_evidence_sparse_and_unsplit_applicability() -> None:
+    sparse = cluster_hierarchical(_observations([1.0, 1.1, 1.2]))
+    unsplit = cluster_hierarchical(_observations([1.0] * 4))
+
+    assert sparse["hierarchical_flag"].to_list() == [None] * 3
+    assert sparse["hierarchical_applicability"].to_list() == (
+        ["non_applicable"] * 3
+    )
+    assert unsplit["hierarchical_flag"].to_list() == [False] * 4
+    assert unsplit["hierarchical_applicability"].to_list() == (
+        ["applicable"] * 4
+    )
 
 
 def test_hierarchical_matches_marked_fifty_simulation_upper_tails() -> None:

@@ -12,7 +12,6 @@ from src.services.config import AnalysisConfig
 from src.services.dbscan_evidence import evaluate_dbscan_evidence
 from src.services.distribution_adequacy import (
     evaluate_distribution_adequacy,
-    evaluate_mad_evidence,
 )
 from src.services.distribution_histograms import (
     compare_distributions,
@@ -143,12 +142,8 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
     )
     summary = summarize_statistics(analyzed, threshold=config.threshold)
 
-    with_mad = evaluate_mad_evidence(
-        analyzed,
-        threshold=config.mad_threshold,
-    )
     with_kmeans = evaluate_kmeans_evidence(
-        with_mad,
+        analyzed,
         n_clusters=config.kmeans.n_clusters,
         random_state=config.kmeans.random_state,
         group_columns=config.grouping_policy,
@@ -166,6 +161,7 @@ def run_pipeline(config: AnalysisConfig) -> PipelineResult:
         gap_factor=config.hierarchical.gap_factor,
         max_tail_fraction=config.hierarchical.max_tail_fraction,
         label_col="hierarchical_cluster",
+        group_columns=config.grouping_policy,
     )
     compared = compare_anomaly_methods(with_hierarchical)
     clustering_comparison = evaluate_cluster_comparison(

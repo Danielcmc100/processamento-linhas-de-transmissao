@@ -34,314 +34,365 @@
 \textbf{Tema:} Detecção de Anomalias e Análise Probabilística em Manobras
 de Energização de Linhas de Transmissão Utilizando Aprendizagem de Máquina.
 
-\textbf{Uso:} fala sugerida para os 15 slides de
-\texttt{apresentacao.tex}, elaborada com base em \texttt{main.tex} e nas
-evidências v9 citadas na monografia. Os tempos incluem explicação das
-figuras, pausas e transições. São metas de ensaio, não uma duração
-garantida pela leitura. O período de perguntas da banca fica fora
-dos 15 minutos.
+\textbf{Uso:} fala sugerida para os 16 slides de
+\texttt{apresentacao.tex}, voltada a uma banca de Computação sem formação
+elétrica. Contextualização e exemplos antecedem métodos e resultados.
+Os tempos incluem explicação das imagens, pausas e transições. São metas
+de ensaio; a leitura isolada não garante a duração. Perguntas da banca
+ficam fora dos \textbf{20 minutos}.
 
-\section*{Distribuição dos 15 minutos}
+\section*{Distribuição dos 20 minutos}
 \begin{longtable}{r p{9cm} r r}
 \toprule
 Slide & Assunto & Duração & Acumulado \\
 \midrule
 1 & Abertura & 0:30 & 0:30 \\
-2 & Problema de pesquisa & 1:00 & 1:30 \\
-3 & Objetivo e escopo & 0:45 & 2:15 \\
-4 & Estudo de caso & 1:00 & 3:15 \\
-5 & Base e unidade de análise & 0:55 & 4:10 \\
-6 & Processamento e validação & 1:05 & 5:15 \\
-7 & Critérios de candidatos & 1:15 & 6:30 \\
-8 & Estatísticas e normalidade & 1:00 & 7:30 \\
-9 & Leitura da distribuição SRPI & 0:50 & 8:20 \\
-10 & Probabilidade de excedência & 1:00 & 9:20 \\
-11 & Comparação geométrica & 1:00 & 10:20 \\
-12 & Candidatos e concordância & 1:05 & 11:25 \\
-13 & Tamanho amostral & 0:55 & 12:20 \\
-14 & Ensaios e limites & 1:10 & 13:30 \\
-15 & Conclusão e próximos passos & 1:30 & 15:00 \\
+2 & Contextualização: energização de linhas de transmissão & 1:40 & 2:10 \\
+3 & Simulação elétrica e problema computacional & 1:30 & 3:40 \\
+4 & Estudo de caso e pontos de observação & 1:20 & 5:00 \\
+5 & Cenários de simulação e composição da base & 1:10 & 6:10 \\
+6 & Normalização e interpretação dos valores de tensão & 1:30 & 7:40 \\
+7 & Fluxo de processamento e validação dos dados & 1:20 & 9:00 \\
+8 & Excedência e discrepância: objetivos distintos & 1:40 & 10:40 \\
+9 & Métodos de clusterização avaliados & 1:10 & 11:50 \\
+10 & Distribuição dos máximos e adequação do modelo normal & 1:20 & 13:10 \\
+11 & Métricas principais: Silhouette e Davies--Bouldin & 1:10 & 14:20 \\
+12 & Probabilidade de excedência e incerteza amostral & 1:20 & 15:40 \\
+13 & Comparação dos índices em recortes específicos & 1:10 & 16:50 \\
+14 & Tamanho amostral e abrangência da comparação & 1:30 & 18:20 \\
+15 & Contribuições computacionais e delimitação do escopo & 1:10 & 19:30 \\
+16 & Limitações e perspectivas de continuidade & 0:30 & 20:00 \\
 \bottomrule
 \end{longtable}
 
 \section*{Fala sugerida}
 
 \slide{1}{Abertura}{0:00--0:30}
-Bom dia à banca e aos presentes. Sou Kleber Daniel Mattos Viana e
-apresento meu trabalho sobre detecção de anomalias e análise probabilística
-em manobras de energização de linhas de transmissão. O trabalho foi
-desenvolvido no curso de Ciência da Computação do UNIFESO, sob orientação
-da professora Andressa Ruback e coorientação do professor Bráulio Chuco
-Paucar. Vou apresentar o problema, a rotina desenvolvida e os resultados,
-destacando o alcance das conclusões.
+Bom dia. Sou Kleber Viana. Este trabalho trata do processamento de resultados
+de simulações elétricas para encontrar valores que merecem investigação.
+Foi orientado pela professora Andressa Ruback e coorientado pelo professor
+Bráulio Chuco. Vou começar pelo contexto elétrico necessário e,
+depois, mostrar a solução computacional e seus resultados.
 \cue{Olhar para a banca. Não ler o título inteiro.}
 
-\slide{2}{Problema de pesquisa}{0:30--1:30}
-Quando uma linha de transmissão é energizada, podem ocorrer sobretensões
-transitórias. O ATP permite simular essas condições e variar os instantes
-de fechamento das chaves, produzindo muitos resultados.
+\slide{2}{Contextualização: energização de linhas de transmissão}{0:30--2:10}
+Antes dos algoritmos, precisamos entender o que está sendo simulado.
+Uma linha de transmissão transporta energia entre subestações, que são
+pontos de conexão e operação da rede elétrica. A linha deste estudo tem
+80 quilômetros. Não é necessário conhecer todos os componentes elétricos
+para acompanhar o problema.
 
-O desafio computacional está em transformar arquivos extensos em uma base
-confiável e localizar observações discrepantes sem perder sua origem.
-Inspecionar somente os maiores valores não informa com que frequência
-eles aparecem nem se são diferentes do comportamento do restante da base.
+Energizar significa conectar essa linha à rede por meio do fechamento
+de uma chave. Podemos pensar no ato de ligar um equipamento, mas aqui
+estamos falando de uma infraestrutura de alta tensão. Essa comparação
+ajuda a entender a conexão; não descreve todos os fenômenos da linha.
 
-A pergunta da pesquisa foi como combinar tratamento estatístico, análise
-probabilística e aprendizagem não supervisionada para selecionar casos
-que merecem investigação técnica. Uma distinção orienta todo o trabalho:
-um valor raro pode ser um candidato, mas sua raridade não confirma erro
-numérico nem fenômeno físico.
-\cue{Enfatizar a pergunta de pesquisa e a diferença entre seleção e causa.}
+Logo depois dessa conexão, o comportamento ainda não se estabilizou.
+A tensão pode oscilar e atingir valores acima de sua referência. Esses
+aumentos temporários são chamados de sobretensões. O isolamento é o
+conjunto de materiais e distâncias que evita passagens indesejadas de
+corrente, e precisa suportar esses esforços.
 
-\slide{3}{Objetivo e escopo}{1:30--2:15}
-O objetivo foi desenvolver uma rotina computacional integrada para extrair,
-organizar e analisar os máximos de tensão produzidos pelo ATP.
-Os objetivos específicos abrangem validar os dados e a conversão de
-unidades, calcular estatísticas e probabilidades com incerteza, comparar
-agrupamentos e registrar candidatos rastreáveis.
+Por isso, interessa estudar o que acontece nos primeiros instantes após
+ligar a linha. Neste trabalho, a pergunta elétrica fornece o contexto;
+a minha contribuição está em tratar os dados produzidos pelas simulações.
+\cue{Dedicar a abertura ao contexto. Fazer uma pausa após definir energização e outra após sobretensão.}
 
-A entrega acadêmica é essa camada de processamento e análise. A rotina
-não exclui automaticamente os candidatos, não determina de forma
-definitiva a causa dos extremos e não recomenda um nível de isolamento.
-Essas decisões exigem evidência elétrica adicional. Esse limite permite
-avaliar a contribuição computacional sem atribuir aos algoritmos uma
-capacidade que não foi demonstrada.
-\cue{Apresentar o escopo como delimitação metodológica da pesquisa.}
+\slide{3}{Simulação elétrica e problema computacional}{2:10--3:40}
+Repetir manobras reais apenas para observar o que acontece seria caro e
+exigiria cuidados operacionais. O ATP, Alternative Transients Program,
+é um software que simula o comportamento elétrico durante esses eventos.
+O ATPDraw permite representar o circuito graficamente.
 
-\slide{4}{Estudo de caso}{2:15--3:15}
-A aplicação considera uma linha de 138 quilovolts e 80 quilômetros,
-representada no ATPDraw pelo modelo K.C. Lee não transposto.
-Nesta figura, os pontos monitorados são o terminal de manobra, o centro
-da linha e o terminal oposto. Em cada ponto são observadas as fases A,
-B e C.
+Em vez de realizar uma única simulação, podemos variar os instantes de
+fechamento das chaves e repetir a manobra muitas vezes. Cada execução
+produz resultados diferentes. O simulador escreve essas informações em
+arquivos de texto chamados LIS.
 
-O passo de integração utilizado nos casos foi de dez microssegundos,
-com uma janela simulada de três décimos de segundo. A energização usa
-chaves estatísticas, variando os instantes de fechamento entre execuções.
+Aqui aparece um problema familiar à Ciência da Computação: transformar
+saídas extensas de outro sistema em dados estruturados e verificáveis.
+Precisamos localizar os valores, identificar a execução correta,
+validar a extração e comparar registros sem perder sua origem.
 
-Para o processamento, o que foi extraído é o máximo por execução,
-terminal e fase, acompanhado de seu instante. A base não contém a forma
-de onda completa; portanto, sua análise não permite concluir sobre a
-duração ou o conteúdo oscilatório do transitório.
-\cue{Apontar os três terminais na figura, sem percorrer todos os
-componentes do circuito.}
+Se um valor se destaca, existem diferentes explicações possíveis: um
+comportamento físico incomum ou uma limitação numérica da simulação,
+por exemplo. Olhar apenas o número não resolve essa dúvida. A pergunta
+do trabalho é como organizar os dados e selecionar casos para investigação
+por um processo reproduzível. O sistema seleciona candidatos; não confirma
+sozinho a causa desses valores.
+\cue{Conectar problema elétrico a leitura, validação e rastreabilidade de dados.}
 
-\slide{5}{Base e unidade de análise}{3:15--4:10}
-Foram considerados dois cenários: com resistor de pré-inserção, chamado
-CRPI, e sem esse resistor, chamado SRPI. Para cada cenário existem
-arquivos com 50, 100, 200, mil e dez mil simulações, totalizando dez
-arquivos de entrada.
+\slide{4}{Estudo de caso e pontos de observação}{3:40--5:00}
+Esta imagem mostra o modelo usado nas simulações. Para acompanhar a
+apresentação, basta localizar três pontos: o início da linha, onde ocorre
+a conexão; o meio; e a outra ponta. Na documentação, esses pontos recebem
+os nomes terminal de manobra, meio da linha e terminal oposto.
 
-Cada execução fornece nove observações escalares, pois são três terminais
-e três fases. A soma dos tamanhos, multiplicada pelos dois cenários e
-pelas nove combinações, produz 204.300 observações.
+A linha tem 80 quilômetros e tensão nominal de 138 quilovolts. Ela é
+trifásica: trabalhamos com três sinais elétricos, chamados fases A, B e C.
+Observamos cada uma dessas fases nos três locais.
 
-As análises preservam 90 grupos definidos por cenário, tamanho amostral,
-terminal e fase. Essa separação evita misturar comportamentos de locais
-ou fases diferentes e interpretar uma diferença esperada entre eles
-como uma anomalia.
-\cue{Distinguir observações escalares de execuções. Não chamar
-204.300 de número de simulações.}
+Assim, uma execução fornece nove máximos: três locais multiplicados por
+três fases. Guardamos o maior valor em módulo e o instante em que ocorreu
+para cada combinação. Não estamos tratando os nove valores como nove
+execuções independentes.
 
-\slide{6}{Processamento e validação}{4:10--5:15}
-O fluxo começa com um leitor estruturado dos arquivos LIS. Ele associa
-os valores aos terminais e fases corretos e preserva os identificadores
-da fonte e da execução. Depois são verificadas duplicidades, combinações
-ausentes, valores inválidos e os instantes registrados.
+Também é importante separar máximo de forma de onda. O máximo resume um
+pico registrado durante a execução. Ele não mostra como a tensão evoluiu
+antes e depois desse instante. Essa limitação será importante ao discutir
+por que a causa de um caso selecionado ainda precisa de revisão elétrica.
+\cue{Apontar início, meio e outra ponta na imagem. Não explicar cada símbolo do circuito.}
 
-Os máximos fase-terra são convertidos para por unidade usando o módulo
-do pico e a base de 112.677 volts, impressa no ATP e coerente com a
-referência nominal da linha. Essa base permite expressar a amplitude
-em relação à referência elétrica utilizada no estudo.
+\slide{5}{Cenários de simulação e composição da base}{5:00--6:10}
+Foram estudados dois cenários. No primeiro, há um resistor de pré-inserção,
+um componente usado durante a conexão para atenuar o transitório.
+No segundo, a conexão ocorre sem esse componente. As siglas CRPI e SRPI
+significam, respectivamente, com e sem resistor de pré-inserção.
 
-Na validação, os 60 pontos individuais da fase A e as 90 médias do ATP
-concordaram com os valores processados. As 204.300 observações foram
-mantidas, sem exclusões. A cobertura estrutural alcança os dez arquivos;
-a conferência numérica independente está limitada aos pontos declarados,
-sem representar auditoria de cada valor.
-\cue{Apontar a fórmula; destacar que a validação antecede os modelos.}
+Cada cenário tem arquivos com 50, 100, 200, mil e dez mil simulações.
+São dez arquivos ao todo. Somando as execuções e considerando os nove
+máximos de cada uma, chegamos a 204.300 observações. Esse número representa
+máximos de tensão, não quantidade de simulações.
 
-\slide{7}{Critérios de candidatos}{5:15--6:30}
-Foram utilizados três critérios explícitos, com finalidades diferentes.
-O MAD compara o valor com a mediana usando uma medida robusta de
-dispersão. O critério sinaliza escores absolutos superiores a 3,5,
-desde que haja dados suficientes e MAD diferente de zero.
+A análise é separada em 90 grupos por cenário, tamanho da amostra, local
+e fase. Isso evita comparar diretamente valores de contextos diferentes
+como se todos pertencessem à mesma população.
 
-No K-Means, a comparação utiliza dois agrupamentos. O candidato é
-definido pela distância ao centroide atribuído acima do percentil 99
-das distâncias de calibração. Pertencer ao agrupamento de maior tensão
-não basta para ser sinalizado.
+Os cenários também diferem nas condições de chaveamento. Portanto, quando
+compararmos os resultados, estaremos descrevendo os cenários observados;
+não isolando o efeito do resistor em um experimento que controle os demais
+fatores.
+\cue{Definir as siglas apenas uma vez; depois dizer com resistor e sem resistor.}
 
-O DBSCAN identifica regiões densas e pontos de ruído. O ruído só
-contribui como evidência quando o ajuste atende às regras de
-aplicabilidade. Métodos não aplicáveis não votam.
+\slide{6}{Normalização e interpretação dos valores de tensão}{6:10--7:40}
+Para facilitar a leitura, os resultados são apresentados em por unidade,
+ou P.U. A ideia é uma normalização: dividimos o valor por uma referência.
+É semelhante a expressar uma medida em relação a uma escala comum.
 
-Os rótulos hierárquicos permanecem descritivos. Também não usamos o teste
-de normalidade para selecionar candidatos. O parâmetro de três desvios
-padrão do ATP pertence ao chaveamento de entrada, e não a um detector
-das tensões de saída.
-\cue{Pausar entre os três métodos. Não confundir o escore robusto MAD
-com um limiar baseado no desvio padrão das tensões.}
+Se o resultado é 1,0 P.U., ele coincide com a referência. Se é 1,5 P.U.,
+está 50 por cento acima. Se é 2,0 P.U., corresponde ao dobro. Assim,
+podemos discutir a amplitude sem repetir números grandes em volts.
 
-\slide{8}{Estatísticas e normalidade}{6:30--7:30}
-Esta tabela apresenta o terminal oposto, fase A, com dez mil simulações
-por cenário. A média foi aproximadamente 1,18 por unidade no CRPI e
-1,70 no SRPI. Os desvios padrão amostrais foram aproximadamente 0,12
-e 0,13. As assimetrias têm sinais diferentes, indicando formas
-distintas das distribuições nesse recorte.
+Neste estudo, a referência usada para os picos fase-terra é 112.677 volts.
+Como exemplo apenas ilustrativo, um pico de 225.354 volts daria 2,0 P.U.
+Esse exemplo explica a conta; não é um resultado observado da base.
 
-A hipótese de normalidade foi avaliada por Anderson--Darling, com nível
-de significância de cinco por cento, e foi rejeitada em 88 dos 90 grupos.
-As duas não rejeições ocorreram com apenas 50 simulações e não provam
-normalidade.
+Os 138 quilovolts apresentados antes descrevem a tensão nominal eficaz
+entre fases. Já a conversão dos máximos usa uma referência de pico entre
+fase e terra. São grandezas distintas. O detalhe da conversão fica
+reservado para as perguntas; para ler os próximos resultados, basta
+lembrar que 1,0 é a referência.
 
-Assim, não foi adotada uma distribuição gaussiana comum como referência
-de validação dos candidatos. Média e desvio padrão continuam úteis
-como descrição; a inadequação do ajuste não invalida essas medidas.
-\cue{Ler apenas os números principais. Não atribuir a diferença
-observada exclusivamente ao resistor: os cenários têm definições
-distintas de chaveamento.}
+Além da amplitude normalizada, cada registro mantém instante, local,
+fase e identificador da execução. Esses campos permitem recuperar o
+contexto de qualquer valor selecionado.
+\cue{Percorrer referência, 50 por cento acima e dobro. Exemplo é ilustrativo, não registro observado.}
 
-\slide{9}{Distribuição SRPI}{7:30--8:20}
-Esta figura permite visualizar o diagnóstico no SRPI. À esquerda,
-o histograma mostra como os máximos se distribuem, junto da curva
-normal ajustada como referência. À direita, o gráfico quantil--quantil
-compara os quantis observados aos de uma normal.
+\slide{7}{Fluxo de processamento e validação dos dados}{7:40--9:00}
+A rotina foi implementada em Python, usando Polars no tratamento tabular,
+SciPy nas análises estatísticas e scikit-learn nos métodos de aprendizagem.
+O fluxo tem quatro etapas.
 
-Os afastamentos da referência ajudam a interpretar a rejeição da
-normalidade nesse grupo. O resultado indica que esse ajuste não
-representa adequadamente os dados segundo o diagnóstico adotado.
-Ele não demonstra que os dados não seguem distribuição alguma.
+Primeiro, o leitor extrai os máximos dos arquivos LIS e associa cada um
+à execução, ao local e à fase corretos. Depois, a validação procura
+combinações ausentes, duplicidades e valores inválidos. Uma extração
+incorreta poderia parecer uma anomalia; por isso essa verificação vem
+antes dos algoritmos.
 
-Por isso, a análise probabilística principal usa frequências empíricas
-e seus intervalos de confiança. A curva normal permanece uma comparação
-qualificada, sem determinar os candidatos.
-\cue{Apontar primeiro o histograma e depois os afastamentos no gráfico
-quantil--quantil. Reservar alguns segundos para a banca observar.}
+A terceira etapa converte as unidades, calcula estatísticas e aplica os
+critérios de seleção. A quarta preserva o vínculo entre o resultado e o
+arquivo de origem. Assim, o registro selecionado continua investigável.
 
-\slide{10}{Probabilidade de excedência}{8:20--9:20}
-O evento analisado foi a ocorrência de um máximo acima de 2,3 por unidade.
-A estimativa empírica é a contagem desses eventos dividida pelo número
-de simulações do próprio grupo. Não foram observadas excedências
-em nenhum dos 90 grupos.
+As 204.300 observações foram mantidas, sem exclusão automática. Na
+conferência numérica, 60 valores individuais da fase A e 90 médias
+concordaram com o ATP. Essa é a cobertura verificada: não significa que
+cada valor da base tenha sido auditado individualmente.
+\cue{Explicar fluxo como processamento de dados. Destacar validação antes dos modelos.}
 
-Isso produz frequência empírica zero, mas não demonstra probabilidade
-real nula. O intervalo de Wilson preserva essa incerteza: seu limite
-superior de 95 por cento é aproximadamente 7,13 por cento com 50
-simulações e 0,04 por cento com dez mil.
+\slide{8}{Excedência e discrepância: objetivos distintos}{9:00--10:40}
+Antes de mostrar os métodos, precisamos separar duas perguntas.
+A primeira é: o máximo ultrapassou um valor definido? Neste trabalho,
+escolhemos analisar máximos acima de 2,3 P.U. Para responder, contamos as
+ocorrências e dividimos pelo número de simulações do próprio grupo.
 
-Os intervalos são calculados por grupo, sem reunir as 204.300 observações
-em um único denominador. O limiar de 2,3 por unidade define o evento
-estudado; não representa uma recomendação de isolamento nem um critério
-que confirma a causa dos candidatos.
-\cue{Separar verbalmente frequência observada e probabilidade
-subjacente.}
+A segunda pergunta é: esse registro destoa dos demais do seu grupo?
+Aqui a comparação depende dos valores observados no mesmo cenário,
+local e fase. Procuramos registros afastados do comportamento típico
+ou pouco próximos de outros registros.
 
-\slide{11}{Comparação geométrica}{9:20--10:20}
-Para comparar as partições, foram usados Silhouette e Davies--Bouldin.
-Em termos gerais, Silhouette maior e Davies--Bouldin menor favorecem
-separação interna no espaço analisado.
+Imagine, apenas como exemplo, um grupo em que os valores se concentram
+próximos de 1,2 P.U. Um valor de 1,8 P.U. poderia chamar atenção nesse
+grupo e, ainda assim, ficar abaixo de 2,3. A primeira pergunta e a segunda
+não precisam produzir a mesma resposta. O exemplo é conceitual; a seleção
+real segue as regras dos métodos.
 
-Os índices foram aplicáveis aos 90 grupos do K-Means, a quatro do
-DBSCAN e a seis da seleção hierárquica de cauda superior. Essas contagens
-não indicam quantos detectores funcionaram. Por exemplo, o DBSCAN pode
-manter um único agrupamento e pontos de ruído, permitindo selecionar
-candidatos, mas sem uma partição elegível para esses índices.
+Também não devemos confundir candidato com erro. Um valor diferente pode
+ser um resultado físico legítimo. Os algoritmos fornecem sinais para
+investigação, não um diagnóstico elétrico. E o limiar de 2,3 P.U. define
+somente o evento estudado: não é uma recomendação de isolamento.
+\cue{Ler cada pergunta separadamente. Usar exemplo verbal e pausar para fixar a diferença.}
 
-Além disso, dividir uma distribuição contínua em dois agrupamentos não
-prova a existência de duas classes de fenômenos elétricos. A comparação
-precisa considerar a finalidade do método, sua aplicabilidade e a
-população avaliada. Os resultados não sustentam um vencedor universal.
-\cue{Destacar que ausência de índice não deve ser registrada como
-escore zero ou como falha do detector.}
+\slide{9}{Métodos de clusterização avaliados}{10:40--11:50}
+A comparação principal envolve três métodos de clusterização.
+O K-Means divide os valores em dois agrupamentos e busca reduzir as
+distâncias aos centros. O DBSCAN procura regiões densas e pode deixar
+pontos classificados como ruído. O método hierárquico empregado utiliza
+ligação simples em uma dimensão para investigar uma pequena cauda de
+valores elevados separada do restante. Os membros
+dessa cauda também são candidatos, quando o critério é aplicável.
 
-\slide{12}{Candidatos e concordância}{10:20--11:25}
-No grupo de referência, os três detectores foram aplicáveis. O MAD
-sinalizou 109 observações no CRPI e 852 no SRPI. A distância do K-Means
-sinalizou 99 em cada cenário, enquanto o DBSCAN não sinalizou candidatos
-com a configuração usada.
+Esses métodos constroem partições com objetivos diferentes. Por isso,
+a comparação utiliza Silhouette e Davies--Bouldin, acompanhados das
+contagens de grupos e observações efetivamente avaliadas.
 
-Todos os candidatos do K-Means também estavam no conjunto do MAD.
-Por isso, a união coincide com o MAD nesse recorte. A diferença entre
-as contagens mostra por que é útil preservar os resultados de cada
-critério, em vez de substituí-los por um rótulo definitivo.
+É importante separar avaliação dos agrupamentos de seleção de candidatos: uma
+partição bem separada não confirma erro numérico nem causa elétrica.
+\cue{Apresentar os três métodos com o mesmo destaque. Distinguir avaliação de partições e seleção de candidatos.}
 
-As taxas têm denominador de dez mil por cenário e se referem somente
-ao terminal oposto, fase A. Concordância aumenta a informação disponível
-para investigar o caso, mas não confirma erro numérico. Nenhuma dessas
-observações foi excluída automaticamente da base.
-\cue{Comparar as linhas MAD e K-Means; não ler todas as células.}
+\slide{10}{Distribuição dos máximos e adequação do modelo normal}{11:50--13:10}
+Vamos olhar primeiro o gráfico da esquerda. O eixo horizontal mostra os
+máximos em P.U.; a altura das barras mostra quantos valores caem em cada
+faixa. É uma forma de ver onde os resultados se concentram.
 
-\slide{13}{Tamanho amostral}{11:25--12:20}
-A comparação dos tamanhos mostra que a seleção de candidatos depende
-dos conjuntos observados. No CRPI, terminal oposto, fase A, a taxa da
-união foi de 16 por cento com 50 simulações, 12 por cento com cem,
-um por cento com duzentas e mil, e 1,09 por cento com dez mil.
+A curva sobreposta tem a conhecida forma de sino da distribuição normal.
+Ela foi ajustada para comparação. Com apoio no documento de Orlando P.
+Hevia sobre histogramas e curvas de excedência do ATP, investigamos
+estimar probabilidades para avaliar os casos. Esse documento orienta
+a interpretação das saídas; não garante normalidade dos máximos. Neste grupo, seu formato não acompanha
+bem os dados. O painel da direita é outra comparação com a normal:
+se o ajuste fosse adequado, os pontos tenderiam a acompanhar a reta.
 
-Ao mesmo tempo, o intervalo da probabilidade de excedência fica mais
-estreito com o aumento de N. Esse estreitamento expressa menor incerteza
-sob o modelo do intervalo, sem provar convergência independente nem
-melhora automática dos agrupamentos.
+O diagnóstico estatístico rejeitou a hipótese de normalidade em 88 dos
+90 grupos, ao nível de cinco por cento. As duas não rejeições, com
+amostras pequenas, não provam normalidade. A conclusão também não é
+que todos os dados sejam anômalos.
 
-Dez mil simulações servem como referência empírica de maior amostragem,
-sem representar verdade fundamental. As fontes não foram presumidas
-independentes ou aninhadas entre si.
-\cue{Usar a tabela como exemplo localizado; não generalizar suas
-taxas para todas as fases e terminais.}
+Média e desvio padrão continuam úteis para descrever os valores. Mas,
+para estimar a chance de ultrapassar o limiar, o resultado principal usa
+contagens observadas e um intervalo de incerteza. Não impomos a curva
+normal como se ela explicasse os dados nem a usamos para escolher
+candidatos.
+\cue{Apontar eixos e barras do histograma. Só depois explicar brevemente o painel à direita.}
 
-\slide{14}{Ensaios e limites}{12:20--13:30}
-Também foram realizados ensaios controlados no grupo de referência,
-com perturbações pontuais, contextuais e coletivas, em três taxas de
-contaminação, além da condição limpa. A divisão entre desenvolvimento
-e avaliação foi feita por blocos de execução.
+\slide{11}{Métricas principais: Silhouette e Davies--Bouldin}{13:10--14:20}
+As métricas principais da comparação são Silhouette e Davies--Bouldin.
+Silhouette compara a proximidade de cada ponto ao próprio grupo com a
+proximidade ao grupo vizinho. Valores próximos de um indicam melhor
+coesão e separação; valores próximos de zero sugerem fronteiras pouco
+nítidas, e negativos indicam que outro grupo pode ser mais próximo.
 
-Na condição limpa, o K-Means apresentou 42 falsos positivos em 5.400
-observações de avaliação, aproximadamente 0,78 por cento. O DBSCAN,
-avaliado por novidade de densidade, apresentou 391, ou 7,24 por cento.
-Essas métricas descrevem o ensaio controlado, não a identificação de
-erros reais do ATP.
+Davies--Bouldin relaciona a dispersão interna à separação entre centros.
+Nesse índice, valores menores são preferíveis. As métricas observam
+aspectos diferentes, portanto podem produzir ordenações distintas.
 
-Na grade de sensibilidade, vinte réplicas produziram Jaccard igual a um
-em relação à referência, indicando estabilidade no recorte e nas
-variações testadas. Estabilidade também não comprova acurácia causal.
-Os cinco casos escolhidos para revisão permanecem não resolvidos:
-faltam formas de onda, repetições comparáveis e revisão elétrica
-independente qualificada.
-\cue{Não equiparar o DBSCAN por novidade do ensaio ao ajuste
-exploratório realizado sobre toda a amostra.}
+Antes de comparar os números, conferimos se a partição permite o cálculo.
+Na política adotada, um único grupo ou a presença de grupo unitário
+impede a avaliação. No DBSCAN, os pontos de ruído são retirados desse
+cálculo. Um índice não aplicável não recebe zero e não significa falha
+de execução. Nenhuma das métricas mede probabilidade de erro elétrico.
+\cue{Fixar direções: Silhouette maior; Davies--Bouldin menor.}
 
-\slide{15}{Conclusão e próximos passos}{13:30--15:00}
-Retomando a pergunta de pesquisa, o trabalho demonstrou como integrar
-extração, validação, estatística e aprendizagem não supervisionada para
-organizar observações discrepantes e selecionar candidatos rastreáveis.
-A rotina foi executada de ponta a ponta nos dez arquivos, preservando
-as 204.300 observações e sua identidade até a origem.
+\slide{12}{Probabilidade de excedência e incerteza amostral}{14:20--15:40}
+Retomando a primeira pergunta: algum máximo passou de 2,3 P.U.?
+Não houve nenhuma ocorrência nos 90 grupos. A frequência observada foi
+zero, mas isso não demonstra que o evento seja impossível.
 
-Os resultados mostram por que essas etapas precisam ser avaliadas
-separadamente. A ausência de excedências não elimina a incerteza;
-a rejeição da normalidade impede impor uma referência gaussiana comum;
-e os critérios de candidatos apresentam concordâncias e discordâncias
-que devem permanecer visíveis.
+É como executar testes de software sem encontrar uma falha: isso informa
+sobre os testes realizados, mas não prova que nenhuma falha possa existir.
+A analogia serve para lembrar o limite da observação.
 
-A principal contribuição para a Ciência da Computação é a integração
-reprodutível dessas etapas com regras explícitas e evidências
-auditáveis. A identificação causal de um extremo continua em aberto.
-O pacote final registra essa pendência, ainda que as etapas
-computacionais tenham sido concluídas no escopo declarado.
+Para expressar a incerteza, calculamos um intervalo de Wilson de
+95 por cento em cada grupo. Com zero eventos em 50 simulações, o limite
+superior fica em aproximadamente 7,13 por cento. Com zero em dez mil,
+cai para aproximadamente 0,04 por cento.
 
-Como continuidade, proponho analisar formas de onda, repetir as
-simulações com passo de integração menor e submeter os candidatos
-à revisão elétrica independente qualificada. Também cabe ampliar
-os ensaios e avaliar outras distribuições por grupo.
+Esses números não são probabilidades observadas; são limites do intervalo
+estimado pelo procedimento. O resultado central é que uma amostra maior
+estreita esse intervalo, sob as condições do modelo estatístico.
+Não reunimos as 204.300 observações em um único denominador: cada grupo
+mantém seu número de simulações e seu intervalo.
+\cue{Comparar as duas linhas: mesmo zero observado, incertezas diferentes.}
 
-Concluo que a rotina fornece uma base rastreável para investigação
-técnica, respeitando a diferença entre evidência estatística e
-confirmação de causa. Agradeço à banca e fico à disposição para
-as perguntas.
-\cue{Concluir olhando para a banca. Usar pausas; não acelerar a lista
-de trabalhos futuros.}
+\slide{13}{Comparação dos índices em recortes específicos}{15:40--16:50}
+A primeira tabela compara K-Means e hierárquico no cenário com resistor,
+terminal oposto, fase A, com 200 observações. Ambos
+avaliam exatamente os mesmos valores.
+O K-Means tem Silhouette de 0,7127, acima de 0,5444 do hierárquico.
+Já Davies--Bouldin favorece o hierárquico: 0,3182 contra 0,4065.
+Portanto, os índices não apontam necessariamente o mesmo vencedor.
+
+A segunda tabela usa outro recorte: com resistor, meio da linha,
+fase A, com 50 simulações. K-Means e DBSCAN avaliam os mesmos 50 valores,
+sem exclusão de ruído pelo DBSCAN. Silhouette favorece o K-Means:
+0,7736 contra 0,7580. Davies--Bouldin favorece o DBSCAN:
+0,2381 contra 0,3928.
+
+As tabelas mostram somente pares com os dois índices aplicáveis.
+Isso facilita a leitura; a abrangência da avaliação dos três métodos
+será apresentada no próximo slide.
+
+Não devemos comparar diretamente as duas tabelas como se representassem
+o mesmo experimento. Em cada tabela, a população é a mesma entre os
+métodos comparados, mas os índices favorecem métodos diferentes.
+Os resultados não sustentam um vencedor universal.
+\cue{Comparar métodos dentro de cada tabela. Apontar denominadores.}
+
+\slide{14}{Tamanho amostral e abrangência da comparação}{16:50--18:20}
+Esta tabela examina o tamanho amostral no cenário sem resistor para o
+K-Means. Cada linha mostra as medianas dos nove grupos terminal--fase,
+não o resultado de um único agrupamento de todas as observações.
+
+Silhouette passa de 0,6491 com 50 simulações para 0,6770 com cem e
+0,6258 com dez mil. Davies--Bouldin passa de 0,4499 para 0,4663 e
+0,5032. Portanto, aumentar a amostra não melhora automaticamente a
+separação dos grupos. No K-Means, o número de agrupamentos continua fixo
+em dois.
+
+Também precisamos mostrar a abrangência da avaliação. Os índices foram
+aplicáveis aos 90 grupos do K-Means, a quatro do DBSCAN e a seis do
+hierárquico. Isso limita comparações globais: uma mediana de poucos
+grupos não representa toda a base com a mesma cobertura.
+
+Ausência de índice não significa que o método falhou. Pode significar
+que produziu uma partição sem estrutura elegível para essas métricas.
+A comparação entre tamanhos é descritiva; não demonstra efeito causal
+isolado da quantidade de simulações.
+\cue{Distinguir qualidade da partição, abrangência dos índices e tamanho amostral.}
+
+\slide{15}{Contribuições computacionais e delimitação do escopo}{18:20--19:30}
+A contribuição para a Ciência da Computação é integrar etapas que,
+isoladas, não resolvem o problema: leitura estruturada, validação,
+normalização, estatística e seleção de candidatos com rastreabilidade.
+A rotina foi executada de ponta a ponta nos dez arquivos e preservou
+as 204.300 observações.
+
+O resultado não é apenas uma lista de números altos. Cada candidato
+mantém seu contexto e os critérios que o selecionaram. Os parâmetros
+e as evidências ficam registrados para conferir e repetir a análise.
+Isso permite que uma investigação posterior volte ao dado de origem.
+
+Os resultados também separam conclusões que poderiam ser confundidas:
+zero excedências não significa impossibilidade; rejeitar normalidade
+não confirma erro; e concordância entre métodos não confirma causa.
+
+Dentro do escopo do TCC, a entrega é essa base computacional verificável.
+A decisão sobre isolamento e a exclusão automática de registros não
+fazem parte dela. O sistema organiza a evidência disponível para apoiar
+a investigação técnica.
+\cue{Retomar pergunta de pesquisa e contribuição concreta. Marco de tempo: 19:30 ao terminar.}
+
+\slide{16}{Limitações e perspectivas de continuidade}{19:30--20:00}
+O próximo passo é investigar os casos selecionados com formas de onda
+completas, repetições com passo de integração menor e revisão elétrica
+independente qualificada. Cinco casos selecionados ainda estão sem
+conclusão causal.
+
+Concluo que a rotina aponta onde investigar e preserva o caminho para
+recuperar a evidência. Obrigado. Fico à disposição para as perguntas.
+\cue{Encerrar sem abrir novo tópico. Perguntas ficam fora dos 20 minutos.}
 
 \section*{Apoio para perguntas da banca}
+
 As respostas abaixo são apoio ao estudo, fora do tempo de exposição.
 
 \subsection*{O trabalho detectou erros numéricos reais do ATP?}
@@ -378,9 +429,9 @@ ser discrepante dentro de seu grupo e permanecer abaixo de 2,3 P.U.
 \subsection*{Por que não usar três desvios padrão para detectar tensões?}
 No modelo examinado, o parâmetro de três desvios padrão pertence ao
 chaveamento estatístico de entrada. Ele não define um critério das tensões
-de saída. A seleção utiliza MAD, distância do K-Means e ruído do DBSCAN,
-sob suas regras de aplicabilidade. O escore MAD usa mediana e desvio
-absoluto mediano, não média e desvio padrão amostral.
+de saída. A seleção utiliza distância do K-Means, ruído do DBSCAN e
+cauda superior hierárquica,
+sob suas regras de aplicabilidade.
 
 \subsection*{O K-Means é melhor por ter índices em todos os grupos?}
 Não é possível concluir isso. Ele fixa duas partições na comparação,
@@ -409,38 +460,51 @@ O resultado descreve a comparação observada e não isola o efeito causal
 do resistor por um experimento pareado que controle todos os demais fatores.
 
 \subsection*{Como reproduzir e quais limites permanecem?}
-O pacote v9 registra fontes, parâmetros e artefatos em um manifesto de
+O pacote de evidências registra fontes, parâmetros e artefatos em um manifesto de
 reprodutibilidade. A aceitação vale para os dez arquivos, seus leiautes
 e pontos de verificação declarados. Novos formatos e condições exigem
 nova validação. O estado do pacote continua incompleto quanto à
 validação elétrica dos candidatos, conforme a monografia.
 
 \section*{Orientação para o ensaio}
-Cronometre pelo menos uma exposição completa com os PDFs abertos.
-Use os marcos de 5:15 ao terminar o processamento, 10:20 ao terminar
-a comparação geométrica e 13:30 ao iniciar a conclusão. Se ultrapassar
-o tempo, reduza a leitura de números secundários nos slides 8 e 12;
-preserve as ressalvas sobre incerteza, aplicabilidade e causa não
-resolvida. Os tempos são referência: ajuste a fala ao seu ritmo sem
-acrescentar conclusões ausentes na monografia.
+Cronometre a exposição com os slides abertos. Marcos: 5:00 ao terminar
+o cenário físico (slide 4), 9:00 ao terminar o processamento (slide 7),
+14:20 ao terminar a explicação das métricas (slide 11), 18:20 ao terminar
+a comparação amostral (slide 14) e 19:30 ao iniciar o encerramento (slide 16).
+Use as pausas para apontar elementos nas figuras e permitir a leitura
+das tabelas. Não preencha o tempo com detalhes de parâmetros.
+
+Se a exposição ficar curta, explique novamente o exemplo de P.U. e a
+diferença entre excedência e discrepância. Se ficar longa, reduza detalhes
+dos métodos e a leitura de números. Preserve a contextualização inicial,
+a contribuição computacional e os limites das conclusões.
+
+\section*{Detalhes técnicos reservados para perguntas}
+O K-Means usa dois
+agrupamentos e distância ao centroide acima do percentil 99 da calibração.
+O DBSCAN usa $\varepsilon=0{,}5$ no espaço padronizado e mínimo de cinco
+vizinhos, sob regras de aplicabilidade. O hierárquico sinaliza os membros
+de uma pequena cauda superior separada por uma lacuna suficiente. Esse critério também participa da seleção de candidatos; não confirma
+erro numérico.
+
+Os índices Silhouette e Davies--Bouldin avaliam separação geométrica,
+não causas elétricas. Foram aplicáveis a 90 grupos do K-Means, quatro do
+DBSCAN e seis da seleção hierárquica de cauda superior. Ausência de índice
+não equivale a detector não aplicável. Vinte réplicas na grade de
+sensibilidade tiveram Jaccard igual a um no recorte testado, evidência
+de estabilidade que não comprova causa.
+
+A taxa de candidatos no CRPI, outra ponta, fase A, foi de 0\% em
+50 simulações e 0,99\% em 10.000, sem evolução monotônica entre tamanhos. As fontes não são presumidas independentes
+ou aninhadas. A amostra maior é referência empírica, não verdade fundamental.
+O modelo elétrico é K.C. Lee não transposto, com passo de integração de
+$10\,\mu$s e janela simulada de $0{,}3$ s.
 
 \section*{Fontes para preparação}
-\begin{itemize}[itemsep=4pt]
-  \item Viana, K. D. M. Monografia em \texttt{doc/main.tex},
-    capítulos de introdução, metodologia, resultados e conclusão;
-    tabelas e figuras do pacote v9.
-  \item Dommel, H. W. \textit{Digital Computer Solution of
-    Electromagnetic Transients in Single- and Multiphase Networks}.
-    IEEE Transactions on Power Apparatus and Systems, 1969.
-  \item Chandola, V.; Banerjee, A.; Kumar, V.
-    \textit{Anomaly Detection: A Survey}. ACM Computing Surveys, 2009.
-  \item Rousseeuw, P. J. \textit{Silhouettes: A graphical aid to the
-    interpretation and validation of cluster analysis}.
-    Journal of Computational and Applied Mathematics, 1987.
-  \item Davies, D. L.; Bouldin, D. W.
-    \textit{A Cluster Separation Measure}.
-    IEEE Transactions on Pattern Analysis and Machine Intelligence, 1979.
-\end{itemize}
+A apresentação se baseia na monografia \texttt{doc/main.tex} e no pacote
+de evidências, especialmente as tabelas de estatística, probabilidade,
+comparação de métodos e ensaios controlados. Consultar as referências
+bibliográficas da monografia para os fundamentos dos métodos.
 
 \section*{Compilação}
 A partir do diretório \texttt{doc/}, execute:
@@ -448,8 +512,165 @@ A partir do diretório \texttt{doc/}, execute:
 latexmk -pdf -outdir=build/apresentacao apresentacao.tex
 latexmk -pdf -outdir=build/apresentacao roteiro_apresentacao.tex
 \end{verbatim}
-Os dois PDFs serão gerados em \texttt{doc/build/apresentacao/}.
-Os caminhos das figuras são relativos a \texttt{doc/}; mantenha
-\texttt{imagens/} e \texttt{evidence/v9/} junto das fontes.
+Os PDFs serão gerados em \texttt{doc/build/apresentacao/}.
+
+\clearpage
+\section*{Alternativa: tópicos para apresentar com suas próprias palavras}
+Use os tópicos abaixo como lembretes, na mesma ordem dos slides e com os
+mesmos tempos do roteiro. Desenvolva cada ideia com suas próprias palavras;
+não é necessário decorar frases nem ler todos os números das tabelas.
+
+\slide{1}{Abertura}{0:00--0:30}
+\begin{itemize}
+\item Apresentação pessoal, orientação e coorientação.
+\item Tema: processamento de simulações elétricas e análise de anomalias.
+\item Percurso da apresentação: contexto, solução computacional e resultados.
+\end{itemize}
+
+\slide{2}{Contextualização: energização de linhas de transmissão}{0:30--2:10}
+\begin{itemize}
+\item Linha de transmissão: transporte de energia entre subestações.
+\item Energização: conexão da linha à rede pelo fechamento de uma chave.
+\item Transitório: oscilações logo após a conexão; definir sobretensão.
+\item Relevância: isolamento precisa suportar esses esforços elétricos.
+\end{itemize}
+
+\slide{3}{Simulação elétrica e problema computacional}{2:10--3:40}
+\begin{itemize}
+\item Ensaios reais: custos e restrições operacionais.
+\item ATP simula transitórios; ATPDraw representa o circuito graficamente.
+\item Repetições com diferentes instantes de chaveamento geram arquivos LIS.
+\item Desafio: extrair, validar e comparar dados, preservando a origem.
+\item Caso discrepante exige investigação; o número isolado não revela a causa.
+\end{itemize}
+
+\slide{4}{Estudo de caso e pontos de observação}{3:40--5:00}
+\begin{itemize}
+\item Apontar na imagem: terminal de manobra, meio e terminal oposto.
+\item Linha de 80 km, tensão nominal de 138 kV e fases A, B e C.
+\item Nove máximos por execução: três locais multiplicados por três fases.
+\item Máximo e instante resumem o pico; não descrevem a forma de onda completa.
+\item Nove máximos da mesma execução não são nove execuções independentes.
+\end{itemize}
+
+\slide{5}{Cenários de simulação e composição da base}{5:00--6:10}
+\begin{itemize}
+\item Definir CRPI e SRPI: com e sem resistor de pré-inserção.
+\item Por cenário: 50, 100, 200, 1.000 e 10.000 simulações.
+\item Dez arquivos, 204.300 máximos e 90 grupos de análise ao todo.
+\item Separação por cenário, tamanho amostral, local e fase.
+\item Chaveamento também difere: comparação não isola o efeito do resistor.
+\end{itemize}
+
+\slide{6}{Normalização e interpretação dos valores de tensão}{6:10--7:40}
+\begin{itemize}
+\item P.U.: valor dividido pela referência; facilita comparar amplitudes.
+\item Exemplos: 1,0 é a referência; 1,5 é 50\% acima; 2,0 é o dobro.
+\item Base de pico fase-terra: 112.677 V; distinguir dos 138 kV entre fases.
+\item Exemplo ilustrativo: 225.354 V correspondem a 2,0 P.U.
+\item Preservar instante, local, fase e execução junto ao máximo.
+\end{itemize}
+
+\slide{7}{Fluxo de processamento e validação dos dados}{7:40--9:00}
+\begin{itemize}
+\item Ferramentas: Python, Polars, SciPy e scikit-learn.
+\item Fluxo: extração, validação, análise e rastreabilidade.
+\item Verificar ausências, duplicidades e valores inválidos antes dos modelos.
+\item Todas as 204.300 observações preservadas; nenhuma exclusão automática.
+\item Conferência com ATP: 60 valores da fase A e 90 médias;
+não equivale à auditoria individual de toda a base.
+\end{itemize}
+
+\slide{8}{Excedência e discrepância: objetivos distintos}{9:00--10:40}
+\begin{itemize}
+\item Excedência: ultrapassar o limiar fixo de 2,3 P.U.
+\item Discrepância: destoar dos demais registros do próprio grupo.
+\item Exemplo conceitual: 1,8 P.U. pode destoar de valores próximos de
+1,2 P.U. sem ultrapassar 2,3 P.U.
+\item Candidato não confirma erro; limiar não recomenda nível de isolamento.
+\end{itemize}
+
+\slide{9}{Métodos de clusterização avaliados}{10:40--11:50}
+\begin{itemize}
+\item K-Means: dois agrupamentos por proximidade aos centros.
+\item DBSCAN: agrupamentos por densidade e identificação de ruído.
+\item Hierárquico: ligação simples em uma dimensão; descrição de uma
+cauda superior separada dos demais valores.
+\item Comparar partições por Silhouette e Davies--Bouldin.
+\item Boa separação geométrica não comprova erro numérico ou causa elétrica.
+\end{itemize}
+
+\slide{10}{Distribuição dos máximos e adequação do modelo normal}{11:50--13:10}
+\begin{itemize}
+\item Ler o histograma: máximos no eixo horizontal, frequência nas barras.
+\item Curva normal e painel à direita: comparações de adequação do modelo.
+\item Referência de Hevia orienta a interpretação das saídas do ATP;
+não garante normalidade.
+\item Normalidade rejeitada em 88 de 90 grupos a 5\%; duas não rejeições
+não provam normalidade.
+\item Média e desvio padrão permanecem descritivos; excedência principal
+estimada por frequência empírica, sem detector baseado na normal.
+\end{itemize}
+
+\slide{11}{Métricas principais: Silhouette e Davies--Bouldin}{13:10--14:20}
+\begin{itemize}
+\item Silhouette: coesão e separação; quanto maior, melhor.
+\item Davies--Bouldin: dispersão relativa à separação; quanto menor, melhor.
+\item Métricas podem favorecer partições diferentes.
+\item Política adotada: um grupo ou grupo unitário impede o cálculo;
+ruído do DBSCAN fica fora da população avaliada.
+\item Não aplicável não significa zero, falha de execução ou erro elétrico.
+\end{itemize}
+
+\slide{12}{Probabilidade de excedência e incerteza amostral}{14:20--15:40}
+\begin{itemize}
+\item Zero máximos acima de 2,3 P.U. nos 90 grupos.
+\item Zero observado não demonstra impossibilidade do evento.
+\item Wilson de 95\%: limite superior de 7,13\% com 50 simulações e
+aproximadamente 0,04\% com 10.000, ambos com zero eventos.
+\item Mesma frequência observada, menor incerteza com amostra maior.
+\item Calcular por grupo; não usar 204.300 como denominador único.
+\end{itemize}
+
+\slide{13}{Comparação dos índices em recortes específicos}{15:40--16:50}
+\begin{itemize}
+\item Primeira tabela: mesmo recorte, índices favorecem métodos diferentes
+entre K-Means e hierárquico.
+\item Segunda tabela: com resistor, meio da linha, fase A, 50 simulações;
+K-Means e DBSCAN avaliam os mesmos 50 valores, sem exclusão de ruído.
+\item Silhouette favorece K-Means; Davies--Bouldin favorece DBSCAN.
+\item Mostrar somente pares com índices aplicáveis; cobertura dos três
+métodos será discutida no próximo slide.
+\item Comparar dentro de cada tabela, conferir denominadores;
+não há vencedor universal.
+\end{itemize}
+
+\slide{14}{Tamanho amostral e abrangência da comparação}{16:50--18:20}
+\begin{itemize}
+\item Tabela: medianas de nove grupos terminal--fase do K-Means sem resistor.
+\item Mais simulações não melhoram automaticamente a separação geométrica.
+\item Cobertura dos índices: K-Means 90/90, DBSCAN 4/90, hierárquico 6/90.
+\item Medianas de poucos grupos não representam a base inteira.
+\item Comparação descritiva entre fontes; não isola efeito causal do tamanho
+amostral nem demonstra convergência por si só.
+\end{itemize}
+
+\slide{15}{Contribuições computacionais e delimitação do escopo}{18:20--19:30}
+\begin{itemize}
+\item Integração de dez arquivos em base estruturada e verificável.
+\item Rastreabilidade dos candidatos e critérios explícitos de seleção.
+\item Reprodução apoiada por parâmetros registrados e pacote de evidências.
+\item Contribuição: apoiar investigação dos resultados de simulação.
+\item Escopo exclui recomendação de isolamento e exclusão automática de dados.
+\end{itemize}
+
+\slide{16}{Limitações e perspectivas de continuidade}{19:30--20:00}
+\begin{itemize}
+\item Cinco casos selecionados ainda sem conclusão causal.
+\item Próximos passos: formas de onda completas, menor passo de integração
+e revisão elétrica independente qualificada.
+\item Mensagem final: seleção de casos com evidências preservadas.
+\item Agradecimento e abertura para perguntas.
+\end{itemize}
 
 \end{document}

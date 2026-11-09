@@ -1,5 +1,5 @@
-Analise comparativa de cada método 
+Procurar o maximo de linearidade e encadeamento de ideias
 
-Possibilidade de validação utilizando probabilidade do caso (Nao foi possivel devido a cada medicao seguir uma distribuicao diferente)
+Evitar repetições desnecessárias de ideias
 
-Procurar metricas que possam ser utilizadas para afirmar que os candidatos são confiáveis, atualmente utizamos 
+Retomar de forma breve o objetivo na conclusão, onde foi possivel chegar com o trabalho e o que ainda pode ser explorado

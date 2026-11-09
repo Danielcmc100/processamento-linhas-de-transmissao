@@ -77,15 +77,15 @@ _METHOD_COLUMNS = (
     "terminal_position_km",
     "phase",
     "event_definition",
-    "mad_flag",
-    "mad_applicability",
-    "mad_reason",
     "flag",
     "applicability",
     "reason",
     "dbscan_flag",
     "dbscan_applicability",
     "dbscan_reason",
+    "hierarchical_flag",
+    "hierarchical_applicability",
+    "hierarchical_reason",
     "method_agreement",
     "applicable_method_count",
     "method_disagreement",
@@ -224,7 +224,7 @@ def build_method_comparison_matrix(
             "multiplicity_qualification"
         ),
         lit(
-            "mad_modified_z;kmeans_distance;dbscan_noise",
+            "kmeans_distance;dbscan_noise;hierarchical_upper_tail",
             dtype=String,
         ).alias("compared_methods"),
     )
