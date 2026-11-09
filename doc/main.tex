@@ -145,10 +145,10 @@
 \sobrenome{Mattos Viana}
 \nome{Kleber Daniel}% APENAS O PRIMEIRO NOME SEM SOBRENOME
 \palavraschave{%
+Energização de linhas de transmissão,
 Sobretensões transitórias,
 Detecção de anomalias,
-Aprendizagem de máquina,
-ATP/EMTP,
+Aprendizagem não supervisionada,
 Análise probabilística.
 }
 
@@ -372,16 +372,34 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
   \item[ANAREDE] Programa de Análise de Redes Elétricas
   \item[ATP] \textit{Alternative Transients Program}
   \item[ATPDraw] Interface gráfica para elaboração de modelos do ATP
+  \item[CEPEL] Centro de Pesquisas de Energia Elétrica
   \item[CRPI] Com resistor de pré-inserção
+  \item[CSV] Valores separados por vírgulas (\textit{comma-separated values})
+  \item[DB] Davies--Bouldin
   \item[DBSCAN] \textit{Density-Based Spatial Clustering of Applications with Noise}
   \item[EMTP] \textit{Electromagnetic Transients Program}
+  \item[FN] Falsos negativos
+  \item[FP] Falsos positivos
   \item[IA] Inteligência Artificial
+  \item[IC] Intervalo de confiança
+  \item[IQR] Amplitude interquartil (\textit{interquartile range})
+  \item[LIS] Arquivo de listagem de saída do ATP (\texttt{.lis})
   \item[LT] Linha de transmissão
   \item[MAD] Desvio absoluto mediano (\textit{median absolute deviation})
+  \item[MATLAB] \textit{Matrix Laboratory}
+  \item[NA] Não aplicável
+  \item[NaN] \textit{Not a Number}
   \item[ONS] Operador Nacional do Sistema Elétrico
   \item[PAR/PEL] Plano da Operação Elétrica de Médio Prazo
   \item[P.U.] Por unidade (\textit{per unit})
+  \item[PUC-Rio] Pontifícia Universidade Católica do Rio de Janeiro
+  \item[RMS] Valor eficaz (\textit{root mean square})
+  \item[SHA-256] \textit{Secure Hash Algorithm} com saída de 256 bits
+  \item[SOM] Mapas auto-organizáveis (\textit{self-organizing maps})
   \item[SRPI] Sem resistor de pré-inserção
+  \item[TCC] Trabalho de conclusão de curso
+  \item[VN] Verdadeiros negativos
+  \item[VP] Verdadeiros positivos
 \end{siglas}
 % ---
 
@@ -437,7 +455,7 @@ Este trabalho desenvolveu uma rotina computacional para extrair, organizar e ana
 A operação de sistemas elétricos de potência exige elevado grau de confiabilidade, especialmente em processos de energização de linhas de transmissão, nos quais podem surgir sobretensões transitórias capazes de comprometer a coordenação de isolamento dos equipamentos. 
 Em sistemas de transmissão em alta tensão, os fenômenos transitórios associados às manobras de energização e religamento apresentam curta duração, porém podem atingir amplitudes significativas, influenciando diretamente a definição dos níveis de isolamento, a especificação de equipamentos e os critérios de segurança operacional \cite{iec6007112019,iec6007122023,marin2025}.
 
-Nesse contexto, ferramentas de simulação eletromagnética são amplamente empregadas para antecipar comportamentos do sistema e subsidiar decisões de projeto. Entre essas ferramentas, o \textit{Alternative Transients Program/Electromagnetic Transients Program} (ATP/EMTP) se destaca por permitir a modelagem de transitórios eletromagnéticos em linhas de transmissão, considerando fenômenos dependentes da frequência e diferentes condições de manobra \cite{dommel1969,marti1982}.
+Nesse contexto, ferramentas de simulação eletromagnética são amplamente empregadas para antecipar comportamentos do sistema e subsidiar decisões de projeto. Entre essas ferramentas, o ATP (\textit{Alternative Transients Program}), associado à família EMTP (\textit{Electromagnetic Transients Program}), se destaca por permitir a modelagem de transitórios eletromagnéticos em linhas de transmissão, considerando fenômenos dependentes da frequência e diferentes condições de manobra \cite{dommel1969,marti1982}.
 A utilização de simulações computacionais é particularmente relevante nesse tipo de estudo, uma vez que os valores de sobretensão podem depender de fatores como o instante de fechamento dos polos do disjuntor, a configuração física da rede, os parâmetros elétricos da linha, a distância entre circuitos paralelos e as condições iniciais do sistema \cite{mestas2010,marin2025}.
 
 % Apesar de sua relevância técnica, a análise dos resultados gerados pelo ATP ainda apresenta dificuldades importantes. Os arquivos de saída podem conter grande quantidade de informações, o que torna a inspeção manual lenta, repetitiva e suscetível a interpretações inconsistentes.
@@ -457,7 +475,7 @@ A detecção de anomalias em bases de dados de sistemas elétricos tem sido ampl
 
 A justificativa deste trabalho está relacionada à necessidade de tornar a análise de resultados de simulações de energização mais reprodutível, objetiva e tecnicamente consistente. Em estudos com grande quantidade de cenários, a inspeção manual dos arquivos de saída do ATP tende a aumentar o tempo de análise e a possibilidade de erros na organização dos dados. Além disso, a utilização direta do maior valor observado como única referência pode conduzir a interpretações excessivamente conservadoras quando esse valor corresponde a uma ocorrência isolada ou pouco representativa do conjunto analisado.
 
-Parte-se da expectativa de que a combinação entre métodos estatísticos clássicos, análise probabilística e técnicas de aprendizagem de máquina não supervisionada contribua para tornar a avaliação mais robusta, reduzindo a subjetividade da inspeção manual e oferecendo suporte mais consistente à tomada de decisão em estudos de coordenação de isolamento. Algoritmos como K-Means e DBSCAN podem auxiliar, respectivamente, na identificação de agrupamentos predominantes e de regiões de baixa densidade associadas a observações atípicas \cite{ardebili2024}. Assim, além de contribuir para a confiabilidade técnica do processo analítico, a proposta pode favorecer a otimização de investimentos, ao evitar superdimensionamentos motivados por eventos sem relevância prática.
+Parte-se da expectativa de que a combinação entre métodos estatísticos clássicos, análise probabilística e técnicas de aprendizagem de máquina não supervisionada contribua para tornar a avaliação mais robusta, reduzindo a subjetividade da inspeção manual e oferecendo suporte mais consistente à tomada de decisão em estudos de coordenação de isolamento. Algoritmos como K-Means e DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}) podem auxiliar, respectivamente, na identificação de agrupamentos predominantes e de regiões de baixa densidade associadas a observações atípicas \cite{ardebili2024}. Assim, além de contribuir para a confiabilidade técnica do processo analítico, a proposta pode favorecer a otimização de investimentos, ao evitar superdimensionamentos motivados por eventos sem relevância prática.
 
 A contribuição deste trabalho consistiu no desenvolvimento de uma rotina computacional em Python capaz de integrar a extração, a organização, o tratamento estatístico, a análise probabilística e a geração de evidências analíticas sobre os dados obtidos no ATP. A rotina identifica e organiza observações discrepantes como candidatos para investigação posterior, preservando sua rastreabilidade até a simulação de origem.
 
@@ -569,17 +587,15 @@ No presente trabalho, esses transitórios foram analisados a partir dos valores 
 
 O \textit{Alternative Transients Program} (ATP) é uma ferramenta computacional utilizada para a simulação de transitórios eletromagnéticos em sistemas elétricos de potência. Por meio da representação matemática dos componentes do sistema, o programa permite analisar o comportamento de linhas, transformadores, disjuntores, fontes, cargas e demais elementos submetidos a diferentes condições de operação. Em estudos de energização, o ATP possibilita executar múltiplas simulações considerando diferentes instantes de chaveamento e diferentes condições do sistema. A partir dessas simulações, podem ser obtidas as sobretensões máximas em cada fase e em diferentes pontos de monitoramento da linha.
 
-De forma complementar, Leão \cite{leao2022} apresenta uma aplicação do ATP na repotencialização de uma linha de transmissão em Manaus-AM, mostrando que o simulador pode ser utilizado para modelar configurações reais de rede e avaliar alternativas técnicas de operação e planejamento. Essa aplicação reforça a importância do ATP como ferramenta de apoio a estudos de linhas de transmissão, especialmente em cenários nos quais a simulação computacional permite avaliar diferentes configurações do sistema e subsidiar decisões técnicas de projeto.
+De forma complementar, Leão \cite{leao2022} apresenta uma aplicação do ATP na repotencialização de uma linha de transmissão em Manaus, no Amazonas, mostrando que o simulador pode ser utilizado para modelar configurações reais de rede e avaliar alternativas técnicas de operação e planejamento. Essa aplicação reforça a importância do ATP como ferramenta de apoio a estudos de linhas de transmissão, especialmente em cenários nos quais a simulação computacional permite avaliar diferentes configurações do sistema e subsidiar decisões técnicas de projeto.
 
 % \section{Extração e organização dos dados do ATP}
 
 Apesar de sua utilidade, a análise dos arquivos gerados pelo ATP pode ser trabalhosa quando há grande volume de simulações, pois os resultados podem estar distribuídos em arquivos extensos, contendo valores numéricos, identificação de fases, pontos de medição e informações de cada execução. Nesse contexto, a automatização da leitura dos arquivos por meio de um \textit{parser} contribui para reduzir o esforço manual, padronizar a extração dos dados e diminuir a possibilidade de erros na organização das informações. Além disso, como as múltiplas simulações produzem um conjunto de valores máximos de tensão, torna-se necessário aplicar procedimentos estatísticos e visuais que permitam compreender a distribuição dos dados, identificar valores extremos e apoiar a interpretação técnica dos resultados.
 
-O código-fonte desenvolvido para o processamento dos dados das linhas de transmissão está disponível em repositório público no GitHub \cite{viana2026repositorio}. A automatização de estudos envolvendo o ATP também é discutida por Guidi-Venerdini e Pérez-Yauli \cite{guidi2013}, que desenvolveram uma rotina em MATLAB para manipular arquivos-base do ATP e executar simulações sistemáticas em uma linha de transmissão. Embora o foco dos autores esteja na simulação de faltas, o trabalho evidencia a relevância de procedimentos automatizados para a construção de bases de dados, redução do esforço manual e diminuição de erros no tratamento de grandes volumes de resultados.
+O código-fonte desenvolvido para o processamento dos dados das linhas de transmissão está disponível em repositório público no GitHub \cite{viana2026repositorio}. A automatização de estudos envolvendo o ATP também é discutida por Guidi-Venerdini e Pérez-Yauli \cite{guidi2013}, que desenvolveram uma rotina em MATLAB (\textit{Matrix Laboratory}) para manipular arquivos-base do ATP e executar simulações sistemáticas em uma linha de transmissão. Embora o foco dos autores esteja na simulação de faltas, o trabalho evidencia a relevância de procedimentos automatizados para a construção de bases de dados, redução do esforço manual e diminuição de erros no tratamento de grandes volumes de resultados.
 
-De forma complementar, Colqui et al. \cite{colqui2022} discutem a implementação de modelos de linhas de transmissão no ATP-EMTP para estudos de transitórios eletromagnéticos, comparando diferentes abordagens de representação, como o modelo JMarti, o \textit{Universal Line Model} e uma implementação modificada do \textit{Folded Line Equivalent}. Os autores avaliam esses modelos em condições de circuito aberto, energização e ocorrência de faltas, evidenciando a importância da escolha adequada da representação da linha para a obtenção de respostas transitórias coerentes. A Figura~\ref{fig:linha_colqui} apresenta um exemplo de sistema de linha de transmissão utilizado nesse tipo de simulação, ilustrando a configuração empregada pelos autores para analisar o comportamento transitório do sistema.
-
-Embora o foco do presente trabalho não seja a formulação de novos modelos de linha, a figura reforça a importância da modelagem adequada do sistema elétrico como etapa fundamental para a qualidade dos dados posteriormente analisados.
+De forma complementar, Colqui et al. \cite{colqui2022} discutem a implementação de modelos de linhas de transmissão no ATP-EMTP para estudos de transitórios eletromagnéticos, comparando diferentes abordagens de representação, como o modelo JMarti, o \textit{Universal Line Model} e uma implementação modificada do \textit{Folded Line Equivalent}. Os autores avaliam esses modelos em condições de circuito aberto, energização e ocorrência de faltas, evidenciando a importância da escolha adequada da representação da linha para a obtenção de respostas transitórias coerentes. A Figura~\ref{fig:linha_colqui} apresenta um exemplo de sistema de linha de transmissão utilizado nesse tipo de simulação, ilustrando a configuração empregada pelos autores para analisar o comportamento transitório do sistema. Embora a formulação de novos modelos de linha esteja fora do escopo deste trabalho, essa discussão fundamenta a importância da modelagem adequada para a qualidade dos dados posteriormente analisados.
 
 \begin{figure}[htbp]
     \centering
@@ -596,16 +612,18 @@ A partir dos dados extraídos dos arquivos do ATP, a análise estatística permi
 
 Medidas como média, desvio padrão, mínimo, máximo, quartis e percentis são importantes para compreender o comportamento geral das tensões simuladas. A média fornece uma medida representativa do conjunto analisado, enquanto o desvio padrão expressa o grau de dispersão dos dados em relação a essa média.
 
-O ajuste de uma distribuição normal descreve uma referência probabilística cuja adequação deve ser examinada, pois máximos de tensão não são necessariamente gaussianos. A média e o desvio padrão descrevem posição e dispersão; a identificação de candidatos neste trabalho utiliza critérios explícitos de desvio absoluto mediano (MAD, do inglês \textit{median absolute deviation}), distância do K-Means e ruído do DBSCAN, apresentados na metodologia.
+O ajuste de uma distribuição normal descreve uma referência probabilística cuja adequação deve ser examinada, pois máximos de tensão não são necessariamente gaussianos. A média e o desvio padrão descrevem posição e dispersão; a identificação de candidatos neste trabalho utiliza critérios explícitos de MAD (desvio absoluto mediano, do inglês \textit{median absolute deviation}), distância do K-Means e ruído do DBSCAN, apresentados na metodologia.
 
-Como complemento, podem ser utilizados quartis, percentis e a amplitude interquartil, conhecida como IQR, definida por
+Como complemento, podem ser utilizados quartis, percentis e a IQR (amplitude interquartil, do inglês \textit{interquartile range}), definida na Equação~\ref{eq:iqr}:
 
 \begin{equation}
+\label{eq:iqr}
 IQR = Q_3 - Q_1,
 \end{equation}
-em que $Q_1$ e $Q_3$ representam, respectivamente, o primeiro e o terceiro quartil. Um critério exploratório frequentemente associado ao boxplot considera como candidatos a valores atípicos os pontos situados fora do intervalo
+em que $Q_1$ e $Q_3$ representam, respectivamente, o primeiro e o terceiro quartil. Um critério exploratório frequentemente associado ao boxplot considera como candidatos a valores atípicos os pontos situados fora do intervalo definido na Equação~\ref{eq:limites-iqr}:
 
 \begin{equation}
+\label{eq:limites-iqr}
 [Q_1 - 1{,}5IQR, Q_3 + 1{,}5IQR].
 \end{equation}
 Esse procedimento não substitui a interpretação física do fenômeno, mas oferece uma referência adicional para identificar observações que se afastam da região central dos dados.
@@ -652,16 +670,19 @@ Os bigodes alcançam os valores observados mais extremos dentro dos
 limites tracejados; pontos externos não são erros confirmados.}
 \end{figure}
 
-A análise probabilística complementa a descrição estatística ao permitir estimar a frequência de ocorrência de eventos críticos. Considerando $N$ simulações e um limiar de sobretensão $v$, a probabilidade empírica de excedência pode ser estimada por
+A análise probabilística complementa a descrição estatística ao permitir estimar a frequência de ocorrência de eventos críticos. Considerando $N$ simulações e um limiar de sobretensão $v$, a probabilidade empírica de excedência é estimada pela Equação~\ref{eq:excedencia-empirica}:
 
 \begin{equation}
+\label{eq:excedencia-empirica}
 \hat{P}(V > v)=\frac{n_v}{N},
 \end{equation}
 em que $n_v$ representa o número de observações cujo valor de sobretensão
 $V$ excede o limiar estabelecido. Neste trabalho, a incerteza dessa
-proporção é representada pelo intervalo bilateral de Wilson:
+proporção é representada pelo IC (intervalo de confiança) bilateral de Wilson, definido na
+Equação~\ref{eq:intervalo-wilson}:
 
 \begin{equation}
+\label{eq:intervalo-wilson}
 IC_{\mathrm{Wilson}} =
 \frac{\hat{p}+\dfrac{z^2}{2N}
 \;\pm\; z\sqrt{\dfrac{\hat{p}(1-\hat{p})}{N}
@@ -687,7 +708,7 @@ centroides; a Figura~\ref{fig:kmeans-mahon} ilustra a separação entre grupos;
 e a Figura~\ref{fig:dbscan-comparacao} contrasta critérios de densidade e de
 proximidade. São exemplos bidimensionais, sem resultados das simulações deste
 trabalho. A análise implementada utiliza um único atributo, o máximo de tensão
-em P.U., separadamente por terminal e fase; formas espaciais em duas dimensões
+em P.U. (por unidade, do inglês \textit{per unit}), separadamente por terminal e fase; formas espaciais em duas dimensões
 não demonstram desempenho dos métodos nessa análise unidimensional.
 
 A Figura~\ref{fig:nuvem-clusters-anomalias} apresenta uma representação esquemática de uma nuvem de pontos com agrupamentos e possíveis observações anômalas. Os centroides representam os centros dos grupos, conceito associado a métodos particionais como o K-Means, enquanto os pontos afastados das regiões de maior concentração podem ser analisados como candidatos a valores atípicos.
@@ -766,7 +787,7 @@ No contexto deste trabalho, destaca-se a aprendizagem não supervisionada, pois 
 
 A aplicação de técnicas de aprendizagem de máquina em sistemas elétricos tem crescido em diferentes frentes, incluindo previsão de carga, identificação de falhas, análise de estabilidade, monitoramento de redes inteligentes, detecção de ataques cibernéticos e reconhecimento de padrões anômalos em dados operacionais. Guato Burgos, Morato e Vizcaino Imacaña \cite{guato2024} apresentam uma revisão sobre abordagens de detecção de anomalias em redes elétricas inteligentes baseadas em técnicas de Inteligência Artificial, destacando aplicações relacionadas a falhas, irregularidades em medições, ataques cibernéticos e padrões operacionais incomuns. Aghazadeh Ardebili et al. \cite{ardebili2024} realizam uma revisão sistemática sobre detecção de anomalias em tempo real em sistemas energéticos complexos, destacando sua importância para a resiliência operacional dessas infraestruturas. Khaledian et al. \cite{khaledian2021} aplicam métodos como Isolation Forest, K-Means e LoOP à detecção e classificação de anomalias em dados sincrofasoriais em tempo real, enquanto Ren, Hou e Etingov \cite{ren2018} investigam a detecção de anomalias no contexto da estimação de estado em sistemas de potência. Gillioz et al. \cite{gillioz2026}, por sua vez, aplicam algoritmos de aprendizagem de máquina à detecção de anomalias em dados operacionais de redes elétricas de grande porte e alta tensão, evidenciando que métodos baseados em dados podem apoiar a identificação de comportamentos incomuns em sistemas de transmissão.
 
-Embora esses estudos não estejam diretamente voltados à análise de sobretensões transitórias geradas por simulações no ATP, eles fornecem suporte conceitual e metodológico para a proposta deste trabalho, pois a identificação de anomalias em sobretensões simuladas compartilha desafios semelhantes, como tratamento de grandes volumes de dados, reconhecimento de padrões predominantes e distinção entre valores extremos relevantes e observações discrepantes.
+Embora esses estudos não estejam diretamente voltados à análise de sobretensões transitórias geradas por simulações no ATP, eles fornecem suporte conceitual e metodológico para a proposta deste trabalho. Os desafios compartilhados incluem o tratamento de grandes volumes de dados, o reconhecimento de padrões predominantes e a identificação de observações discrepantes. No caso das sobretensões simuladas, a relevância física dos valores extremos exige investigação complementar, além da sinalização estatística.
 
 \section{Aprendizagem de máquina não supervisionada e clusterização}
 
@@ -776,14 +797,15 @@ Entre os métodos de aprendizagem não supervisionada, os algoritmos de clusteri
 
 O K-Means é um algoritmo clássico de clusterização não supervisionada. O método foi introduzido por MacQueen \cite{macqueen1967}, no contexto da classificação e análise de observações multivariadas, com o objetivo de particionar uma população ou amostra em $k$ conjuntos com baixa variabilidade interna. Posteriormente, o procedimento iterativo de atribuição de pontos aos representantes mais próximos e atualização desses representantes foi associado ao algoritmo de Lloyd, originalmente formulado no contexto de quantização por mínimos quadrados \cite{lloyd1982}.
 
-O K-Means divide um conjunto de dados em $k$ agrupamentos, sendo $k$ definido previamente pelo usuário. Cada agrupamento é representado por um centroide, calculado como a média das observações pertencentes ao grupo. O algoritmo alterna duas etapas principais: atribuição de cada ponto ao centroide mais próximo e atualização dos centroides com base na média dos pontos atribuídos a cada grupo. Esse processo se repete até a estabilização dos agrupamentos. Matematicamente, o K-Means procura minimizar a soma das distâncias quadráticas entre cada observação e o centroide do grupo ao qual ela pertence:
+O K-Means divide um conjunto de dados em $k$ agrupamentos, sendo $k$ definido previamente pelo usuário. Cada agrupamento é representado por um centroide, calculado como a média das observações pertencentes ao grupo. O algoritmo alterna duas etapas principais: atribuição de cada ponto ao centroide mais próximo e atualização dos centroides com base na média dos pontos atribuídos a cada grupo. Esse processo se repete até a estabilização dos agrupamentos. Matematicamente, o K-Means procura minimizar a soma das distâncias quadráticas entre cada observação e o centroide do grupo ao qual ela pertence, conforme a função objetivo da Equação~\ref{eq:objetivo-kmeans}:
 
 \begin{equation}
+\label{eq:objetivo-kmeans}
 J = \sum_{j=1}^{k} \sum_{x_i \in C_j} |x_i - \mu_j|^2,
 \end{equation}
 em que $C_j$ representa o $j$-ésimo agrupamento, $\mu_j$ é o centroide desse agrupamento e $x_i$ representa uma observação da base de dados \cite{bishop2006}.
 
-Mahon e Lapata \cite{mahon2025} destacam que, apesar de sua simplicidade, o K-Means permanece como um dos algoritmos de clusterização mais utilizados, devido à sua rapidez, à garantia de convergência, à existência de um parâmetro de fácil interpretação e ao desempenho competitivo em relação a métodos mais complexos.
+Mahon e Lapata \cite{mahon2025} destacam que o K-Means permanece como um dos algoritmos de clusterização mais utilizados, apesar de sua simplicidade. Entre os motivos apontados estão a rapidez, a garantia de convergência, a existência de um parâmetro de fácil interpretação e o desempenho competitivo em relação a métodos mais complexos.
 
 Entretanto, os autores também ressaltam como limitação a necessidade de definir previamente o número de agrupamentos $k$. Essa limitação é relevante para este trabalho, pois, em bases de dados provenientes de simulações de transitórios eletromagnéticos, nem sempre se conhece previamente a quantidade ideal de padrões ou grupos de comportamento existentes.
 
@@ -806,9 +828,10 @@ No presente trabalho, o K-Means foi utilizado como ferramenta exploratória para
 
 O DBSCAN, sigla para \textit{Density-Based Spatial Clustering of Applications with Noise}, foi proposto por Ester et al. \cite{ester1996} para identificar agrupamentos em grandes bases de dados espaciais com presença de ruído. Diferentemente do K-Means, o DBSCAN não exige a definição prévia do número de grupos. O método baseia-se na densidade local dos pontos, permitindo identificar agrupamentos com formatos arbitrários e classificar como ruído os pontos localizados em regiões pouco densas.
 
-O algoritmo utiliza dois parâmetros principais: $\varepsilon$, que define o raio de vizinhança ao redor de um ponto, e \textit{MinPts}, que indica o número mínimo de pontos necessário para que uma região seja considerada densa. A vizinhança de raio $\varepsilon$ de um ponto $p$ é definida por
+O algoritmo utiliza dois parâmetros principais: $\varepsilon$, que define o raio de vizinhança ao redor de um ponto, e \textit{MinPts}, que indica o número mínimo de pontos necessário para que uma região seja considerada densa. A vizinhança de raio $\varepsilon$ de um ponto $p$ é definida na Equação~\ref{eq:vizinhanca-dbscan}:
 
 \begin{equation}
+\label{eq:vizinhanca-dbscan}
 N_{\varepsilon}(p)={q \in D \mid dist(p,q)\leq \varepsilon},
 \end{equation}
 em que $D$ representa a base de dados e $dist(p,q)$ corresponde à função de distância entre os pontos $p$ e $q$.
@@ -817,7 +840,7 @@ Com base nessa vizinhança, os pontos são classificados como centrais, de borda
 
 O funcionamento do DBSCAN ocorre pela expansão de agrupamentos: inicialmente, o algoritmo seleciona um ponto ainda não visitado e verifica sua vizinhança; se o ponto satisfaz a condição de ponto central, inicia-se um novo agrupamento, incorporando todos os pontos direta ou indiretamente alcançáveis por densidade; caso contrário, o ponto pode ser classificado como ruído. O processo é repetido até que todos os pontos da base tenham sido avaliados.
 
-Mumtaz e Duraiswamy \cite{mumtaz2010} comparam o desempenho do DBSCAN, do K-Means e dos Mapas Auto-Organizáveis de Kohonen, conhecidos como SOM, em bases sintéticas espaciais. A comparação evidencia que o DBSCAN apresenta melhor desempenho em conjuntos de dados com formatos arbitrários, não convexos e estruturas espiraladas. Enquanto o K-Means tende a separar os dados em grupos influenciados pela proximidade aos centroides, o DBSCAN preserva melhor a forma natural dos agrupamentos, pois sua definição de agrupamento depende da densidade local dos pontos. A Figura~\ref{fig:dbscan-comparacao} apresenta uma comparação entre os resultados de clusterização obtidos por SOM, K-Means e DBSCAN em bases sintéticas bidimensionais.
+Mumtaz e Duraiswamy \cite{mumtaz2010} comparam o desempenho do DBSCAN, do K-Means e dos SOM (mapas auto-organizáveis, do inglês \textit{self-organizing maps}) de Kohonen, em bases sintéticas espaciais. A comparação evidencia que o DBSCAN apresenta melhor desempenho em conjuntos de dados com formatos arbitrários, não convexos e estruturas espiraladas. Enquanto o K-Means tende a separar os dados em grupos influenciados pela proximidade aos centroides, o DBSCAN preserva melhor a forma natural dos agrupamentos, pois sua definição de agrupamento depende da densidade local dos pontos. A Figura~\ref{fig:dbscan-comparacao} apresenta uma comparação entre os resultados de clusterização obtidos por SOM, K-Means e DBSCAN em bases sintéticas bidimensionais.
 
 Essa característica é importante para a detecção de anomalias, pois o DBSCAN não força todos os pontos a pertencerem a algum grupo. Pontos situados em regiões de baixa densidade podem ser classificados como ruído, tornando o método adequado para identificar observações que não seguem o comportamento predominante da base de dados. No contexto deste trabalho, o DBSCAN foi utilizado para auxiliar na identificação de sobretensões máximas isoladas em relação ao conjunto analisado. Entretanto, uma observação classificada como ruído não deve ser descartada automaticamente. Sua interpretação deve considerar a análise estatística, os parâmetros da simulação e a coerência física do fenômeno transitório.
 
@@ -827,7 +850,7 @@ Essa característica é importante para a detecção de anomalias, pois o DBSCAN
 \label{fig:dbscan-comparacao}
 \includegraphics[width=\textwidth]{dbscan.jpg}
 
-\legend{Fonte: adaptado de \citeauthoronline{mumtaz2010}, \citeyear{mumtaz2010}, reproduzido em documento da Biblioteca Digital Maxwell/PUC-Rio \citeauthoronline{maxwell2014}, \citeyear{maxwell2014}.}
+\legend{Fonte: adaptado de \citeauthoronline{mumtaz2010}, \citeyear{mumtaz2010}, reproduzido em documento da Biblioteca Digital Maxwell da PUC-Rio (Pontifícia Universidade Católica do Rio de Janeiro) \citeauthoronline{maxwell2014}, \citeyear{maxwell2014}.}
 \end{figure}
 
 Apesar de suas vantagens, o DBSCAN apresenta limitações. A escolha inadequada de $\varepsilon$ ou de \textit{MinPts} pode levar à fragmentação excessiva dos agrupamentos ou à classificação indevida de muitos pontos como ruído. Além disso, quando os dados apresentam regiões com densidades muito diferentes, o uso de parâmetros globais pode dificultar a identificação correta dos agrupamentos. Por isso, sua aplicação deve ser acompanhada de análise exploratória, visualização gráfica e validação técnica.
@@ -842,29 +865,29 @@ modelo de rede nem realizar um estudo completo de planejamento elétrico, mas
 registrar a origem dos dados, as simplificações adotadas e as variáveis que
 podem influenciar as sobretensões obtidas. Essa descrição estabelece a
 rastreabilidade entre o cenário elétrico, os arquivos produzidos pelo ATP e a
-base posteriormente processada pela aplicação em Python. O nível de detalhamento foi limitado às decisões necessárias para compreender e reproduzir o processo de geração dos dados. Assim, são apresentados o caso de referência, a redução da rede, a representação dos componentes no ATPDraw,
+base posteriormente processada pela aplicação em Python. O nível de detalhamento foi limitado às decisões necessárias para compreender e reproduzir o processo de geração dos dados. Assim, são apresentados o caso de referência, a redução da rede, a representação dos componentes no ATPDraw (interface gráfica para elaboração de modelos do ATP),
 o modelo da linha de transmissão e os pontos de observação, sem aprofundar as
 formulações matemáticas próprias dos programas elétricos empregados.
 
 \section{Dados de entrada e cenário de referência}
 
 O ponto de partida foi um caso do Sistema Interligado Nacional disponibilizado
-pelo Operador Nacional do Sistema Elétrico (ONS) para o ciclo PAR/PEL
-2027--2031. Foi selecionado o cenário de inverno de 2031, no patamar de carga
+pelo ONS (Operador Nacional do Sistema Elétrico) para o ciclo 2027--2031
+do PAR/PEL (Plano da Operação Elétrica de Médio Prazo). Foi selecionado o cenário de inverno de 2031, no patamar de carga
 máxima noturna. A base de fluxo de potência foi fornecida no formato do
-ANAREDE, enquanto o caso de curto-circuito utilizado corresponde ao arquivo
+ANAREDE (Programa de Análise de Redes Elétricas), enquanto o caso de curto-circuito utilizado corresponde ao arquivo
 \texttt{BR2612PJ.ANA}, configuração de dezembro de 2026 e versão de 31 de
 março de 2026.
 
 As duas bases desempenham funções distintas e complementares. O ANAREDE é
 utilizado para estudos de regime permanente e fornece o ponto de operação do
 sistema, incluindo níveis de tensão, carregamentos e condições de geração. O
-ANAFAS é destinado a estudos de curto-circuito e fornece os parâmetros
+ANAFAS (Programa de Análise de Faltas Simultâneas) é destinado a estudos de curto-circuito e fornece os parâmetros
 necessários à representação da resposta da rede diante de perturbações
 \cite{cepelAnarede2026,cepelAnafas2026}. O uso conjunto dessas informações é
 compatível com a prática adotada nos estudos do PAR/PEL, que disponibilizam
 casos de fluxo de potência e de curto-circuito para os programas da plataforma
-CEPEL \cite{ons2026pnast}.
+CEPEL (Centro de Pesquisas de Energia Elétrica) \cite{ons2026pnast}.
 
 Essa identificação do cenário é relevante para a análise computacional porque
 os valores produzidos pelo ATP não constituem medições de campo. Eles são
@@ -983,7 +1006,7 @@ intermediários receberam nomes próprios, empregados posteriormente pelo
 
 \section{Modelo da linha de transmissão}
 
-A linha de transmissão analisada possui tensão nominal de 138~kV e extensão
+A LT (linha de transmissão) analisada possui tensão nominal de 138~kV e extensão
 total de 80~km. No ATPDraw, ela foi representada pelo modelo K.C. Lee não
 transposto, cujos parâmetros foram calculados a 60~Hz. A representação também
 considera a disposição geométrica dos condutores e a resistividade do solo de
@@ -1037,11 +1060,9 @@ A, B e C. Em vez de utilizar um único instante determinístico, o ATP produz
 múltiplas execuções com pequenas variações nos tempos de fechamento. Dessa
 forma, cada execução representa uma possível condição de manobra e gera um
 conjunto de valores máximos de tensão. O modelo também permite comparar
-configurações com e sem resistor de pré-inserção, além de diferentes
-representações da rede equivalente.
-
-Os cenários são denominados sem resistor de pré-inserção (SRPI) e com
-resistor de pré-inserção (CRPI).
+diferentes representações da rede equivalente e configurações com e sem
+resistor de pré-inserção. Neste trabalho, os cenários são denominados SRPI (sem
+resistor de pré-inserção) e CRPI (com resistor de pré-inserção).
 
 O caso completo SRPI com 10.000 simulações utiliza o parâmetro de três
 desvios padrão na configuração do chaveamento estatístico do modelo de entrada;
@@ -1133,7 +1154,8 @@ pendente; a adequação gaussiana não constitui voto de detecção.}
 
 A prosa e as tabelas usam vírgula decimal e ponto para separar milhares.
 Identificadores de barras, simulações e arquivos preservam sua grafia
-original. Trechos literais do ATP e arquivos CSV mantêm a notação técnica
+original. Trechos literais do ATP e arquivos CSV (valores separados por vírgulas,
+do inglês \textit{comma-separated values}) mantêm a notação técnica
 da fonte; o arredondamento de apresentação não altera os valores usados
 nos cálculos.
 
@@ -1160,8 +1182,8 @@ comparou esses pares nos cinco arquivos. As primeiras e últimas execuções
 fornecem os máximos com sinal e os instantes de ocorrência da fase A em
 $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, juntamente com os instantes da chave 10. As
 referências foram lidas diretamente do texto do ATP, de forma independente do
-parser de produção; os resumos SHA-256 identificam os arquivos de entrada
-locais completos. Os pontos de verificação existentes do SRPI são mantidos.
+parser de produção; os resumos SHA-256 (\textit{Secure Hash Algorithm}
+com saída de 256 bits) identificam os arquivos de entrada locais completos. Os pontos de verificação existentes do SRPI são mantidos.
 
 \section{Estrutura da base e unidade de observação}
 
@@ -1217,18 +1239,22 @@ máximo escalar; os registros não representam a forma de onda.}
 \section{Normalização por unidade}
 \label{sec:per-unit-validation}
 
-Para a referência nominal de 138~kV de tensão eficaz entre fases, as bases
-de pico senoidal fase-terra e fase-fase decorrem da referência trifásica
-equilibrada:
+Para a referência nominal de 138~kV de tensão RMS (valor eficaz, do inglês
+\textit{root mean square}) entre fases, as bases
+de pico senoidal fase-terra e fase-fase decorrem das relações da referência
+trifásica equilibrada apresentadas na Equação~\ref{eq:bases-nominais}:
 \begin{equation}
+\label{eq:bases-nominais}
 \begin{aligned}
 V_{\mathrm{phase,RMS}} &= \frac{138.000}{\sqrt{3}}\ \mathrm{V}, \\
 V_{\mathrm{phase-ground,peak}} &= \sqrt{2}V_{\mathrm{phase,RMS}}, \\
 V_{\mathrm{phase-phase,peak}} &= \sqrt{2}\,138.000.
 \end{aligned}
 \end{equation}
-Portanto,
+As bases de pico resultantes são apresentadas na
+Equação~\ref{eq:bases-pico}:
 \begin{equation}
+\label{eq:bases-pico}
 V_{\mathrm{base,phase-ground}} = 138.000\sqrt{\frac{2}{3}}
 \approx 112.676{,}528\ \mathrm{V},
 \qquad
@@ -1236,7 +1262,8 @@ V_{\mathrm{base,phase-phase}} \approx 195.161{,}522\ \mathrm{V}.
 \end{equation}
 Uma fonte do ATP associada ao barramento 9049 utiliza 112.676,528~V a 60~Hz.
 Os cartões estatísticos arredondam as bases para 112.677~V, para nós
-fase-terra, e 195.161~V, para ramos fase-fase. O LIS imprime explicitamente as
+fase-terra, e 195.161~V, para ramos fase-fase. O LIS (arquivo de listagem de saída do ATP, com extensão \texttt{.lis})
+imprime explicitamente as
 duas bases nas distribuições dos picos monitorados.
 Os registros da rede equivalente e dos arquivos ATP e LIS conciliam a
 tensão nominal de 138~kV dos barramentos 9049 e 48461 com essas duas
@@ -1244,8 +1271,10 @@ normalizações. A localização dos registros está no
 Apêndice~\ref{app:fontes-eletricas}. A base fase-terra arredondada difere do pico
 nominal calculado em apenas 0,472~V, ou aproximadamente 4,19 partes por
 milhão. O algoritmo deste trabalho extrai exclusivamente máximos de nós
-fase-terra; portanto, sua conversão é
+fase-terra; portanto, sua conversão utiliza a
+Equação~\ref{eq:conversao-pu}:
 \begin{equation}
+\label{eq:conversao-pu}
 V_{\mathrm{pu}} = \frac{|V_{\mathrm{peak,signed}}|}{112.677}.
 \end{equation}
 Para uma futura extração de máximos fase-fase, a base correspondente é
@@ -1493,8 +1522,9 @@ apenas como comparação qualificada, sem participar da votação de
 candidatos a anomalias.
 
 Como referência robusta, também se calcula o escore baseado na mediana e no
-desvio absoluto mediano (MAD):
+desvio absoluto mediano (MAD), definido na Equação~\ref{eq:escore-mad}:
 \begin{equation}
+\label{eq:escore-mad}
 z_{MAD}=0{,}67448975\,
 \frac{x-\operatorname{mediana}(x)}
 {\operatorname{mediana}(|x-\operatorname{mediana}(x)|)}.
@@ -1611,8 +1641,10 @@ Essa partição exploratória não equivale a um diagnóstico de anomalia e
 não participa da votação dos três critérios de detecção.
 
 Para cada observação, Silhouette compara a distância média ao próprio
-agrupamento, $a(i)$, com a menor distância média a outro agrupamento, $b(i)$:
+agrupamento, $a(i)$, com a menor distância média a outro agrupamento, $b(i)$,
+conforme a Equação~\ref{eq:silhouette}:
 \begin{equation}
+\label{eq:silhouette}
 s(i)=\frac{b(i)-a(i)}{\max\{a(i),b(i)\}}.
 \end{equation}
 O escore da partição é a média de $s(i)$, entre $-1$ e $1$.
@@ -1647,8 +1679,8 @@ A separação entre desenvolvimento e avaliação foi feita conjuntamente por
 linhagem da fonte e identidade da simulação, mantendo fases e terminais da
 mesma execução no mesmo subconjunto. Escalas, centroides e limiares foram
 ajustados somente no desenvolvimento. Para cada família, intensidade e
-método, foram relatados primeiro verdadeiros positivos, falsos positivos,
-verdadeiros negativos e falsos negativos; em seguida, precisão, revocação,
+método, foram relatados primeiro VP (verdadeiros positivos), FP (falsos
+positivos), VN (verdadeiros negativos) e FN (falsos negativos); em seguida, precisão, revocação,
 $F_1$ e taxa de falsos positivos. Métricas com denominador nulo são mantidas
 como indefinidas, acompanhadas do motivo. Esses rótulos comprovam apenas a
 detecção das intervenções declaradas e não representam erros numéricos reais
@@ -1722,8 +1754,10 @@ A sensibilidade foi avaliada com grades predefinidas para sementes e número de
 grupos do K-Means, limiares de distância e parâmetros ou calibração do
 DBSCAN, mantendo os demais controles fixos. Para cada política foram informados
 aplicabilidade, quantidade e taxa de candidatos. A estabilidade de identidade
-foi medida pelo índice de Jaccard entre dois conjuntos de candidatos, $A$ e $B$:
+foi medida pelo índice de Jaccard entre dois conjuntos de candidatos, $A$ e $B$,
+conforme a Equação~\ref{eq:jaccard}:
 \begin{equation}
+\label{eq:jaccard}
 J(A,B)=\frac{|A\cap B|}{|A\cup B|}.
 \end{equation}
 Valores inferiores a 0,80 são descritos como sensíveis. Esse limiar qualifica
@@ -1778,7 +1812,7 @@ ruído do DBSCAN sob suas regras de aplicabilidade; os rótulos hierárquicos
 permanecem descritivos e não participam dessa seleção. A revisão elétrica
 continua pendente, sem atribuição de causa aos extremos.
 
-As verificações de extração, identidade, conversão e limpeza a seguir
+As verificações de extração, identidade, conversão e limpeza deste capítulo
 fundamentam essa síntese; depois são detalhadas as análises estatísticas e
 comparativas. Cada resultado permanece restrito ao escopo, ao método e à
 camada de validade declarados na Seção~\ref{sec:camadas-validade}.
@@ -1871,7 +1905,6 @@ da referência anterior está no Apêndice~\ref{app:auditoria-pu}.
 A decisão de aceitação é sustentada pela derivação da referência
 nominal, pela base explícita do ATP e pelas comparações numéricas
 independentes apresentadas neste capítulo.
-
 A conversão é, portanto, aceita para os dez casos SRPI/CRPI declarados como
 modelo completo e sem defeitos, em $T_{MAN}$, $1/2\,LT$ e $T_{OPO}$, nas fases
 A, B e C, utilizando 112.677~V para máximos fase-terra. As declarações de
@@ -1895,7 +1928,7 @@ referência diz respeito ao método de extração; não implica a participação
 um revisor humano independente nem uma auditoria numérica exaustiva.
 A introdução artificial de falhas no caso CRPI de 900 linhas bloqueou
 corretamente a análise diante de uma observação duplicada e de uma observação
-ausente. Um instante de 0,30001~s ou um valor de tensão NaN provocou, em cada
+ausente. Um instante de 0,30001~s ou um valor de tensão NaN (\textit{not a number}) provocou, em cada
 teste, exatamente uma exclusão registrada, restando 899 linhas. Verificações
 adicionais especificadas manualmente abrangem os limites do intervalo,
 instantes negativos e ausentes, identificações alteradas e combinações
@@ -2050,8 +2083,8 @@ em $N=50$ não comprovam normalidade.
 
 Uma comparação exploratória adicional ajustou as famílias normal,
 gama e lognormal por máxima verossimilhança, com localização estimada,
-em cada grupo. A seleção utiliza o critério de informação de Akaike
-(AIC, do inglês \textit{Akaike information criterion}). No CRPI, o menor
+em cada grupo. A seleção utiliza o AIC (critério de informação de Akaike,
+do inglês \textit{Akaike information criterion}). No CRPI, o menor
 AIC selecionou gama em 27 grupos e
 lognormal em 18; no SRPI, selecionou normal em 29, gama em 13 e
 lognormal em três. Os 270 ajustes e suas decisões relativas estão
@@ -2086,8 +2119,9 @@ Em cada linha, os índices são medianas calculadas somente entre os grupos
 aplicáveis dentre as nove combinações terminal--fase, e a coluna A/9
 informa quantos grupos contribuíram. Assim, uma mediana calculada em um
 único grupo não representa os outros oito.
-DB representa o índice de Davies--Bouldin; NA preserva a ausência de uma
-partição elegível para avaliação, sem atribuir artificialmente escore zero.
+DB (Davies--Bouldin) identifica o índice de separação geométrica;
+NA (não aplicável) indica a ausência de uma partição elegível para
+avaliação, sem atribuir artificialmente escore zero.
 
 \clearpage
 \input{evidence/v9/tables/clustering_summary.tex}
