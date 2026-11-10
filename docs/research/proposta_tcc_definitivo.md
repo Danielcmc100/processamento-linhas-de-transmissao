@@ -8,7 +8,8 @@
 > historical results below remain evidence of their original execution.
 
 **1. Título Sugerido**  
-**Detecção de Anomalias e Análise Probabilística em Manobras de Energização de Linhas de Transmissão Utilizando ** **Machine** ** Learning**  
+**Comparação de Métodos de Clusterização na Análise de Máximos de Tensão em Simulações de Energização de Linhas de Transmissão no ATP**
+
 **2. Delimitação do Tema**  
 O trabalho foca na interpretação de resultados de sobretensão transitória, gerados através de simulações estatísticas (dados sintéticos) no software **ATP (** **Alternative** ** ** **Transients** ** ** **Program** **)**. O foco está no processamento de dados sintéticos para identificar sobretensões críticas e diferenciar eventos físicos reais de instabilidades numéricas (erros de cálculo do software) durante manobras de energização de linhas de transmissão.  
 **3. Problematização**  

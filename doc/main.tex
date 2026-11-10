@@ -134,7 +134,7 @@
 \universidade{CENTRO UNIVERSITÁRIO SERRA DOS ÓRGÃOS - UNIFESO}
 \instituto{DIREÇÃO ACADÊMICA DE CIÊNCIAS HUMANAS E TECNOLÓGICAS - DACHT}
 \curso{CURSO DE BACHARELADO EM CIÊNCIA DA COMPUTAÇÃO}
-\titulo{Detecção de Anomalias e Análise Probabilística em Manobras de Energização de Linhas de Transmissão Utilizando Aprendizagem de Máquina}
+\titulo{Comparação de Métodos de Clusterização na Análise de Máximos de Tensão em Simulações de Energização de Linhas de Transmissão no ATP}
 \autor{Kleber Daniel Mattos Viana}
 \local{TERESÓPOLIS}
 \data{2026}
@@ -334,9 +334,9 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 % ---
 % UTILIZE CASO HAJA QUADROS NA MONOGRAFIAS. EM QUASO DE AUSENCIA DE QUADROS COMENTAR COM AS 3 LINHAS DE CODIGOS UTILIZANDO O '%'.
 
-% \pdfbookmark[0]{\listofquadrosname}{loq}
-% \listofquadros*
-% \cleardoublepage
+\pdfbookmark[0]{\listofquadrosname}{loq}
+\listofquadros*
+\cleardoublepage
 % ---
 
 % ---
@@ -358,7 +358,7 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 
 % \pdfbookmark[0]{\listalgorithmcfname}{loa}
 % \imprimirlistadealgoritmos
-% \cleardoublepage
+\cleardoublepage
 % ---
 
 % ---
@@ -419,7 +419,7 @@ Agradeço à minha orientadora, Prof. Andressa Alves Machado da Silva, e ao meu 
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 \begin{resumo}
 
-Este trabalho desenvolveu uma rotina computacional para extrair, organizar e analisar máximos de tensão provenientes de simulações de energização de linhas de transmissão no \textit{Alternative Transients Program} (ATP). A avaliação utilizou dois cenários, com e sem resistor de pré-inserção, cinco quantidades de simulações, três terminais e três fases, totalizando 204.300 observações escalares. O foco é a análise comparativa de K-Means, DBSCAN e seleção hierárquica de cauda superior, utilizando Silhouette e Davies--Bouldin, contagens de grupos e estados de aplicabilidade. A comparação examinou como os resultados variaram com a quantidade de casos, sem interpretar separação geométrica como comprovação de erro numérico. A análise probabilística empregou frequências empíricas e intervalos de confiança; a rejeição da hipótese normal em 88 dos 90 grupos impede adotar uma distribuição gaussiana comum como referência de validação dos candidatos. A rotina preserva rastreabilidade e produz evidências reproduzíveis para investigação posterior. A validação causal por especialista, com formas de onda e repetições das simulações, constitui trabalho futuro, fora do escopo deste TCC.
+Este trabalho desenvolveu uma rotina computacional para extrair, organizar e analisar máximos de tensão provenientes de simulações de energização de linhas de transmissão no \textit{Alternative Transients Program} (ATP). A avaliação utilizou dois cenários, com e sem resistor de pré-inserção, cinco quantidades de simulações, três terminais e três fases, totalizando 204.300 observações escalares. O foco é a análise comparativa de K-Means, DBSCAN e seleção hierárquica de cauda superior, utilizando Silhouette e Davies--Bouldin, medidas de coesão e separação dos agrupamentos, contagens de grupos e estados de aplicabilidade. A comparação examinou como os resultados variaram com a quantidade de casos, sem interpretar separação geométrica como comprovação de erro numérico. A análise probabilística empregou frequências empíricas e intervalos de confiança; a rejeição da hipótese normal em 88 dos 90 grupos impede adotar uma distribuição gaussiana comum como referência de validação dos candidatos. A rotina preserva rastreabilidade e produz evidências reproduzíveis para investigação posterior. A validação causal por especialista, com formas de onda e repetições das simulações, constitui trabalho futuro, fora do escopo deste TCC.
 
 %reduzir a subjetividade da avaliação técnica e oferecer suporte mais consistente à interpretação dos resultados de simulações de energização.
 
@@ -450,6 +450,13 @@ Este trabalho desenvolveu uma rotina computacional para extrair, organizar e ana
 % Introdução
 % ----------------------------------------------------------
 \chapter{Introdução}
+
+Energizar uma linha de transmissão significa colocá-la sob tensão por meio
+do fechamento de dispositivos de manobra. Durante essa mudança, a tensão
+pode ultrapassar temporariamente sua referência de operação, produzindo
+uma sobretensão transitória. A coordenação de isolamento busca compatibilizar
+a capacidade dos equipamentos de suportar essas tensões com a atuação dos
+dispositivos de proteção, evitando falhas de isolamento.
 
 A operação de sistemas elétricos de potência exige elevado grau de confiabilidade, especialmente em processos de energização de linhas de transmissão, nos quais podem surgir sobretensões transitórias capazes de comprometer a coordenação de isolamento dos equipamentos. 
 Em sistemas de transmissão em alta tensão, os fenômenos transitórios associados às manobras de energização e religamento apresentam curta duração, porém podem atingir amplitudes significativas, influenciando diretamente a definição dos níveis de isolamento, a especificação de equipamentos e os critérios de segurança operacional \cite{iec6007112019,iec6007122023,marin2025}.
@@ -561,6 +568,34 @@ Este capítulo reúne os conceitos que fundamentam o trabalho. Primeiro, são di
 % \section{Sistemas elétricos de potência e linhas de transmissão}
 
 \section{Sistemas elétricos, linhas de transmissão e transitórios de energização}
+
+Em uma rede trifásica, a energia é transportada por três fases, identificadas
+neste trabalho como A, B e C, cujas tensões alternadas estão defasadas entre
+si. O disjuntor é o equipamento que estabelece ou interrompe a passagem de
+corrente; seus polos correspondem aos caminhos de interrupção de cada fase.
+Chaveamento designa a abertura ou o fechamento desses caminhos. Uma falta
+é uma condição elétrica anormal, como um curto-circuito. Já o regime
+permanente corresponde à operação estabilizada, após o desaparecimento
+das alterações transitórias.
+
+A tensão fase-terra é medida entre uma fase e a referência de terra;
+a tensão fase-fase é medida entre duas fases. O pico é o maior valor em
+módulo considerado, enquanto o valor eficaz representa uma tensão alternada
+pela tensão contínua que produziria o mesmo efeito térmico em uma
+resistência. Para uma senoide, o pico corresponde ao valor eficaz
+multiplicado por $\sqrt{2}$; essa relação não deve ser aplicada
+automaticamente a uma forma de onda transitória distorcida.
+
+A representação por unidade (P.U.) divide uma grandeza por uma base
+explicitamente escolhida. Assim, 1~P.U. corresponde à própria base e
+1,5~P.U. corresponde a uma tensão 50\% maior que ela. Essa representação
+facilita comparações, desde que as grandezas e suas bases sejam compatíveis.
+
+Um resistor de pré-inserção é uma resistência conectada temporariamente
+durante o fechamento do disjuntor, antes de ser retirada do caminho
+principal da corrente. Sua função é reduzir os transitórios da manobra.
+Comparar cenários com e sem esse componente permite examinar sua influência
+sobre os máximos de tensão simulados.
 Os sistemas elétricos de potência são responsáveis pela geração, transmissão, distribuição e utilização da energia elétrica. Nesse contexto, as linhas de transmissão desempenham papel fundamental, pois permitem o transporte de grandes blocos de energia entre centros geradores e centros consumidores. Por operarem normalmente em níveis elevados de tensão, essas linhas exigem planejamento cuidadoso, critérios adequados de proteção e avaliação constante de fenômenos capazes de comprometer a confiabilidade operacional do sistema.
 
 Durante a operação de uma linha de transmissão, diferentes eventos podem alterar temporariamente o comportamento das tensões e correntes, como abertura e fechamento de disjuntores, ocorrência de faltas, religamentos e energizações. Entre essas situações, as manobras de energização merecem destaque, pois podem produzir sobretensões transitórias superiores aos valores observados em regime permanente, influenciando diretamente a coordenação de isolamento dos equipamentos.
@@ -590,7 +625,7 @@ De forma complementar, Leão \cite{leao2022} apresenta uma aplicação do ATP na
 
 % \section{Extração e organização dos dados do ATP}
 
-Apesar de sua utilidade, a análise dos arquivos gerados pelo ATP pode ser trabalhosa quando há grande volume de simulações, pois os resultados podem estar distribuídos em arquivos extensos, contendo valores numéricos, identificação de fases, pontos de medição e informações de cada execução. Nesse contexto, a automatização da leitura dos arquivos por meio de um \textit{parser} contribui para reduzir o esforço manual, padronizar a extração dos dados e diminuir a possibilidade de erros na organização das informações. Além disso, como as múltiplas simulações produzem um conjunto de valores máximos de tensão, torna-se necessário aplicar procedimentos estatísticos e visuais que permitam compreender a distribuição dos dados, identificar valores extremos e apoiar a interpretação técnica dos resultados.
+Apesar de sua utilidade, a análise dos arquivos gerados pelo ATP pode ser trabalhosa quando há grande volume de simulações, pois os resultados podem estar distribuídos em arquivos extensos, contendo valores numéricos, identificação de fases, pontos de medição e informações de cada execução. Nesse contexto, a automatização da leitura dos arquivos por meio de um \textit{parser}, programa que reconhece a estrutura do texto e extrai registros organizados, contribui para reduzir o esforço manual, padronizar a extração dos dados e diminuir a possibilidade de erros na organização das informações. Além disso, como as múltiplas simulações produzem um conjunto de valores máximos de tensão, torna-se necessário aplicar procedimentos estatísticos e visuais que permitam compreender a distribuição dos dados, identificar valores extremos e apoiar a interpretação técnica dos resultados.
 
 O código-fonte desenvolvido para o processamento dos dados das linhas de transmissão está disponível em repositório público no GitHub \cite{viana2026repositorio}. A automatização de estudos envolvendo o ATP também é discutida por Guidi-Venerdini e Pérez-Yauli \cite{guidi2013}, que desenvolveram uma rotina em MATLAB (\textit{Matrix Laboratory}) para manipular arquivos-base do ATP e executar simulações sistemáticas em uma linha de transmissão. Embora o foco dos autores esteja na simulação de faltas, o trabalho evidencia a relevância de procedimentos automatizados para a construção de bases de dados, redução do esforço manual e diminuição de erros no tratamento de grandes volumes de resultados.
 
@@ -606,6 +641,53 @@ De forma complementar, Colqui et al. \cite{colqui2022} discutem a implementaçã
 \end{figure}
 
 \section{Análise estatística e probabilística dos dados}
+
+Uma distribuição descreve como os valores se repartem entre diferentes
+faixas. A distribuição normal, também chamada gaussiana, tem forma de sino,
+simétrica em torno da média. Ajustar essa curva significa estimar seus
+parâmetros com os dados; isso não comprova que ela represente adequadamente
+os valores observados.
+
+A mediana divide os dados ordenados em duas metades. Os quartis delimitam
+quatro partes: o primeiro e o terceiro correspondem aos percentis 25 e 75.
+Um percentil indica uma posição na distribuição ordenada; por exemplo,
+aproximadamente 95\% dos valores ficam abaixo ou no percentil 95, conforme
+a convenção de cálculo e a presença de valores repetidos. Um quantil é a
+mesma ideia expressa como fração, em vez de porcentagem.
+
+Um histograma apresenta contagens em intervalos de valores, chamados
+classes. Uma curva de densidade descreve a concentração de probabilidade:
+a probabilidade de um intervalo corresponde à área sob a curva nesse
+intervalo, e não à altura da curva em um ponto. A cauda superior é a região
+dos maiores valores da distribuição.
+
+A assimetria descreve o desequilíbrio entre os lados da distribuição.
+O excesso de curtose compara o quarto momento padronizado com o da normal,
+cujo excesso é zero, e é sensível ao peso dos valores afastados do centro.
+Essas medidas descrevem a forma dos dados, sem estabelecer a causa de
+valores extremos.
+
+Um teste de normalidade, como Anderson--Darling, verifica a compatibilidade
+dos dados com uma distribuição normal, com atenção também às caudas.
+O nível de significância de 5\% define uma regra que, sob a hipótese nula
+e as condições do teste, admite rejeições indevidas em cerca de 5\% das
+repetições. O valor $p$ mede quão incompatível com essa hipótese é uma
+estatística tão extrema quanto a observada; não é a probabilidade de a
+hipótese ser verdadeira. Não rejeitar normalidade não significa comprová-la.
+O gráfico quantil--quantil compara posições dos dados ordenados com as
+posições esperadas na distribuição de referência: desvios de uma reta
+indicam diferenças de forma. A potência do teste é sua capacidade de
+detectar uma incompatibilidade quando ela existe.
+
+Outras famílias, como gama e lognormal, permitem representar distribuições
+assimétricas. Na lognormal, o logaritmo dos valores segue uma distribuição
+normal; a gama é uma família definida para valores positivos, antes de
+eventual deslocamento de localização. A máxima verossimilhança escolhe
+parâmetros que tornam os dados observados mais plausíveis segundo o modelo.
+O critério de informação de Akaike (AIC) compara ajustes ponderando sua
+qualidade e o número de parâmetros; valores menores são preferidos entre
+as opções comparadas. Essa preferência relativa não demonstra adequação
+absoluta \cite{montgomery2020,devore2016}.
 
 A partir dos dados extraídos dos arquivos do ATP, a análise estatística permite descrever e interpretar os valores de sobretensão obtidos nas simulações ou medições, sendo amplamente utilizada em aplicações de engenharia para sintetizar informações, avaliar variabilidade e apoiar decisões técnicas \cite{montgomery2020,devore2016}. Em estudos de sobretensões, ela auxilia na identificação de tendências centrais, dispersão dos valores e ocorrência de eventos extremos.
 
@@ -680,6 +762,15 @@ $V$ excede o limiar estabelecido. Neste trabalho, a incerteza dessa
 proporção é representada pelo IC (intervalo de confiança) bilateral de Wilson, definido na
 Equação~\ref{eq:intervalo-wilson}:
 
+O intervalo expressa a incerteza da proporção estimada por uma amostra.
+Um procedimento com 95\% de confiança produz intervalos que contêm a
+proporção verdadeira em cerca de 95\% das repetições sob as condições
+do modelo; isso não atribui 95\% de probabilidade a um parâmetro fixo.
+Bilateral significa que há limites inferior e superior. O modelo binomial
+trata cada observação como ocorrência ou não ocorrência do evento,
+com probabilidade comum e independência dentro do grupo considerado;
+o cálculo do intervalo não verifica essas condições por si só.
+
 \begin{equation}
 \label{eq:intervalo-wilson}
 IC_{\mathrm{Wilson}} =
@@ -694,6 +785,12 @@ mantém limite superior positivo quando nenhuma ocorrência é observada.
 O intervalo se refere à proporção binomial por grupo; seu cálculo não
 pressupõe distribuição gaussiana para os máximos de tensão nem demonstra
 independência entre as fontes.
+
+Na fórmula, $\alpha=0{,}05$ e $z\approx1{,}96$ para a confiança adotada.
+A aproximação de Wald usa uma margem simétrica em torno da proporção
+observada, que pode representar mal situações com poucas ocorrências.
+Wilson evita interpretar uma amostra sem excedências como certeza de
+que a probabilidade real seja zero.
 
 A identificação de valores atípicos (\textit{outliers}), entretanto, deve ser conduzida com cautela, pois valores discrepantes podem ter diferentes origens e interpretações, não sendo necessariamente erros ou observações inválidas \cite{barnett1994}. Em aplicações de sistemas elétricos, um valor extremo pode representar um evento fisicamente relevante, uma condição operacional rara, um comportamento transitório específico ou, ainda, um desvio associado ao processo numérico da simulação. Portanto, a análise estatística e probabilística deve ser combinada com visualização de dados, interpretação física e métodos computacionais de identificação de padrões.
 
@@ -856,6 +953,72 @@ Apesar de suas vantagens, o DBSCAN apresenta limitações. A escolha inadequada 
 
 Com base nos conceitos apresentados, observa-se que a análise de sobretensões transitórias em manobras de energização exige a integração entre conhecimento físico do sistema elétrico, simulação computacional, tratamento estatístico, análise probabilística e técnicas de reconhecimento de padrões. O ATP fornece os dados necessários para representar diferentes condições de operação, enquanto a estatística e a visualização auxiliam na compreensão da distribuição dos valores máximos obtidos. Os algoritmos de clusterização, por sua vez, podem apoiar a identificação de comportamentos predominantes e de observações discrepantes. Essa fundamentação sustenta a etapa metodológica do trabalho, na qual foram definidos os procedimentos de extração, organização, análise probabilística e classificação das sobretensões simuladas.
 
+\subsection{Clusterização hierárquica por ligação simples}
+\label{sec:fundamentacao-hierarquica}
+
+A clusterização hierárquica organiza as observações em agrupamentos
+aninhados. Na abordagem aglomerativa, cada observação constitui inicialmente
+um grupo, e os grupos mais próximos são unidos sucessivamente, conforme
+uma medida de distância e um critério de ligação. A sequência de uniões
+pode ser representada por um dendrograma, cuja altura indica a
+dissimilaridade em que cada união ocorre. Um corte nessa hierarquia produz
+uma partição; portanto, embora a construção não exija fixar previamente o
+número de grupos, a obtenção de uma partição requer uma regra de corte
+\cite{jain1988}.
+
+Na ligação simples, ou \textit{single linkage}, a distância entre dois
+grupos é a menor distância entre seus membros, conforme a
+Equação~\ref{eq:ligacao-simples}:
+\begin{equation}
+\label{eq:ligacao-simples}
+d_{\mathrm{SL}}(C_r,C_s)
+=\min_{x_i\in C_r,\,x_j\in C_s}|x_i-x_j|,
+\end{equation}
+em que $C_r$ e $C_s$ são grupos distintos e $x_i$ e $x_j$ representam
+máximos de tensão em P.U. A formulação considera a distância euclidiana
+em uma dimensão. Sibson \cite{sibson1973} apresenta o algoritmo SLINK,
+uma formulação eficiente para construir a hierarquia de ligação simples;
+essa referência fundamenta o método clássico, sem implicar que o SLINK
+tenha sido implementado neste trabalho.
+
+Para valores ordenados $x_{(1)}\leq\cdots\leq x_{(N)}$, as lacunas
+adjacentes são $g_i=x_{(i+1)}-x_{(i)}$. Em uma dimensão, os grupos
+obtidos por um corte de distância na ligação simples correspondem aos
+blocos conectados por lacunas que não ultrapassam esse corte. Uma lacuna
+grande pode, assim, separar uma região de valores elevados do restante
+da amostra. Entretanto, a ligação simples apresenta o efeito de
+encadeamento: pontos intermediários próximos podem conectar regiões
+distantes e impedir sua separação em grupos distintos
+\cite{jain1988}. A ausência de separação não demonstra ausência de
+observações relevantes.
+
+Neste trabalho, essa relação com as lacunas fundamenta a seleção
+exploratória de uma cauda superior em cada contexto de análise. A regra
+adicional de limitar a proporção da cauda, preservar observações de
+referência e exigir lacunas mínimas é uma escolha operacional do estudo,
+detalhada na metodologia; não constitui uma propriedade universal da
+clusterização hierárquica. A pertença ao grupo superior não identifica,
+isoladamente, erro numérico nem causa física. A interpretação depende
+dos critérios declarados e de investigação elétrica complementar.
+
+\subsection{Avaliação de agrupamentos e de detectores}
+
+A avaliação interna de agrupamentos descreve sua organização, sem exigir
+rótulos de referência. Silhouette compara a proximidade de cada observação
+ao próprio grupo com sua proximidade aos demais: valores maiores indicam
+melhor separação. Davies--Bouldin compara dispersão interna e afastamento
+entre grupos: valores menores são preferíveis. Nenhum desses índices
+comprova que os grupos correspondam a fenômenos físicos distintos.
+
+A avaliação de um detector com rótulos conhecidos compara suas sinalizações
+com eventos declarados. Precisão mede quantas sinalizações estão corretas;
+revocação mede quantos eventos foram encontrados; $F_1$ combina ambas.
+A estabilidade tem finalidade diferente: compara seleções obtidas sob
+configurações distintas, podendo ser medida pela proporção de candidatos
+comuns, como no índice de Jaccard. Seleções estáveis também podem estar
+incorretas. As fórmulas e os rótulos dos ensaios deste trabalho são
+especificados na metodologia.
+
 \chapter{Modelagem do sistema elétrico e geração dos dados}
 
 Este capítulo descreve o sistema elétrico utilizado para gerar os dados
@@ -895,6 +1058,15 @@ selecionado. Consequentemente, qualquer comparação entre simulações deve man
 o cenário de referência ou registrar explicitamente suas alterações.
 
 \section{Redução da rede}
+
+Uma barra, ou barramento, é um ponto de conexão de componentes da rede.
+As barras de fronteira delimitam a região preservada. Um equivalente
+substitui a parte externa por componentes que procuram reproduzir sua
+influência nos pontos de conexão. Ligações em série ficam no caminho
+entre pontos da rede; ligações em derivação conectam um ponto a outro
+ramo ou à referência de terra. Um diagrama unifilar resume as conexões
+do sistema trifásico por meio de traços e símbolos, sem desenhar
+separadamente cada fase.
 
 A representação integral do Sistema Interligado Nacional introduziria grande
 quantidade de elementos sem relação direta com a manobra investigada. Para
@@ -943,15 +1115,15 @@ Referências de tensão: 390 (500~kV), 391 (345~kV), 395 e 397 (13,8~kV).}
 
 Após a redução, os componentes foram representados no ATPDraw para a execução
 das simulações de transitórios eletromagnéticos. A conversão exigiu associar
-cada elemento da rede de origem a um componente compatível do ATP. A
-Tabela~\ref{tab:mapeamento-atpdraw} resume esse mapeamento e sua relação com os
+cada elemento da rede de origem a um componente compatível do ATP. O
+Quadro~\ref{qua:mapeamento-atpdraw} resume esse mapeamento e sua relação com os
 dados gerados.
 
-\begin{table}[htbp]
+\begin{quadro}[htbp]
 \centering
 \caption{Mapeamento dos principais elementos para o ATPDraw.}
-\label{tab:mapeamento-atpdraw}
-\begin{tabularx}{\textwidth}{L L L}
+\label{qua:mapeamento-atpdraw}
+\begin{tabularx}{\textwidth}{|L|L|L|}
 \hline
 \textbf{Informação de origem} &
 \textbf{Representação no ATPDraw} &
@@ -960,29 +1132,34 @@ dados gerados.
 Ponto de operação do ANAREDE &
 Fontes e condições iniciais &
 Define as tensões anteriores à manobra \\
+\hline
 
 Rede externa equivalente &
 Fontes e impedâncias equivalentes &
 Representa a influência do sistema externo \\
+\hline
 
 Transformadores &
 Transformadores trifásicos e suas ligações &
 Conecta os diferentes níveis de tensão \\
+\hline
 
 Linha sob estudo &
 Modelo de parâmetros distribuídos &
 Determina a propagação das ondas de tensão \\
+\hline
 
 Disjuntor de manobra &
 Chaves estatísticas por fase &
 Varia os instantes de energização \\
+\hline
 
 Pontos de medição &
 Sondas de tensão &
 Produz os valores processados pela aplicação \\
 \hline
 \end{tabularx}
-\end{table}
+\end{quadro}
 
 A Figura~\ref{fig:equivalente_atp_draw} mostra a implementação da rede
 equivalente. As identificações das barras foram preservadas para facilitar a
@@ -1004,6 +1181,15 @@ intermediários receberam nomes próprios, empregados posteriormente pelo
 \end{figure}
 
 \section{Modelo da linha de transmissão}
+
+O modelo de linha representa matematicamente como tensões e correntes
+se propagam pelos condutores. A representação por parâmetros distribuídos
+considera esses efeitos ao longo da extensão da linha, em vez de
+concentrá-los em um único ponto. A designação K.C. Lee identifica a
+formulação utilizada no ATP. Uma linha não transposta mantém as posições
+relativas dos condutores, sem a troca de posições que poderia equilibrar
+seus efeitos elétricos. A resistividade do solo expressa sua oposição
+à passagem de corrente e influencia a representação do retorno pela terra.
 
 A LT (linha de transmissão) analisada possui tensão nominal de 138~kV e extensão
 total de 80~km. No ATPDraw, ela foi representada pelo modelo K.C. Lee não
@@ -1077,6 +1263,12 @@ e o instante em que esse máximo ocorreu. A quantidade de execuções é um
 parâmetro do experimento; por isso, foram preparados conjuntos com 50, 100,
 200, 1.000 e 10.000 simulações estatísticas para avaliar também o efeito do
 tamanho da amostra.
+
+O passo de integração é o intervalo de tempo entre avanços do cálculo
+numérico; $10~\mu\text{s}$ correspondem a dez milionésimos de segundo.
+A janela simulada é a duração total representada. Um passo menor permite
+examinar variações mais rápidas, mas aumenta o esforço computacional;
+a verificação de sua suficiência exige comparar simulações equivalentes.
 
 Esses arquivos constituem a entrada da etapa computacional deste trabalho. O
 \textit{parser} associa os nomes dos terminais e das fases aos valores extraídos
@@ -1160,6 +1352,16 @@ nos cálculos.
 
 \section{Extração dos dados e validação do parser}
 
+O \textit{parser} é o programa que reconhece a estrutura do arquivo de texto
+e transforma seus trechos em registros organizados. Os marcadores citados
+a seguir são expressões literais que orientam essa leitura;
+\texttt{NENERG} informa a quantidade declarada de energizações, e
+\texttt{Times of maxima} identifica os instantes dos máximos.
+Um resumo SHA-256 é um código calculado a partir do conteúdo do arquivo,
+utilizado para conferir se ele corresponde à entrada registrada na auditoria.
+Um manifesto reúne a identificação dessas entradas, parâmetros e saídas
+necessários à reprodução do processamento.
+
 O reconhecimento do arquivo estatístico utiliza os marcadores textuais
 \texttt{NENERG}, \texttt{otherwise blank space}, a identificação numerada de
 cada simulação e a tabela \texttt{Times of maxima}. Para cada execução, são
@@ -1185,6 +1387,11 @@ parser de produção; os resumos SHA-256 (\textit{Secure Hash Algorithm}
 com saída de 256 bits) identificam os arquivos de entrada locais completos. Os pontos de verificação existentes do SRPI são mantidos.
 
 \section{Estrutura da base e unidade de observação}
+
+Escalar significa um único valor numérico. Cada registro desta base
+representa um máximo, e não toda a sequência de tensões ao longo do tempo,
+denominada forma de onda. Uma chave composta combina vários campos para
+identificar esse registro sem ambiguidade.
 
 Na base tabular, a unidade de observação é um máximo escalar de tensão
 fase--terra, identificado pela combinação entre arquivo de origem, número da
@@ -1237,6 +1444,12 @@ máximo escalar; os registros não representam a forma de onda.}
 
 \section{Normalização por unidade}
 \label{sec:per-unit-validation}
+
+Nesta análise, cada pico em módulo é dividido pela base fase-terra de
+112.677~V. Por exemplo, 1,5~P.U. representa 169.015,5~V nessa base.
+A sigla RMS designa o valor eficaz, distinto do pico usado na conversão;
+os fatores abaixo relacionam essas referências para uma senoide trifásica
+equilibrada, com fases de mesma amplitude e defasagens de 120 graus.
 
 Para a referência nominal de 138~kV de tensão RMS (valor eficaz, do inglês
 \textit{root mean square}) entre fases, as bases
@@ -1304,6 +1517,12 @@ a convenção de módulo, mas não verifica independentemente cada observação.
 \section{Integridade e limpeza dos dados}
 \label{sec:data-cleaning-validation}
 
+O produto cartesiano citado nesta verificação é o conjunto de todas as
+combinações esperadas entre simulações, terminais e fases. Um valor finito
+é um número definido que não representa infinito nem um resultado
+numérico indefinido, como NaN. Limpeza determinística significa aplicar
+regras fixas, que produzem a mesma decisão para os mesmos dados.
+
 A integridade dos dados foi avaliada separadamente
 para os dez casos SRPI/CRPI de modelo completo, sem defeito, com 50, 100, 200,
 1.000 e 10.000 execuções, utilizando a base aceita de 112.677~V. A chave de cada
@@ -1312,8 +1531,8 @@ pela fase. A unicidade das chaves e a igualdade entre seu conjunto e o produto
 cartesiano das execuções declaradas (de 1 a NENERG), dos três terminais e das
 fases A/B/C estabelecem a completude antes da limpeza. As declarações nos
 arquivos de origem são lidas independentemente da contagem de linhas extraídas.
-As ações de bloqueio, exclusão e preservação são sintetizadas na
-Tabela~\ref{tab:regras-limpeza}.
+As ações de bloqueio, exclusão e preservação são sintetizadas no
+Quadro~\ref{qua:regras-limpeza}.
 
 Os instantes de ocorrência devem pertencer ao intervalo fechado $[0;0{,}3]$~s,
 conforme declarado na reprodução do cartão de parâmetros diversos no LIS e
@@ -1323,34 +1542,39 @@ classificação física. Toda exclusão preserva identificação de origem,
 valores originais e motivo. Nesta etapa, não se aplica critério de corte
 baseado no instante de chaveamento ou na amplitude estatística.
 
-\begin{table}[htbp]
+\begin{quadro}[htbp]
 \centering
 \caption{Decisões de integridade e limpeza da base de máximos.}
-\label{tab:regras-limpeza}
+\label{qua:regras-limpeza}
 \small
 \renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\textwidth}{@{}L
-    >{\RaggedRight\arraybackslash}p{2cm} L@{}}
+\begin{tabularx}{\textwidth}{|L|
+    >{\RaggedRight\arraybackslash}p{2cm}|L|}
 \hline
 \textbf{Condição} & \textbf{Ação} & \textbf{Registro e interpretação} \\
 \hline
 Chave composta duplicada & Bloquear &
 Identificar colisão; não reduzir silenciosamente a amostra. \\
+\hline
 Combinação esperada ausente & Bloquear &
 Registrar incompletude antes de calcular estatísticas. \\
+\hline
 Tensão não finita & Excluir registro &
 Preservar origem, valor e motivo da exclusão. \\
+\hline
 Instante fora de $[0;0{,}3]$~s & Excluir registro &
 Registrar inconsistência com a janela declarada. \\
+\hline
 Extremo finito com identidade e instante válidos & Preservar &
 Manter na amostra; eventual sinalização analítica não o exclui. \\
+\hline
 Seleção vazia após limpeza & Bloquear &
 Impedir análise sem observações válidas. \\
 \hline
 \end{tabularx}
 \legend{Fonte: elaboração própria. Bloqueio impede a análise da seleção;
 exclusão afeta somente o registro inválido e permanece rastreável.}
-\end{table}
+\end{quadro}
 \FloatBarrier
 
 \subsection{Reprodutibilidade e critérios de aceitação}
@@ -1443,20 +1667,20 @@ independência nem inclusão entre simulações de arquivos distintos. A
 identidade de cada observação continua definida por arquivo, simulação,
 terminal e fase.
 
-A validação é dividida em quatro camadas, sintetizadas na
-Tabela~\ref{tab:camadas-validade}. Evidência de uma camada não é usada como
+A validação é dividida em quatro camadas, sintetizadas no
+Quadro~\ref{qua:camadas-validade}. Evidência de uma camada não é usada como
 prova automática de outra: testes de software não demonstram adequação
 estatística, e concordância entre detectores não estabelece causa física
 ou numérica.
 
-\begin{table}[htbp]
+\begin{quadro}[htbp]
 \centering
 \caption{Camadas de validade e alcance das evidências.}
-\label{tab:camadas-validade}
+\label{qua:camadas-validade}
 \small
 \renewcommand{\arraystretch}{1.15}
 \begin{tabularx}{\textwidth}
-    {@{}>{\RaggedRight\arraybackslash}p{2.1cm} L L@{}}
+    {|>{\RaggedRight\arraybackslash}p{2.1cm}|L|L|}
 \hline
 \textbf{Camada} & \textbf{Evidência examinada} &
 \textbf{Alcance e limite} \\
@@ -1464,22 +1688,30 @@ ou numérica.
 Dados & Cabeçalhos, identidade, completude, conversão e limpeza &
 Sustenta a fidelidade no escopo verificado; não valida a física do modelo.
 \\
+\hline
 Estatística & Medidas descritivas, excedência, intervalos e adequação &
 Descreve as distribuições e sua incerteza; não atribui causa aos extremos.
 \\
+\hline
 Detectores & Perturbações controladas e sensibilidade de parâmetros &
 Avalia detecção sintética e estabilidade; não mede acurácia sobre erros
 numéricos reais do ATP. \\
+\hline
 Elétrica & Caso de origem, formas de onda, repetições e revisão qualificada &
 Permite investigar a causa de cada evento; permanece pendente neste estudo.
 \\
 \hline
 \end{tabularx}
 \legend{Fonte: elaboração própria.}
-\end{table}
+\end{quadro}
 
 \subsection{Estatística descritiva e probabilidade de excedência}
 \label{sec:metodo-estatistico}
+
+O cálculo do desvio padrão amostral usa a soma dos desvios quadráticos
+em relação à média dividida por $N-1$, antes da raiz quadrada. Essa
+correção corresponde à perda de um grau de liberdade pela estimação da
+média com os próprios dados.
 
 Para cada combinação de cenário, tamanho da amostra, terminal e fase, foram
 calculados número total e número válido de observações, média, desvio padrão
@@ -1523,6 +1755,16 @@ candidatos a anomalias.
 \subsection{Evidência contextual de K-Means e DBSCAN}
 \label{sec:metodo-anomalias}
 
+Calibração designa a definição de escalas e limiares com um conjunto de
+referência. O espaço padronizado contém os valores após a transformação
+de escala usada pelo detector; distâncias e raios nesse espaço não são
+diretamente valores em volts. O escore é a medida numérica atribuída pelo
+método, e o limiar é o valor de corte que determina sua sinalização.
+Um critério booleano tem duas respostas possíveis: satisfeito ou não
+satisfeito. Na comparação, um voto corresponde à sinalização de um método
+aplicável; a união seleciona observações sinalizadas por pelo menos um deles.
+Essa contagem não representa probabilidade de erro.
+
 Os modelos de agrupamento foram ajustados separadamente por cenário,
 linhagem da fonte, terminal e
 fase. Essa separação evita que diferenças ordinárias de posição ao longo da
@@ -1561,18 +1803,18 @@ aplicabilidade e motivo; concordâncias e discordâncias permanecem visíveis.
 Os termos adotados para as saídas são ``candidato'' e ``evidência
 analítica'', nunca ``erro numérico confirmado do ATP''.
 
-A Tabela~\ref{tab:criterios-metodos} reúne os critérios de seleção e
+O Quadro~\ref{qua:criterios-metodos} reúne os critérios de seleção e
 separa sua aplicabilidade da avaliação geométrica das partições. A
 adequação gaussiana é examinada à parte e não participa da votação.
 
-\begin{table}[htbp]
+\begin{quadro}[htbp]
 \centering
 \caption{Síntese dos métodos e de sua participação na seleção de candidatos.}
-\label{tab:criterios-metodos}
+\label{qua:criterios-metodos}
 \small
 \renewcommand{\arraystretch}{1.15}
 \begin{tabularx}{\textwidth}
-    {@{}>{\RaggedRight\arraybackslash}p{2cm} L L@{}}
+    {|>{\RaggedRight\arraybackslash}p{2cm}|L|L|}
 \hline
 \textbf{Método e papel} & \textbf{Escore ou regra} &
 \textbf{Aplicabilidade e votação} \\
@@ -1582,11 +1824,13 @@ Distância no espaço padronizado estritamente acima do percentil 99 da
 calibração. Rótulo de grupo não é sinalização. &
 Requer amostra de calibração suficiente, escala não degenerada e valores
 distintos suficientes para os centroides. Vota quando aplicável. \\
+\hline
 DBSCAN: ruído por densidade &
 Sinaliza pontos de ruído; raio efetivo de 0,5 no espaço padronizado e
 mínimo de cinco vizinhos no pacote avaliado. &
 Grupos esparsos, constantes ou inteiramente classificados como ruído não
 votam. Zero ruído em ajuste aplicável significa zero candidatos. \\
+\hline
 Hierárquico: seleção da cauda &
 Separa até 10\% da cauda superior, com lacuna acima de 0,05~P.U. e de cinco
 vezes a mediana das lacunas; preserva três pontos de referência. &
@@ -1597,7 +1841,7 @@ Sem separação suficiente, não sinaliza candidatos. \\
 \end{tabularx}
 \legend{Fonte: elaboração própria. Silhouette e Davies--Bouldin avaliam
 partições sob critérios próprios; não são votos de anomalia.}
-\end{table}
+\end{quadro}
 
 Para comparar geometricamente os agrupamentos ajustados, o fluxo
 calcula, para cada grupo comparável, o coeficiente de Silhouette e o índice
@@ -1653,6 +1897,20 @@ independência nem relação de inclusão entre suas simulações. Assim,
 não se atribui causalmente toda mudança de escore ao tamanho amostral.
 
 \subsection{Ensaios controlados dos detectores}
+
+Neste ensaio, positivo significa registro com intervenção sintética
+declarada, e negativo significa registro sem essa intervenção. Um verdadeiro
+positivo (VP) é uma intervenção detectada; um falso negativo (FN) é uma
+intervenção não detectada. Um falso positivo (FP) é um registro sem
+intervenção sinalizado, e um verdadeiro negativo (VN) é um registro sem
+intervenção que não foi sinalizado. Esses nomes se referem às alterações
+controladas, não à causa elétrica dos máximos originais.
+
+A precisão, $VP/(VP+FP)$, mede a fração das sinalizações que corresponde
+a intervenções. A revocação, $VP/(VP+FN)$, mede a fração das intervenções
+detectadas. A medida $F_1=2VP/(2VP+FP+FN)$ combina precisão e revocação,
+e a taxa de falsos positivos, $FP/(FP+VN)$, mede a fração dos registros
+sem intervenção que foi sinalizada. Cada razão requer denominador positivo.
 
 A avaliação controlada utilizou cópias dos dados e manteve as fontes originais
 inalteradas. Além de controles limpos, foram aplicadas perturbações pontuais de
@@ -1718,6 +1976,15 @@ sintéticas; métricas não comprovam detecção de erros numéricos reais.}
 
 \subsection{Convergência, comparação e sensibilidade}
 
+Convergência descreve a aproximação ou estabilização de resultados sob
+um refinamento definido; aqui, a comparação amostral apenas examina
+mudanças entre fontes disponíveis. Fontes aninhadas seriam aquelas em que
+as simulações de uma amostra menor também pertencem à maior.
+A análise de sensibilidade verifica quanto a seleção muda quando variam
+os parâmetros. Uma grade é o conjunto predefinido dessas configurações.
+Multiplicidade refere-se à realização de várias comparações, que pode
+aumentar a ocorrência de conclusões ocasionais quando se fazem inferências.
+
 A comparação entre tamanhos amostrais considera 50, 100, 200, 1.000 e 10.000 simulações
 somente sob o mesmo cenário, base, terminal, fase, limiar, agrupamento e
 política de método. Para cada tamanho, são confrontados medidas descritivas,
@@ -1746,6 +2013,12 @@ conforme a Equação~\ref{eq:jaccard}:
 \label{eq:jaccard}
 J(A,B)=\frac{|A\cap B|}{|A\cup B|}.
 \end{equation}
+Na expressão, a interseção $A\cap B$ contém os candidatos comuns às duas
+seleções, e a união $A\cup B$ reúne todos os candidatos distintos.
+O índice vale 1 para conjuntos não vazios idênticos e 0 para conjuntos
+não vazios sem membros comuns. Oito candidatos comuns em dez distintos
+produzem Jaccard de 0,8; duas seleções vazias exigem convenção explícita,
+pois a razão tem denominador nulo.
 Valores inferiores a 0,80 são descritos como sensíveis. Esse limiar qualifica
 a estabilidade da seleção; não mede acurácia nem valida uma configuração como
 única.
