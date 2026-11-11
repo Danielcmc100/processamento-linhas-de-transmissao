@@ -21,6 +21,8 @@
 \setbeamerfont{frametitle}{size=\Large,series=\bfseries}
 \setbeamerfont{title}{size=\LARGE,series=\bfseries}
 \setbeamertemplate{navigation symbols}{}
+% Reveal content on manual advance without moving the remaining elements.
+\setbeamercovered{invisible}
 \setbeamertemplate{itemize items}[circle]
 \setbeamersize{text margin left=9mm,text margin right=9mm}
 \setbeamertemplate{footline}{%
@@ -61,46 +63,55 @@
 \begin{frame}{Contextualização: energização de linhas de transmissão}
 \begin{itemize}\setlength{\itemsep}{4mm}
 \item Uma linha de transmissão transporta energia entre subestações.
+\pause
 \item A energização consiste na conexão da linha à rede por uma chave.
+\pause
 \item Após a conexão, a tensão pode oscilar e superar
  temporariamente sua referência, caracterizando uma \textbf{sobretensão}.
 \end{itemize}
+\pause
 \begin{block}{Relevância do estudo}
 O isolamento elétrico deve suportar esses esforços. A análise da
 manobra contribui para compreender as condições de operação.
 \end{block}
+\pause
 \takeaway{O estudo concentra-se no período transitório após a energização.}
 \end{frame}
 
 \begin{frame}{Simulação elétrica e problema computacional}
 \begin{itemize}\setlength{\itemsep}{4mm}
 \item Ensaios reais envolvem custos elevados e restrições operacionais.
+\pause
 \item O ATP é um simulador de transitórios elétricos: permite repetir
  a conexão variando os instantes de fechamento das chaves.
+\pause
 \item Cada execução gera resultados em arquivos de texto extensos.
+\pause
 \item O desafio computacional consiste em extrair, validar e comparar
  observações, selecionando casos para investigação com rastreabilidade.
 \end{itemize}
+\pause
 \takeaway{Objetivo: transformar resultados de simulação em evidências verificáveis.}
-% \source{ATP: Alternative Transients Program. Fonte: monografia,
-%  Introdução e Metodologia.}
 \end{frame}
 
 \begin{frame}{Objetivos específicos}
 \begin{enumerate}\setlength{\itemsep}{3mm}
 \item \textbf{Extrair e organizar} máximos com identificação da origem.
+\pause
 \item \textbf{Pré-processar e descrever}: média, desvio padrão
  e dispersão dos máximos.
+\pause
 \item \textbf{Estimar excedências} e intervalos de confiança.
+\pause
 \item \textbf{Aplicar K-Means, DBSCAN e hierárquico}:
  agrupamentos e candidatos a observações atípicas.
+\pause
 \item \textbf{Avaliar agrupamentos}: Silhouette e Davies--Bouldin;
  comparar resultados e sinalizações dos métodos.
 \end{enumerate}
+\pause
 \takeaway{Integrar análise e apresentação dos resultados
  em rotina reprodutível.}
-% \source{Síntese dos sete objetivos específicos da monografia.
-%  Candidatos orientam investigação; não confirmam erro numérico.}
 \end{frame}
 
 \begin{frame}{Estudo de caso e pontos de observação}
@@ -116,30 +127,26 @@ manobra contribui para compreender as condições de operação.
 }
 \end{tikzpicture}
 \par\vspace{3mm}\raggedright
-Linha de \textbf{80 km}, com tensão nominal de \textbf{138 kV}.\par
-Em cada ponto, observamos três sinais elétricos: fases A, B e C.
-\takeaway{Cada simulação fornece nove máximos: três locais
- $\times$ três fases.}
-% \source{Esquema didático dos pontos de observação, sem os componentes do circuito.
-%  No modelo: terminal de manobra ($T_{MAN}$), meio da linha
-%  ($1/2\,LT$) e terminal oposto ($T_{OPO}$).}
 \end{frame}
 
 \begin{frame}{Cenários de simulação e composição da base}
 \begin{itemize}\setlength{\itemsep}{3mm}
 \item \textbf{Com resistor de pré-inserção (CRPI):} componente utilizado
  durante a conexão para atenuar o transitório.
+\pause
 \item \textbf{Sem resistor de pré-inserção (SRPI):} conexão sem
  esse componente.
-\item Por cenário: 50, 100, 200, 1.000 e 10.000 simulações.
+\pause
+\item Por cenário: 50, 100, 200, 1.000 e 10.000 simulações alterando o tempo de chaveamento.
 \end{itemize}
+\pause
 \begin{block}{Base de dados}
 Dez arquivos de saída do ATP (LIS) e \textbf{204.300 máximos de tensão}.
 90 grupos no total: 2 cenários $\times$ 5 tamanhos $\times$
 3 locais $\times$ 3 fases.
 \end{block}
-{\small Os cenários também diferem no chaveamento: a comparação
- não isola o efeito do resistor.}
+% {\small Os cenários também diferem no chaveamento: a comparação
+%  não isola o efeito do resistor.}
 \end{frame}
 
 \begin{frame}{Normalização e interpretação dos valores de tensão}
@@ -147,11 +154,14 @@ Dez arquivos de saída do ATP (LIS) e \textbf{204.300 máximos de tensão}.
 \centering
 1,0 P.U. = referência\qquad 1,5 P.U. = 50\% acima da referência
 \end{block}
+\pause
 \begin{itemize}\setlength{\itemsep}{3mm}
 \item Referência de pico fase-terra no estudo: 112.677 V.
+\pause
 \item Exemplo ilustrativo: 225.354 V correspondem a 2,0 P.U.
-\item Cada registro contém o maior valor em módulo, seu instante,
- local, fase e simulação de origem.
+\pause
+% \item Cada registro contém o maior valor em módulo, seu instante,
+%  local, fase e simulação de origem.
 \end{itemize}
 \takeaway{Unidade de análise: máximo de tensão por execução, local e fase.}
 % \source{138 kV é a tensão nominal eficaz entre fases; a referência
@@ -166,14 +176,19 @@ $\longrightarrow$ \textbf{Base em P.U.}\par\vspace{2mm}
 $\longrightarrow$ \textbf{Estatística e agrupamentos}
 $\longrightarrow$ \textbf{Tabelas, gráficos e rastreabilidade}
 \end{center}
+\pause
 \begin{description}\setlength{\itemsep}{2mm}
 \item[Python e Polars] Extração e tratamento tabular; regra hierárquica própria em Python.
+\pause
 \item[NumPy e SciPy] Cálculos numéricos e diagnósticos estatísticos.
+\pause
 \item[scikit-learn] K-Means, DBSCAN e índices dos agrupamentos.
+\pause
 \item[Matplotlib] Gráficos para inspeção e comparação dos resultados.
+\pause
 \item[Pytest] Verificação das regras de extração, integridade e análise.
 \end{description}
-\takeaway{Identidade de origem acompanha todas as etapas.}
+% \takeaway{Identidade de origem acompanha todas as etapas.}
 % \source{Implementação do projeto. Bibliotecas apoiam a rotina;
 %  testes de software não substituem validação elétrica.}
 \end{frame}
@@ -187,12 +202,14 @@ $\longrightarrow$ \textbf{Tabelas, gráficos e rastreabilidade}
 Ultrapassou 2,3 P.U.?\par
 Contar eventos para estimar sua frequência.
 \end{block}
+\pause
 \end{column}
 \begin{column}{0.47\linewidth}
 \begin{block}{2. Discrepância no grupo}
 Destoa dos demais no mesmo contexto?\par
 Selecionar candidatos para investigação.
 \end{block}
+\pause
 \end{column}
 \end{columns}
 \begin{center}
@@ -209,6 +226,7 @@ Selecionar candidatos para investigação.
  \node[below] at (\x,-0.1) {\label};
 \end{tikzpicture}
 \end{center}
+\pause
 \takeaway{Uma observação pode ser discrepante sem exceder o limiar de 2,3 P.U.}
 Exemplo ilustrativo, não dado observado. Discrepância não confirma erro.
 % \source{O limiar define o evento estudado; não recomenda isolamento.}
@@ -221,8 +239,8 @@ Exemplo ilustrativo, não dado observado. Discrepância não confirma erro.
 \par\raggedright
 {\small\textbf{Figura 1 --- Histograma e gráfico quantil--quantil dos máximos.}\par}
 
-{\small\color{accent}\bfseries Normalidade rejeitada em 88/90 grupos;
- excedência empírica é principal.}
+% {\small\color{accent}\bfseries Normalidade rejeitada em 88/90 grupos;
+%  excedência empírica é principal.}
 % \source{Anderson--Darling a 5\%. Figura: SRPI, terminal oposto, fase A,
 %  10.000 simulações. Fonte: pacote de evidências; fundamentação: Hevia.}
 \end{frame}
@@ -242,6 +260,7 @@ Simulações no grupo & Eventos & Limite superior (95\%) \\
 \bottomrule
 \end{tabular}
 \end{center}
+\pause
 \takeaway{Com zero ocorrências, a amostra maior reduz a incerteza estimada.}
 % \source{Frequência = eventos / simulações do grupo.
 %  Intervalo bilateral de Wilson de 95\%, calculado por grupo.
@@ -254,15 +273,17 @@ Simulações no grupo & Eventos & Limite superior (95\%) \\
 \item[K-Means] Dois agrupamentos; candidato quando a distância ao
  centroide supera o percentil 99 das distâncias de calibração.
  O grupo de maior tensão não é automaticamente anômalo.
+\pause
 \item[DBSCAN] Agrupa por densidade; sinaliza ruído quando aplicável.
  Raio de 0,5 no espaço padronizado e mínimo de cinco vizinhos.
+\pause
 \item[Hierárquico] Ligação simples em uma dimensão: cauda superior
  de até 10\%, lacuna acima de 0,05 P.U. e de cinco vezes a mediana
  das lacunas; preserva três pontos de referência.
 \end{description}
-\takeaway{Os três métodos integram a comparação geométrica dos agrupamentos.}
-{\small Os três também selecionam candidatos, sob critérios próprios.
- Sinalização não confirma erro numérico.}
+% \takeaway{Os três métodos integram a comparação geométrica dos agrupamentos.}
+% {\small Os três também selecionam candidatos, sob critérios próprios.
+%  Sinalização não confirma erro numérico.}
 % \source{Fonte: monografia, metodologia e comparação geométrica.}
 \end{frame}
 
@@ -273,7 +294,7 @@ Simulações no grupo & Eventos & Limite superior (95\%) \\
  {evidence/v10/runs/crpi/200/a/kmeans_clusters.png}
 \par\raggedright
 {\small\textbf{Figura 2 --- Partição em dois grupos por terminal.}\par}
-{\small Azul: grupo 0; verde: grupo 1. Rótulos não determinam candidatura.\par}
+% {\small Azul: grupo 0; verde: grupo 1. Rótulos não determinam candidatura.\par}
 % \source{Posição relativa: 0 = manobra; 0,5 = meio; 1 = oposto.
 %  Máximos em P.U. Cores não identificam causas. Fonte: monografia, figura 16; pacote v10.}
 \end{frame}
@@ -285,7 +306,7 @@ Simulações no grupo & Eventos & Limite superior (95\%) \\
  {evidence/v10/runs/crpi/200/a/dbscan_clusters.png}
 \par\raggedright
 {\small\textbf{Figura 3 --- Agrupamento por densidade e pontos de ruído.}\par}
-{\small Azul: grupo 0; cruzes cinzas: ruído (rótulo -1).\par}
+% {\small Azul: grupo 0; cruzes cinzas: ruído (rótulo -1).\par}
 % \source{Posição relativa: 0 = manobra; 0,5 = meio; 1 = oposto.
 %  Máximos em P.U. Cores não identificam causas. Fonte: monografia, figura 17; pacote v10.}
 \end{frame}
@@ -297,7 +318,7 @@ Simulações no grupo & Eventos & Limite superior (95\%) \\
  {evidence/v10/runs/crpi/200/a/hierarchical_clusters.png}
 \par\raggedright
 {\small\textbf{Figura 4 --- Separação da cauda superior no terminal oposto.}\par}
-{\small Azul: grupo de referência; verde: cauda superior separada.\par}
+% {\small Azul: grupo de referência; verde: cauda superior separada.\par}
 % \source{Posição relativa: 0 = manobra; 0,5 = meio; 1 = oposto.
 %  Máximos em P.U. Cores não identificam causas. Fonte: monografia, figura 18; pacote v10.}
 \end{frame}
@@ -308,10 +329,12 @@ Simulações no grupo & Eventos & Limite superior (95\%) \\
 Compara a proximidade de cada ponto ao seu grupo e ao grupo vizinho.
 Varia de $-1$ a $1$; valores maiores favorecem a partição.
 \end{block}
+\pause
 \begin{block}{Davies--Bouldin: dispersão relativa à separação}
 Compara a dispersão interna dos grupos com a distância entre seus centros.
 Valores menores favorecem a partição.
 \end{block}
+\pause
 \takeaway{Os índices avaliam geometria; não confirmam causas elétricas.}
 % \source{Política adotada: índices não aplicáveis com um único grupo ou
 %  grupo unitário. No DBSCAN, o ruído é excluído da população avaliada.
@@ -332,6 +355,7 @@ Hierárquico & 0,5444 & \textbf{0,3182} & 200 \\
 \bottomrule
 \end{tabular}
 \end{center}
+\pause
 \textbf{Com resistor, meio da linha, fase A, 50 simulações:}
 \begin{center}
 \begin{tabular}{lrrr}
@@ -343,8 +367,9 @@ DBSCAN & 0,7580 & \textbf{0,2381} & 50 \\
 \bottomrule
 \end{tabular}
 \end{center}
+\pause
 \takeaway{As métricas podem favorecer métodos diferentes.}
-Comparar dentro de cada tabela: mesma população e índices aplicáveis.
+% Comparar dentro de cada tabela: mesma população e índices aplicáveis.
 % \source{Negrito: melhor índice no recorte. No segundo recorte,
 %  DBSCAN não excluiu ruído. Fonte: pacote de evidências.}
 \end{frame}
@@ -368,6 +393,7 @@ Simulações & Silhouette $\uparrow$ & DB $\downarrow$ \\
 \bottomrule
 \end{tabular}
 \end{center}
+\pause
 \end{column}
 \begin{column}{0.39\linewidth}
 \textbf{Cobertura dos índices}\par
@@ -380,29 +406,32 @@ Grupos aplicáveis em toda a base:
 Não aplicável $\neq$ zero ou falha.
 \end{column}
 \end{columns}
+\pause
 \takeaway{Mais simulações não garantem melhor separação geométrica.}
-Comparação descritiva entre fontes; não isola efeito causal do tamanho.
+% Comparação descritiva entre fontes; não isola efeito causal do tamanho.
 % \source{Medianas entre grupos terminal--fase aplicáveis.
 %  Fonte: pacote de evidências, clustering\_summary.tex.}
 \end{frame}
 
-\begin{frame}{Contribuições computacionais e delimitação do escopo}
-\small
-\begin{itemize}\setlength{\itemsep}{2mm}
-\item \textbf{Extração e organização:} dez arquivos,
- 204.300 observações preservadas.
-\item \textbf{Conferência numérica:} 60 valores da fase A e 90 médias
- concordantes com ATP; não é auditoria individual de toda a base.
-\item \textbf{Seleção exploratória publicada:} 2.010 candidatos
- na união dos três critérios do pacote v10; causas não confirmadas.
-\end{itemize}
-\begin{block}{Exemplo rastreável de candidato}
-Sem resistor, 50 simulações: execução 43, terminal oposto, fase C.\par
-\textbf{1,2467 P.U.}: sinalizado pelo DBSCAN, abaixo de 2,3 P.U.
-\end{block}
-\takeaway{Entrega: dados verificáveis e casos localizáveis para investigação.}
-% \source{Fonte: pacote de evidências, revisão técnica. Caso sem conclusão causal.
-%  Parâmetros e origens registrados; sem exclusão automática ou recomendação de isolamento.}
+\begin{frame}{Contribuições entregues}
+\begin{enumerate}\setlength{\itemsep}{2.8mm}
+\item \textbf{Extração automática e base estruturada}:
+ dez arquivos, 204.300 observações com origem identificada.
+\pause
+\item \textbf{Normalização em P.U. e estatísticas descritivas}:
+ média, desvio padrão, dispersão e candidatos por MAD.
+\pause
+\item \textbf{Excedências empíricas e intervalos de Wilson},
+ com avaliação da adequação normal.
+\pause
+\item \textbf{Agrupamentos por K-Means, DBSCAN e hierárquico};
+ candidatos por K-Means e DBSCAN.
+\pause
+\item \textbf{Comparação por Silhouette e Davies--Bouldin},
+ com concordâncias e divergências nas sinalizações.
+\end{enumerate}
+\pause
+\takeaway{Rotina reprodutível com tabelas, gráficos e casos rastreáveis.}
 \end{frame}
 
 \begin{frame}{Conclusões e continuidade}
@@ -410,13 +439,17 @@ Sem resistor, 50 simulações: execução 43, terminal oposto, fase C.\par
 \begin{itemize}\setlength{\itemsep}{3mm}
 \item K-Means: maior cobertura dos índices; isso não demonstra
  superioridade na detecção.
+\pause
 \item Silhouette e Davies--Bouldin podem favorecer métodos diferentes.
+\pause
 \item Finalidades e populações avaliadas impedem um vencedor universal.
 \end{itemize}
+\pause
 \takeaway{A rotina seleciona casos para investigação e preserva suas evidências.}
 Continuidade: formas de onda, menor passo de integração e revisão
  elétrica independente. Casos permanecem sem conclusão causal.
 % \source{Escopo: processamento e análise dos resultados de simulação.}
+\pause
 \vfill\hfill\textbf{Obrigado.}
 \end{frame}
 
